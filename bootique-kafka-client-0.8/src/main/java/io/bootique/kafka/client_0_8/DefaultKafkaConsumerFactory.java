@@ -5,20 +5,22 @@ import kafka.consumer.ConsumerConfig;
 import kafka.javaapi.consumer.ConsumerConnector;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 public class DefaultKafkaConsumerFactory implements KafkaConsumerFactory {
 
-    private Map<String, ConsumerConfig> consumerConfigs;
+    private Map<String, Map<String, String>> configs;
 
-    public DefaultKafkaConsumerFactory(Map<String, ConsumerConfig> consumerConfigs) {
-        this.consumerConfigs = consumerConfigs;
+    public DefaultKafkaConsumerFactory(Map<String, Map<String, String>> configs) {
+        this.configs = configs;
     }
 
     @Override
     public ConsumerConnector newConsumerConnector() {
 
-        Collection<String> allNames = consumerConfigs.keySet();
+        Collection<String> allNames = configs.keySet();
 
         switch (allNames.size()) {
             case 0:
@@ -33,13 +35,24 @@ public class DefaultKafkaConsumerFactory implements KafkaConsumerFactory {
 
     @Override
     public ConsumerConnector newConsumerConnector(String name) {
+        return newConsumerConnector(name, Collections.emptyMap());
+    }
 
-        ConsumerConfig config = consumerConfigs.get(name);
+    @Override
+    public ConsumerConnector newConsumerConnector(String name, Map<String, String> properties) {
 
-        if (config == null) {
-            throw new IllegalArgumentException("Kafka consumer is not configured: " + name);
+        Properties mergedProps = new Properties();
+
+        Map<String, String> config = configs.get(name);
+
+        if (config != null) {
+            mergedProps.putAll(config);
         }
 
-        return Consumer.createJavaConsumerConnector(config);
+        if (properties != null) {
+            mergedProps.putAll(properties);
+        }
+
+        return Consumer.createJavaConsumerConnector(new ConsumerConfig(mergedProps));
     }
 }

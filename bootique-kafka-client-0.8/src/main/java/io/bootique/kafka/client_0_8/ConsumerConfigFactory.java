@@ -1,28 +1,40 @@
 package io.bootique.kafka.client_0_8;
 
-import kafka.consumer.ConsumerConfig;
-
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class ConsumerConfigFactory {
 
     private String zookeeperConnect = "localhost:2181";
-    private long zookeeperSessionTimeoutMs = 400;
-    private long zookeeperSyncTimeMs = 200;
-    private long autoCommitIntervalMs = 1000;
+    private long zookeeperSessionTimeoutMs;
+    private long zookeeperSyncTimeMs;
+    private long autoCommitIntervalMs;
     private String group;
 
 
-    public ConsumerConfig createConsumerConfig() {
+    public Map<String, String> createConsumerConfig() {
 
-        Properties props = new Properties();
-        props.put("zookeeper.connect", zookeeperConnect);
-        props.put("group.id", group);
-        props.put("zookeeper.session.timeout.ms", "400");
-        props.put("zookeeper.sync.time.ms", "200");
-        props.put("auto.commit.interval.ms", "1000");
-        
-        return new ConsumerConfig(props);
+        Map<String, String> props = new HashMap<>();
+        props.put("zookeeper.connect", Objects.requireNonNull(zookeeperConnect));
+
+        if (group != null) {
+            props.put("group.id", group);
+        }
+
+        if(zookeeperSessionTimeoutMs > 0) {
+            props.put("zookeeper.session.timeout.ms", String.valueOf(zookeeperSessionTimeoutMs));
+        }
+
+        if(zookeeperSyncTimeMs >0) {
+            props.put("zookeeper.sync.time.ms", String.valueOf(zookeeperSyncTimeMs));
+        }
+
+        if(autoCommitIntervalMs > 0) {
+            props.put("auto.commit.interval.ms", String.valueOf(autoCommitIntervalMs));
+        }
+
+        return props;
     }
 
     public void setZookeeperConnect(String zookeeperConnect) {

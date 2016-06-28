@@ -5,6 +5,7 @@ import kafka.consumer.ConsumerConfig;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 // separating factory methods for producer and consumer ... only one may be needed in reality
 // TODO: implement preducers
@@ -13,7 +14,7 @@ public class KafkaClient_0_8_Factory {
     private Map<String, ConsumerConfigFactory> consumers;
 
     public DefaultKafkaConsumerFactory createConsumerFactory() {
-        Map<String, ConsumerConfig> configMap = new HashMap<>();
+        Map<String, Map<String, String>> configMap = new HashMap<>();
         consumers.forEach((name, factory) -> configMap.put(name, factory.createConsumerConfig()));
         return new DefaultKafkaConsumerFactory(configMap);
     }
