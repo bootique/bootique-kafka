@@ -9,9 +9,8 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>bootique-kafka-client-0.8</artifactId>
-	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>bq-kafka-client-0.8: Bootique wrapper for Kafka client compatible with broker version 0.8.*</name>
+	<name>bootique-kafka-client-0.8: Bootique wrapper for Kafka client compatible with broker version 0.8.*</name>
 
 	<dependencyManagement>
 		<dependencies>
