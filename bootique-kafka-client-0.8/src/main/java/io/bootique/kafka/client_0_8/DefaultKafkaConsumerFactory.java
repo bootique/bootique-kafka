@@ -1,11 +1,9 @@
 package io.bootique.kafka.client_0_8;
 
 import kafka.consumer.Consumer;
-import kafka.consumer.ConsumerConfig;
 import kafka.javaapi.consumer.ConsumerConnector;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -35,11 +33,11 @@ public class DefaultKafkaConsumerFactory implements KafkaConsumerFactory {
 
     @Override
     public ConsumerConnector newConsumerConnector(String name) {
-        return newConsumerConnector(name, Collections.emptyMap());
+        return newConsumerConnector(name, null);
     }
 
     @Override
-    public ConsumerConnector newConsumerConnector(String name, Map<String, String> properties) {
+    public ConsumerConnector newConsumerConnector(String name, ConsumerConfig configOverrides) {
 
         Properties mergedProps = new Properties();
 
@@ -49,10 +47,10 @@ public class DefaultKafkaConsumerFactory implements KafkaConsumerFactory {
             mergedProps.putAll(config);
         }
 
-        if (properties != null) {
-            mergedProps.putAll(properties);
+        if (configOverrides != null) {
+            mergedProps.putAll(configOverrides.createConsumerConfig());
         }
 
-        return Consumer.createJavaConsumerConnector(new ConsumerConfig(mergedProps));
+        return Consumer.createJavaConsumerConnector(new kafka.consumer.ConsumerConfig(mergedProps));
     }
 }
