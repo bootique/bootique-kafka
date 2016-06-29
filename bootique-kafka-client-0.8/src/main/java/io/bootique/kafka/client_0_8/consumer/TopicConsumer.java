@@ -59,6 +59,7 @@ public class TopicConsumer<K, V> implements AutoCloseable {
 
     @Override
     public void close() {
+        connector.commitOffsets();
         connector.shutdown();
     }
 
