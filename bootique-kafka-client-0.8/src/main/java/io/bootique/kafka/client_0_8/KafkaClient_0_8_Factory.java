@@ -2,7 +2,7 @@ package io.bootique.kafka.client_0_8;
 
 
 import io.bootique.kafka.client_0_8.consumer.ConsumerConfigFactory;
-import io.bootique.kafka.client_0_8.consumer.DefaultKafkaConsumerFactory;
+import io.bootique.kafka.client_0_8.consumer.DefaultConsumerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,10 +13,10 @@ public class KafkaClient_0_8_Factory {
 
     private Map<String, ConsumerConfigFactory> consumers;
 
-    public DefaultKafkaConsumerFactory createConsumerFactory() {
+    public DefaultConsumerFactory createConsumerFactory() {
         Map<String, Map<String, String>> configMap = new HashMap<>();
         consumers.forEach((name, factory) -> configMap.put(name, factory.createConsumerConfig()));
-        return new DefaultKafkaConsumerFactory(configMap);
+        return new DefaultConsumerFactory(configMap);
     }
 
     public void setConsumers(Map<String, ConsumerConfigFactory> consumers) {

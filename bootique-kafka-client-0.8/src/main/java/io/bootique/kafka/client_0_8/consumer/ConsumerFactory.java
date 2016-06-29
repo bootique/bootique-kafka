@@ -6,11 +6,13 @@ import kafka.javaapi.consumer.ConsumerConnector;
 /**
  * An injectable factory for Kafka {@link ConsumerConnector} objects.
  */
-public interface KafkaConsumerFactory {
+public interface ConsumerFactory {
 
     ConsumerConnector newConsumerConnector();
 
     ConsumerConnector newConsumerConnector(String name);
+
+    ConsumerConnector newConsumerConnector(ConsumerConfig configOverrides);
 
     ConsumerConnector newConsumerConnector(String name, ConsumerConfig configOverrides);
 }
