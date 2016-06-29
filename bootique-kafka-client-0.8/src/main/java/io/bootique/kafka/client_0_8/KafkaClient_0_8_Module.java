@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import com.nhl.bootique.ConfigModule;
 import com.nhl.bootique.config.ConfigurationFactory;
 import com.nhl.bootique.jackson.JacksonService;
+import io.bootique.kafka.client_0_8.consumer.KafkaConsumerFactory;
 import io.bootique.kafka.client_0_8.decoder.JsonDecoder;
 
 public class KafkaClient_0_8_Module extends ConfigModule {

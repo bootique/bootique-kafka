@@ -1,4 +1,4 @@
-package io.bootique.kafka.client_0_8;
+package io.bootique.kafka.client_0_8.consumer;
 
 import java.util.HashMap;
 import java.util.Map;

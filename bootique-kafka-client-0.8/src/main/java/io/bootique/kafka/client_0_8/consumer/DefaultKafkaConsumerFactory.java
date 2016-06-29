@@ -1,4 +1,4 @@
-package io.bootique.kafka.client_0_8;
+package io.bootique.kafka.client_0_8.consumer;
 
 import kafka.consumer.Consumer;
 import kafka.javaapi.consumer.ConsumerConnector;

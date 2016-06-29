@@ -1,11 +1,11 @@
 package io.bootique.kafka.client_0_8;
 
 
-import kafka.consumer.ConsumerConfig;
+import io.bootique.kafka.client_0_8.consumer.ConsumerConfigFactory;
+import io.bootique.kafka.client_0_8.consumer.DefaultKafkaConsumerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 // separating factory methods for producer and consumer ... only one may be needed in reality
 // TODO: implement preducers

@@ -43,7 +43,7 @@ kafka:
        zookeeperConnect: 127.0.0.1:2181
        group: mygroup
 ```
-Now inject ```io.bootique.kafka.client_0_8.KafkaConsumerFactory``` in your code:
+Now inject ```io.bootique.kafka.client_0_8.consumer.KafkaConsumerFactory``` in your code:
 ```java
 
 @Inject
