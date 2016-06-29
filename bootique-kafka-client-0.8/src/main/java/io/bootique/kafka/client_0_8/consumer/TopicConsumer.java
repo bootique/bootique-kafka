@@ -17,7 +17,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 /**
- * A helper class to consumer a singke topic from a Kafka 0.8 stream.
+ * A helper class to consumer a single topic from a Kafka 0.8 stream.
  */
 public class TopicConsumer<K, V> implements AutoCloseable {
 
