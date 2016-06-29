@@ -34,10 +34,13 @@ public class TopicConsumer<K, V> implements AutoCloseable {
         return new Builder<>(keyDecoder, valueDecoder);
     }
 
-    public CompletableFuture consumeAll(Executor executor, BiConsumer<K, V> handler) {
+    public CompletableFuture<Void> consumeAll(Executor executor, BiConsumer<K, V> handler) {
         Collection<CompletableFuture<Object>> results = new ArrayList<>();
         getStreams().forEach(s -> results.add(consumeStream(s, handler, executor)));
-        return CompletableFuture.allOf(results.toArray(new CompletableFuture[results.size()]));
+
+        CompletableFuture<Object>[] resultsArray = results.toArray(new CompletableFuture[results.size()]);
+
+        return CompletableFuture.allOf(resultsArray).thenRun(connector::commitOffsets);
     }
 
     protected CompletableFuture<Object> consumeStream(KafkaStream<K, V> s, BiConsumer<K, V> handler, Executor executor) {
