@@ -33,7 +33,7 @@ public class ConsumerConfig {
         if (autoCommitIntervalMs > 0) {
             props.put("auto.commit.interval.ms", String.valueOf(autoCommitIntervalMs));
         }
-        
+
         return props;
     }
 
