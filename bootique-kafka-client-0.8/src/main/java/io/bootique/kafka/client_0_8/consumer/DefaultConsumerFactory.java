@@ -4,6 +4,7 @@ import kafka.consumer.Consumer;
 import kafka.javaapi.consumer.ConsumerConnector;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -46,6 +47,10 @@ public class DefaultConsumerFactory implements ConsumerFactory {
         }
 
         return Consumer.createJavaConsumerConnector(new kafka.consumer.ConsumerConfig(mergedProps));
+    }
+
+    public Collection<String> getConfigNames() {
+        return Collections.unmodifiableCollection(configs.keySet());
     }
 
     private String getDefaultName() {

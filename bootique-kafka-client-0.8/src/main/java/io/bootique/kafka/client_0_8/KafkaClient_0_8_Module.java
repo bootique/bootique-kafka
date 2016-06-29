@@ -12,6 +12,11 @@ public class KafkaClient_0_8_Module extends ConfigModule {
 
 // TODO: producer...
 
+
+    public KafkaClient_0_8_Module() {
+        super("kafka");
+    }
+
     @Provides
     @Singleton
     ConsumerFactory provideConsumerFactory(KafkaClient_0_8_Factory factory) {

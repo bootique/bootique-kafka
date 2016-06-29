@@ -1,0 +1,6 @@
+kafka:
+  consumers:
+    x:
+      zookeeperConnect: 127.0.0.1:1111
+    y:
+      zookeeperConnect: 127.0.0.1:2222
