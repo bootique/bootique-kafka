@@ -1,16 +1,20 @@
 package io.bootique.kafka.client_0_8.consumer;
 
-import kafka.consumer.*;
+import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
 import kafka.message.MessageAndMetadata;
 import kafka.serializer.Decoder;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * A helper class to consumer a singke topic from a Kafka 0.8 stream.
@@ -30,13 +34,24 @@ public class TopicConsumer<K, V> implements AutoCloseable {
         return new Builder<>(keyDecoder, valueDecoder);
     }
 
-    public void consume(ExecutorService executorService, BiConsumer<K, V> handler) {
-        getStreams().forEach(s -> executorService.submit(() -> {
+    public CompletableFuture consumeAll(Executor executor, BiConsumer<K, V> handler) {
+        Collection<CompletableFuture<Object>> results = new ArrayList<>();
+        getStreams().forEach(s -> results.add(consumeStream(s, handler, executor)));
+        return CompletableFuture.allOf(results.toArray(new CompletableFuture[results.size()]));
+    }
+
+    protected CompletableFuture<Object> consumeStream(KafkaStream<K, V> s, BiConsumer<K, V> handler, Executor executor) {
+
+        Supplier<Object> task = () -> {
 
             for (MessageAndMetadata<K, V> m : s) {
                 handler.accept(m.key(), m.message());
             }
-        }));
+
+            return null;
+        };
+
+        return CompletableFuture.supplyAsync(task, executor);
     }
 
     @Override
