@@ -9,21 +9,19 @@ Integration of Kafka client for Bootique. Supports various versions of the Kafka
 
 First include the BOMs:
 ```xml
-<!-- TODO: until these snapshots are released, they are available from -->
-<!-- http://maven.objectstyle.org/nexus/content/repositories/bootique-snapshots/ -->
 <dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>io.bootique.bom</groupId>
             <artifactId>bootique-bom</artifactId>
-            <version>0.18-SNAPSHOT</version>
+            <version>0.18</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
         <dependency>
             <groupId>com.nhl.bootique.bom</groupId>
             <artifactId>bootique-bom</artifactId>
-            <version>0.18-SNAPSHOT</version>
+            <version>0.18</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
