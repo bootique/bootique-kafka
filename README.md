@@ -43,7 +43,7 @@ kafka:
        zookeeperConnect: 127.0.0.1:2181
        group: mygroup
 ```
-Now inject ```io.bootique.kafka.client_0_8.consumer.ConsumerFactory``` in your code:
+You can inject ```io.bootique.kafka.client_0_8.consumer.ConsumerFactory``` in your code. It can be either used directly:
 ```java
 
 @Inject
@@ -54,9 +54,12 @@ public void doSomething() {
 }
 ```
 
-A user-friendly consumer API:
+or via ```TopicConsumer``` API:
 
 ```java
+@Inject
+KafkaConsumerFactory consumerFactory;
+
 ExecutorService executor = ...
 
 try (TopicConsumer<K, V> consumer = createConsumer()) {
