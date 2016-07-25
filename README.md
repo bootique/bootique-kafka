@@ -15,8 +15,8 @@ First include the BOMs:
     <dependencies>
         <dependency>
             <groupId>io.bootique.bom</groupId>
-            <artifactId>bootique-io-bom</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <artifactId>bootique-bom</artifactId>
+            <version>0.18-SNAPSHOT</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -52,4 +52,34 @@ KafkaConsumerFactory consumerFactory;
 public void doSomething() {
    consumerFactory.newConsumerConnector().createMessageStreams(..);
 }
+```
+
+A user-friendly consumer API:
+
+```java
+ExecutorService executor = ...
+
+try (TopicConsumer<K, V> consumer = createConsumer()) {
+
+    try {
+        kafkaConsumer.consumeAll(executor, this::process).get();
+    } catch (InterruptedException | ExecutionException e) {
+		e.printStackTrace();
+    }
+}
+
+void process(K key, V message) {
+    // do something
+}
+
+TopicConsumer<K, V> createConsumer() {
+	return TopicConsumer
+		.builder(keyDecoder, valueDecoder)
+		.configName("someConsumer")
+		.group("someGroup")
+		.threads(2)
+		.topic("my.topic")
+		.build(consumerFactory.get());
+}
+
 ```
