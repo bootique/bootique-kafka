@@ -21,8 +21,8 @@
     </properties>
 
     <scm>
-        <developerConnection>scm:git:ssh://git@github.com/io/bootique-kafka-client</developerConnection>
-        <url>https://github.com/io/bootique-kafka-client</url>
+        <developerConnection>scm:git:ssh://git@github.com/bootique/bootique-kafka-client</developerConnection>
+        <url>https://github.com/bootique/bootique-kafka-client</url>
         <tag>HEAD</tag>
     </scm>
 
