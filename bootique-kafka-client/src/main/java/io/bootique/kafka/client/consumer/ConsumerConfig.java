@@ -20,7 +20,7 @@ public class ConsumerConfig<K, V> {
     private String group;
     private Boolean autoCommit;
     private Long autoCommitIntervalMs;
-    private Long sessionTimeoutMs;
+    private Integer sessionTimeoutMs;
     private BootstrapServers bootstrapServers;
 
     private ConsumerConfig() {
@@ -64,7 +64,7 @@ public class ConsumerConfig<K, V> {
         return autoCommitIntervalMs;
     }
 
-    public Long getSessionTimeoutMs() {
+    public Integer getSessionTimeoutMs() {
         return sessionTimeoutMs;
     }
 
@@ -100,7 +100,7 @@ public class ConsumerConfig<K, V> {
             return this;
         }
 
-        public Builder<K, V> sessionTimeoutMs(long ms) {
+        public Builder<K, V> sessionTimeoutMs(int ms) {
             config.sessionTimeoutMs = ms;
             return this;
         }

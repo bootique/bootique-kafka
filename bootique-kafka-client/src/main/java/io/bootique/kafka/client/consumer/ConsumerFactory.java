@@ -2,6 +2,8 @@ package io.bootique.kafka.client.consumer;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +17,24 @@ import java.util.Objects;
  */
 public class ConsumerFactory {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerFactory.class);
+
+    private static final String BOOTSTRAP_SERVERS_CONFIG = org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG;
+    private static final String GROUP_ID_CONFIG = org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
+    private static final String ENABLE_AUTO_COMMIT_CONFIG = org.apache.kafka.clients.consumer.ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG;
+    private static final String AUTO_COMMIT_INTERVAL_MS_CONFIG = org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG;
+    private static final String SESSION_TIMEOUT_MS_CONFIG = org.apache.kafka.clients.consumer.ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG;
+
     private String defaultGroup;
     private boolean autoCommit;
     private long autoCommitIntervalMs;
-    private long sessionTimeoutMs;
+    private int sessionTimeoutMs;
+
+    public ConsumerFactory() {
+        this.autoCommit = true;
+        this.autoCommitIntervalMs = 1000l;
+        this.sessionTimeoutMs = 30000;
+    }
 
     public void setDefaultGroup(String defaultGroup) {
         this.defaultGroup = defaultGroup;
@@ -32,7 +48,7 @@ public class ConsumerFactory {
         this.autoCommitIntervalMs = autoCommitIntervalMs;
     }
 
-    public void setSessionTimeoutMs(long sessionTimeoutMs) {
+    public void setSessionTimeoutMs(int sessionTimeoutMs) {
         this.sessionTimeoutMs = sessionTimeoutMs;
     }
 
@@ -41,28 +57,34 @@ public class ConsumerFactory {
         Map<String, Object> properties = new HashMap<>();
 
         setRequiredProperty(properties,
-                org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                BOOTSTRAP_SERVERS_CONFIG,
                 Objects.requireNonNull(bootstrapServers).asString());
 
         setRequiredProperty(properties,
-                org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG,
+                GROUP_ID_CONFIG,
                 config.getGroup(),
                 defaultGroup);
 
         setProperty(properties,
-                org.apache.kafka.clients.consumer.ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
+                ENABLE_AUTO_COMMIT_CONFIG,
                 config.getAutoCommit(),
                 autoCommit);
 
         setProperty(properties,
-                org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,
+                AUTO_COMMIT_INTERVAL_MS_CONFIG,
                 config.getAutoCommitIntervalMs(),
                 autoCommitIntervalMs);
 
         setProperty(properties,
-                org.apache.kafka.clients.consumer.ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG,
+                SESSION_TIMEOUT_MS_CONFIG,
                 config.getSessionTimeoutMs(),
                 sessionTimeoutMs);
+
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(String.format("Creating consumer bootstrapping to %s, group id: %s.",
+                    properties.get(BOOTSTRAP_SERVERS_CONFIG),
+                    properties.get(GROUP_ID_CONFIG)));
+        }
 
         return new KafkaConsumer<>(properties, config.getKeyDeserializer(), config.getValueDeserializer());
     }
