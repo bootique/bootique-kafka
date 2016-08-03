@@ -1,5 +1,6 @@
 package io.bootique.kafka.client;
 
+import io.bootique.kafka.client.consumer.BootstrapServers;
 import io.bootique.kafka.client.consumer.ConsumerConfig;
 import io.bootique.kafka.client.consumer.ConsumerFactory;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -12,10 +13,10 @@ import java.util.Map;
  */
 public class DefaultKafkaClientFactory implements KafkaClientFactory {
 
-    private Map<String, String> clusters;
+    private Map<String, BootstrapServers> clusters;
     private ConsumerFactory consumerTemplate;
 
-    public DefaultKafkaClientFactory(Map<String, String> clusters, ConsumerFactory consumerTemplate) {
+    public DefaultKafkaClientFactory(Map<String, BootstrapServers> clusters, ConsumerFactory consumerTemplate) {
         this.clusters = clusters;
         this.consumerTemplate = consumerTemplate;
     }
@@ -27,13 +28,17 @@ public class DefaultKafkaClientFactory implements KafkaClientFactory {
 
     @Override
     public <K, V> Consumer<K, V> createConsumer(String clusterName, ConsumerConfig<K, V> config) {
-        String bootstrapServers = clusters.get(clusterName);
+        BootstrapServers servers = config.getBootstrapServers();
 
-        if (bootstrapServers == null) {
-            throw new IllegalArgumentException("Unknown Kafka cluster: " + clusterName);
+        if (servers == null) {
+
+            servers = clusters.get(clusterName);
+            if (servers == null) {
+                throw new IllegalArgumentException("Kafka bootstrap servers are missing for: " + clusterName);
+            }
         }
 
-        return consumerTemplate.createConsumer(bootstrapServers, config);
+        return consumerTemplate.createConsumer(servers, config);
     }
 
     private String getDefaultName() {

@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A YAML-configurable factory for a base consumer configuration. In runtime Kafka consumer is created by merging this
@@ -35,13 +36,13 @@ public class ConsumerFactory {
         this.sessionTimeoutMs = sessionTimeoutMs;
     }
 
-    public <K, V> Consumer<K, V> createConsumer(String bootstrapServers, ConsumerConfig<K, V> config) {
+    public <K, V> Consumer<K, V> createConsumer(BootstrapServers bootstrapServers, ConsumerConfig<K, V> config) {
 
         Map<String, Object> properties = new HashMap<>();
 
         setRequiredProperty(properties,
                 org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                bootstrapServers);
+                Objects.requireNonNull(bootstrapServers).asString());
 
         setRequiredProperty(properties,
                 org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG,

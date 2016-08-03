@@ -13,5 +13,5 @@ public interface KafkaClientFactory {
 
     <K, V> Consumer<K, V> createConsumer(ConsumerConfig<K, V> config);
 
-    <K, V> Consumer<K, V> createConsumer(String clusterName, ConsumerConfig<K, V> config);
+    <K, V> Consumer<K, V> createConsumer(String servers, ConsumerConfig<K, V> config);
 }
