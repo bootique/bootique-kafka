@@ -28,7 +28,7 @@ public class ProducerFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerFactory.class);
 
-    private int acks;
+    private String acks;
     private int retries;
     private int batchSize;
     private int lingerMs;
@@ -36,16 +36,14 @@ public class ProducerFactory {
 
     public ProducerFactory() {
 
-        // note that -1 is the default meaning "all"; 0 means no acks and is frequently not a good idea
-        this.acks = -1;
-
+        this.acks = "all";
         this.retries = 0;
         this.batchSize = 16384;
         this.lingerMs = 1;
         this.bufferMemory = 33554432;
     }
 
-    public void setAcks(int acks) {
+    public void setAcks(String acks) {
         this.acks = acks;
     }
 

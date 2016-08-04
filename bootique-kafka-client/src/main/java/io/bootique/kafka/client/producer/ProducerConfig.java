@@ -17,7 +17,7 @@ public class ProducerConfig<K, V> {
     private Serializer<K> keySerializer;
     private Serializer<V> valueSerializer;
 
-    private Integer acks;
+    private String acks;
     private Integer retries;
     private Integer batchSize;
     private Integer lingerMs;
@@ -56,7 +56,7 @@ public class ProducerConfig<K, V> {
         return valueSerializer;
     }
 
-    public Integer getAcks() {
+    public String getAcks() {
         return acks;
     }
 
@@ -90,11 +90,12 @@ public class ProducerConfig<K, V> {
         }
 
         public Builder<K, V> allAcks() {
-            return acks(-1);
+            config.acks = "all";
+            return this;
         }
 
         public Builder<K, V> acks(int acks) {
-            config.acks = acks;
+            config.acks = String.valueOf(acks);
             return this;
         }
 
