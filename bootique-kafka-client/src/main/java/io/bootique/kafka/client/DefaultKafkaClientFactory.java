@@ -9,6 +9,7 @@ import org.apache.kafka.clients.producer.Producer;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @since 0.2
@@ -21,8 +22,8 @@ public class DefaultKafkaClientFactory implements KafkaClientFactory {
 
     public DefaultKafkaClientFactory(Map<String, BootstrapServers> clusters, ConsumerFactory consumerTemplate, ProducerFactory producerTemplate) {
         this.clusters = clusters;
-        this.consumerTemplate = consumerTemplate;
-        this.producerTemplate = producerTemplate;
+        this.consumerTemplate = Objects.requireNonNull(consumerTemplate);
+        this.producerTemplate = Objects.requireNonNull(producerTemplate);
     }
 
     @Override

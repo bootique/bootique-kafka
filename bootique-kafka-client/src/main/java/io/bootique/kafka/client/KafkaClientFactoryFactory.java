@@ -42,6 +42,8 @@ public class KafkaClientFactoryFactory {
 
         Map<String, BootstrapServers> clusters = this.clusters != null ? this.clusters : Collections.emptyMap();
         ConsumerFactory consumerTemplate = this.consumer != null ? this.consumer : new ConsumerFactory();
-        return new DefaultKafkaClientFactory(clusters, consumerTemplate, producer);
+        ProducerFactory producerTemplate = this.producer != null ? this.producer : new ProducerFactory();
+
+        return new DefaultKafkaClientFactory(clusters, consumerTemplate, producerTemplate);
     }
 }
