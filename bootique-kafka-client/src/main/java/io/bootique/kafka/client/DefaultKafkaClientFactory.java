@@ -1,9 +1,11 @@
 package io.bootique.kafka.client;
 
-import io.bootique.kafka.client.consumer.BootstrapServers;
 import io.bootique.kafka.client.consumer.ConsumerConfig;
 import io.bootique.kafka.client.consumer.ConsumerFactory;
+import io.bootique.kafka.client.producer.ProducerConfig;
+import io.bootique.kafka.client.producer.ProducerFactory;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.producer.Producer;
 
 import java.util.Collection;
 import java.util.Map;
@@ -15,10 +17,12 @@ public class DefaultKafkaClientFactory implements KafkaClientFactory {
 
     private Map<String, BootstrapServers> clusters;
     private ConsumerFactory consumerTemplate;
+    private ProducerFactory producerTemplate;
 
-    public DefaultKafkaClientFactory(Map<String, BootstrapServers> clusters, ConsumerFactory consumerTemplate) {
+    public DefaultKafkaClientFactory(Map<String, BootstrapServers> clusters, ConsumerFactory consumerTemplate, ProducerFactory producerTemplate) {
         this.clusters = clusters;
         this.consumerTemplate = consumerTemplate;
+        this.producerTemplate = producerTemplate;
     }
 
     @Override
@@ -39,6 +43,26 @@ public class DefaultKafkaClientFactory implements KafkaClientFactory {
         }
 
         return consumerTemplate.createConsumer(servers, config);
+    }
+
+    @Override
+    public <K, V> Producer<K, V> createProducer(ProducerConfig<K, V> config) {
+        return createProducer(getDefaultName(), config);
+    }
+
+    @Override
+    public <K, V> Producer<K, V> createProducer(String clusterName, ProducerConfig<K, V> config) {
+        BootstrapServers servers = config.getBootstrapServers();
+
+        if (servers == null) {
+
+            servers = clusters.get(clusterName);
+            if (servers == null) {
+                throw new IllegalArgumentException("Kafka bootstrap servers are missing for: " + clusterName);
+            }
+        }
+
+        return producerTemplate.createProducer(servers, config);
     }
 
     private String getDefaultName() {

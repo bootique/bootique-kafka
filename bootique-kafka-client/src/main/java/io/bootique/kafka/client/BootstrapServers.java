@@ -1,4 +1,4 @@
-package io.bootique.kafka.client.consumer;
+package io.bootique.kafka.client;
 
 import java.util.Collection;
 import java.util.Objects;

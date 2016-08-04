@@ -1,5 +1,6 @@
 package io.bootique.kafka.client.consumer;
 
+import io.bootique.kafka.client.BootstrapServers;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;

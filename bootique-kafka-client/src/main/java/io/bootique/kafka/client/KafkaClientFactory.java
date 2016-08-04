@@ -1,7 +1,9 @@
 package io.bootique.kafka.client;
 
 import io.bootique.kafka.client.consumer.ConsumerConfig;
+import io.bootique.kafka.client.producer.ProducerConfig;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.producer.Producer;
 
 /**
  * An injectable service that helps to create Kafka producers and consumers based on Bootique configuration and
@@ -36,4 +38,8 @@ public interface KafkaClientFactory {
      * @return a new instance of Consumer.
      */
     <K, V> Consumer<K, V> createConsumer(String clusterName, ConsumerConfig<K, V> config);
+
+    <K, V> Producer<K, V> createProducer(ProducerConfig<K, V>config);
+
+    <K, V> Producer<K, V> createProducer(String clusterName, ProducerConfig<K, V>config);
 }

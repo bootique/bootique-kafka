@@ -1,5 +1,6 @@
 package io.bootique.kafka.client.consumer;
 
+import io.bootique.kafka.client.BootstrapServers;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
@@ -8,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static io.bootique.kafka.client.FactoryUtils.setProperty;
+import static io.bootique.kafka.client.FactoryUtils.setRequiredProperty;
 
 /**
  * A YAML-configurable factory for a base consumer configuration. In runtime Kafka consumer is created by merging this
@@ -81,7 +85,7 @@ public class ConsumerFactory {
                 sessionTimeoutMs);
 
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(String.format("Creating consumer bootstrapping to %s, group id: %s.",
+            LOGGER.info(String.format("Creating consumer bootstrapping with %s, group id: %s.",
                     properties.get(BOOTSTRAP_SERVERS_CONFIG),
                     properties.get(GROUP_ID_CONFIG)));
         }
@@ -89,34 +93,5 @@ public class ConsumerFactory {
         return new KafkaConsumer<>(properties, config.getKeyDeserializer(), config.getValueDeserializer());
     }
 
-    void setRequiredProperty(Map<String, Object> map, String key, Object... valueChoices) {
-        Object v = firstNonNull(valueChoices);
-        if (v == null) {
-            throw new IllegalArgumentException("Missing required Kafka consumer property: " + key);
-        }
 
-        map.put(key, v);
-    }
-
-    void setProperty(Map<String, Object> map, String key, Object... valueChoices) {
-
-        Object v = firstNonNull(valueChoices);
-        if (v != null) {
-            map.put(key, v);
-        }
-    }
-
-    Object firstNonNull(Object... values) {
-        if (values == null) {
-            return null;
-        }
-
-        for (Object v : values) {
-            if (v != null) {
-                return v;
-            }
-        }
-
-        return null;
-    }
 }
