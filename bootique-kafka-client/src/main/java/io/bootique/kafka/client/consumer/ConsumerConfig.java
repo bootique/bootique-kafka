@@ -32,7 +32,7 @@ public class ConsumerConfig<K, V> {
         return new Builder(d, d);
     }
 
-    public static <V> Builder<byte[], byte[]> binaryKeyConfig(Deserializer<V> valueDeserializer) {
+    public static <V> Builder<byte[], V> binaryKeyConfig(Deserializer<V> valueDeserializer) {
         ByteArrayDeserializer d = new ByteArrayDeserializer();
         return new Builder(d, valueDeserializer);
     }
