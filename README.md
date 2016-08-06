@@ -36,7 +36,7 @@ Include the BOMs and then ```bootique-kafka-client```:
 
 Configure parameters in the YAML. Note that practically all of these settings can be overidden when obtaining a 
 specific Producer or Consumer instance via ```io.bootique.kafka.client.KafkaClientFactory```. So this is just a 
-collection of defaults or a template of the most typical Producer or Consumer:
+collection of defaults for the most typical Producer or Consumer:
 
 ```yaml
 kafka:
