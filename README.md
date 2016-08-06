@@ -2,8 +2,8 @@
 
 # bootique-kafka-client
 
-Integration of Kafka client for Bootique. Supports various versions of the Kafka client.
-
+Integration of Kafka client for Bootique. Supports versions 0.8 and 0.10 of the Kafka client, as described below. The 
+older 0.8 client requires Zookeeper connection for consumer. 0.10 bootstraps directly with Kafka.
 
 ## Usage - Kafka Broker 0.10 and Newer
 
@@ -34,14 +34,16 @@ Include the BOMs and then ```bootique-kafka-client```:
 </dependency>
 ```
 
-Configure parameters in the YAML:
+Configure parameters in the YAML. Note that practically all of these settings can be overidden when obtaining a 
+specific Producer or Consumer instance via ```io.bootique.kafka.client.KafkaClientFactory```. So this is just a 
+collection of defaults or a template of the most typical Producer or Consumer:
 
 ```yaml
 kafka:
   # any number of named clusters, specifying comma-separated bootstrap Kafka servers for each.
   clusters:
-    default: 127.0.0.1:9092
-    other: host1:9092,host2:9092
+    cluster1: 127.0.0.1:9092
+    cluster2: host1:9092,host2:9092
   # Optional consumer configuration template
   consumer:
     autoCommit: true
@@ -60,13 +62,42 @@ kafka:
 Now you can inject ```io.bootique.kafka.client.KafkaClientFactory``` and request producers and consumers. Producer 
 example (also see [this code sample](https://github.com/bootique-examples/bootique-kafka-producer)) :
 ```java
+@Inject
+KafkaClientFactory factory;
 
+public void runProducer() {
+    
+    // not overriding any defaults here...
+    ProducerConfig<byte[], String> config = ProducerConfig
+        .charValueConfig()
+        .build();
+    
+    Producer<byte[], String> producer = factory.createProducer("cluster2", config);
+    producer.send(new ProducerRecord<>("mytopic", "Hi!"));
+}
 ```
 Consumer example (also see [this code sample](https://github.com/bootique-examples/bootique-kafka-consumer)) :
 ```java
+@Inject
+KafkaClientFactory factory;
 
+public void runConsumer() {
+    
+    // overriding group default
+    ConsumerConfig<byte[], String> config = ConsumerConfig
+        .charValueConfig()
+        .group("somegroup")
+        .build();
+    
+    Consumer<byte[], String> consumer = factory.createConsumer("cluster1", config);
+    consumer.subscribe(Collections.singletonList("mytopic"));
+    while (true) {
+        for (ConsumerRecord<byte[], String> r : consumer.poll(1000)) {
+            System.out.println(r.topic() + "_" + r.partition() + "_" + r.offset() + ": " + r.value());
+        }
+    }
+}
 ```
-
 
 ## Usage - Kafka Broker 0.8
 
