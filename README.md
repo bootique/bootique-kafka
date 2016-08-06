@@ -101,7 +101,7 @@ public void runConsumer() {
 
 ## Usage - Kafka Broker 0.8
 
-_Legacy. Only includes consumer configuration._
+_Legacy. Only provides consumer configuration and factory._
 
 Include the BOMs and then ```bootique-kafka-client-0.8```:
 ```xml
