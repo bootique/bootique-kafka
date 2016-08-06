@@ -5,9 +5,74 @@
 Integration of Kafka client for Bootique. Supports various versions of the Kafka client.
 
 
+## Usage - Kafka Broker 0.10 and Newer
+
+Include the BOMs and then ```bootique-kafka-client```:
+```xml
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>io.bootique.bom</groupId>
+            <artifactId>bootique-bom</artifactId>
+            <version>0.19-SNAPSHOT</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.nhl.bootique.bom</groupId>
+            <artifactId>bootique-bom</artifactId>
+            <version>0.19-SNAPSHOT</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+...
+<dependency>
+	<groupId>io.bootique.kafka</groupId>
+	<artifactId>bootique-kafka-client</artifactId>
+</dependency>
+```
+
+Configure parameters in the YAML:
+
+```yaml
+kafka:
+  # any number of named clusters, specifying comma-separated bootstrap Kafka servers for each.
+  clusters:
+    default: 127.0.0.1:9092
+    other: host1:9092,host2:9092
+  # Optional consumer configuration template
+  consumer:
+    autoCommit: true
+    autoCommitIntervalMs: 200
+    defaultGroup: myappgroup
+    sessionTimeoutMs: 20000
+  # Optional producer configuration template
+  producer:
+    acks: all # values are "all" or numeric number for min acks
+    retries: 1
+    batchSize: 16384
+    lingerMs: 1
+    bufferMemory: 33554432
+```
+
+Now you can inject ```io.bootique.kafka.client.KafkaClientFactory``` and request producers and consumers. Producer 
+example (also see [this code sample](https://github.com/bootique-examples/bootique-kafka-producer)) :
+```java
+
+```
+Consumer example (also see [this code sample](https://github.com/bootique-examples/bootique-kafka-consumer)) :
+```java
+
+```
+
+
 ## Usage - Kafka Broker 0.8
 
-First include the BOMs:
+_Legacy. Only includes consumer configuration._
+
+Include the BOMs and then ```bootique-kafka-client-0.8```:
 ```xml
 <dependencyManagement>
     <dependencies>
