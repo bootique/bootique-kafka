@@ -14,14 +14,7 @@ Include the BOMs and then ```bootique-kafka-client```:
         <dependency>
             <groupId>io.bootique.bom</groupId>
             <artifactId>bootique-bom</artifactId>
-            <version>0.19-SNAPSHOT</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.nhl.bootique.bom</groupId>
-            <artifactId>bootique-bom</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>0.19</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -39,7 +32,7 @@ specific Producer or Consumer instance via ```io.bootique.kafka.client.KafkaClie
 collection of defaults for the most typical Producer or Consumer:
 
 ```yaml
-kafka:
+kafkaclient:
   # any number of named clusters, specifying comma-separated bootstrap Kafka servers for each.
   clusters:
     cluster1: 127.0.0.1:9092
@@ -110,14 +103,7 @@ Include the BOMs and then ```bootique-kafka-client-0.8```:
         <dependency>
             <groupId>io.bootique.bom</groupId>
             <artifactId>bootique-bom</artifactId>
-            <version>0.18</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.nhl.bootique.bom</groupId>
-            <artifactId>bootique-bom</artifactId>
-            <version>0.18</version>
+            <version>0.19</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>

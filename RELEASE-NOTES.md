@@ -4,3 +4,4 @@
 * #4 Integrate 0.10 producer
 * #5 Integrate 0.10 consumer
 * #6 Upgrade to Bootique 0.19
+* #7 Upgrade to io.bootique.Bootique

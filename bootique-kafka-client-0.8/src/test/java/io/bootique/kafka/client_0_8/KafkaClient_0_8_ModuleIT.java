@@ -1,7 +1,7 @@
 package io.bootique.kafka.client_0_8;
 
-import com.nhl.bootique.test.BQTestRuntime;
-import com.nhl.bootique.test.junit.BQTestFactory;
+import io.bootique.test.BQTestRuntime;
+import io.bootique.test.junit.BQTestFactory;
 import io.bootique.kafka.client_0_8.consumer.ConsumerFactory;
 import io.bootique.kafka.client_0_8.consumer.DefaultConsumerFactory;
 import org.junit.Rule;
