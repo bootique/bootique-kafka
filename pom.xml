@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.bootique.parent</groupId>
-        <artifactId>bootique-parent</artifactId>
-        <version>0.12</version>
+        <groupId>io.bootique.modules.parent</groupId>
+        <artifactId>bootique-modules-parent</artifactId>
+        <version>0.2</version>
     </parent>
 
     <groupId>io.bootique.kafka.client</groupId>
@@ -18,12 +18,6 @@
     <properties>
         <bootique-version>0.19-SNAPSHOT</bootique-version>
     </properties>
-
-    <scm>
-        <developerConnection>scm:git:ssh://git@github.com/bootique/bootique-kafka-client</developerConnection>
-        <url>https://github.com/bootique/bootique-kafka-client</url>
-        <tag>HEAD</tag>
-    </scm>
 
     <modules>
         <module>bootique-kafka-client</module>
@@ -59,14 +53,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
     <!-- Optional profile used to sign artifacts -->
     <profiles>
