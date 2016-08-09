@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/bootique/bootique-kafka-client.svg)](https://travis-ci.org/bootique/bootique-kafka-client)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.bootique.kafka.client/bootique-kafka-client/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.bootique.kafka.client/bootique-kafka-client/)
 
 # bootique-kafka-client
 
