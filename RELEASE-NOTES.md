@@ -1,3 +1,7 @@
+## 0.3
+
+* #8 Upgrade to Bootique 0.20
+
 ## 0.2
 
 * #3 Integrate 0.10 client
