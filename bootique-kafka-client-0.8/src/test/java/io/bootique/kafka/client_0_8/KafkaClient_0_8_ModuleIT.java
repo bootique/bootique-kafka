@@ -20,9 +20,9 @@ public class KafkaClient_0_8_ModuleIT {
     @Test
     public void testConsumerFactory_NoConfig() {
         BQTestRuntime runtime  = testFactory
-                .newRuntime()
-                .configurator(bootique -> bootique.module(KafkaClient_0_8_Module.class))
-                .build();
+                .app()
+                .module(KafkaClient_0_8_Module.class)
+                .createRuntime();
 
         ConsumerFactory factory = runtime.getRuntime().getInstance(ConsumerFactory.class);
         assertNotNull(factory);
@@ -33,9 +33,9 @@ public class KafkaClient_0_8_ModuleIT {
     @Test
     public void testConsumerFactory_Consumers() {
         BQTestRuntime runtime  = testFactory
-                .newRuntime()
-                .configurator(bootique -> bootique.module(KafkaClient_0_8_Module.class))
-                .build("--config=classpath:test1.yml");
+                .app("--config=classpath:test1.yml")
+                .module(KafkaClient_0_8_Module.class)
+                .createRuntime();
 
         ConsumerFactory factory = runtime.getRuntime().getInstance(ConsumerFactory.class);
         assertNotNull(factory);
