@@ -16,7 +16,7 @@
     <description>Provides integration of various versions of Kafka clients with Bootique</description>
 
     <properties>
-        <bootique-version>0.20-SNAPSHOT</bootique-version>
+        <bootique-version>0.20</bootique-version>
     </properties>
 
     <modules>
