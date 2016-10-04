@@ -10,7 +10,7 @@
 
     <groupId>io.bootique.kafka.client</groupId>
     <artifactId>bootique-kafka-client-parent</artifactId>
-    <version>0.3</version>
+    <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>bootique-kafka-parent: Integration of various versions of Kafka clients with Bootique</name>
     <description>Provides integration of various versions of Kafka clients with Bootique</description>
@@ -27,7 +27,7 @@
     <scm>
         <developerConnection>scm:git:ssh://git@github.com/bootique/bootique-kafka-client</developerConnection>
         <url>https://github.com/bootique/bootique-kafka-client</url>
-        <tag>bootique-kafka-client-parent-0.3</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
