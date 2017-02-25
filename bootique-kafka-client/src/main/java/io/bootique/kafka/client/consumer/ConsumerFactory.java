@@ -1,5 +1,7 @@
 package io.bootique.kafka.client.consumer;
 
+import io.bootique.annotation.BQConfig;
+import io.bootique.annotation.BQConfigProperty;
 import io.bootique.kafka.client.BootstrapServers;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -19,6 +21,7 @@ import static io.bootique.kafka.client.FactoryUtils.setRequiredProperty;
  *
  * @since 0.2
  */
+@BQConfig
 public class ConsumerFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerFactory.class);
@@ -40,18 +43,22 @@ public class ConsumerFactory {
         this.sessionTimeoutMs = 30000;
     }
 
+    @BQConfigProperty
     public void setDefaultGroup(String defaultGroup) {
         this.defaultGroup = defaultGroup;
     }
 
+    @BQConfigProperty
     public void setAutoCommit(boolean autoCommit) {
         this.autoCommit = autoCommit;
     }
 
+    @BQConfigProperty
     public void setAutoCommitIntervalMs(long autoCommitIntervalMs) {
         this.autoCommitIntervalMs = autoCommitIntervalMs;
     }
 
+    @BQConfigProperty
     public void setSessionTimeoutMs(int sessionTimeoutMs) {
         this.sessionTimeoutMs = sessionTimeoutMs;
     }

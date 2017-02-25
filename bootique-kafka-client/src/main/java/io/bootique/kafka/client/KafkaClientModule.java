@@ -19,12 +19,9 @@ public class KafkaClientModule extends ConfigModule {
     @Override
     public void configure(Binder binder) {
         // turn off chatty logs by default
-        BQCoreModule.contributeLogLevels(binder)
-                .addBinding(ConsumerConfig.class.getName())
-                .toInstance(Level.WARNING);
-        BQCoreModule.contributeLogLevels(binder)
-                .addBinding(ProducerConfig.class.getName())
-                .toInstance(Level.WARNING);
+        BQCoreModule.extend(binder)
+                .setLogLevel(ConsumerConfig.class.getName(), Level.WARNING)
+                .setLogLevel(ProducerConfig.class.getName(), Level.WARNING);
     }
 
     @Singleton

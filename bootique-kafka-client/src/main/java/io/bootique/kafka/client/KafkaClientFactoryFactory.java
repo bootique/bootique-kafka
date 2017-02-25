@@ -1,5 +1,7 @@
 package io.bootique.kafka.client;
 
+import io.bootique.annotation.BQConfig;
+import io.bootique.annotation.BQConfigProperty;
 import io.bootique.kafka.client.consumer.ConsumerFactory;
 import io.bootique.kafka.client.producer.ProducerFactory;
 
@@ -12,6 +14,7 @@ import java.util.Map;
  *
  * @since 0.2
  */
+@BQConfig
 public class KafkaClientFactoryFactory {
 
     private Map<String, BootstrapServers> clusters;
@@ -22,10 +25,12 @@ public class KafkaClientFactoryFactory {
         this.consumer = new ConsumerFactory();
     }
 
+    @BQConfigProperty
     public void setConsumer(ConsumerFactory consumer) {
         this.consumer = consumer;
     }
 
+    @BQConfigProperty
     public void setProducer(ProducerFactory producer) {
         this.producer = producer;
     }
@@ -34,6 +39,7 @@ public class KafkaClientFactoryFactory {
         return clusters;
     }
 
+    @BQConfigProperty
     public void setClusters(Map<String, BootstrapServers> clusters) {
         this.clusters = clusters;
     }

@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.bootique.modules.parent</groupId>
         <artifactId>bootique-modules-parent</artifactId>
-        <version>0.2</version>
+        <version>0.7</version>
     </parent>
 
     <groupId>io.bootique.kafka.client</groupId>
@@ -16,7 +16,7 @@
     <description>Provides integration of various versions of Kafka clients with Bootique</description>
 
     <properties>
-        <bootique-version>0.20</bootique-version>
+        <bootique-version>0.22-SNAPSHOT</bootique-version>
     </properties>
 
     <modules>
@@ -49,21 +49,6 @@
                 <groupId>io.bootique</groupId>
                 <artifactId>bootique-test</artifactId>
                 <version>${bootique-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.12</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>2.0.31-beta</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>1.7.13</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,5 +1,7 @@
 package io.bootique.kafka.client.producer;
 
+import io.bootique.annotation.BQConfig;
+import io.bootique.annotation.BQConfigProperty;
 import io.bootique.kafka.client.BootstrapServers;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -16,6 +18,7 @@ import static io.bootique.kafka.client.FactoryUtils.setRequiredProperty;
 /**
  * @since 0.2
  */
+@BQConfig
 public class ProducerFactory {
 
     private static final String BOOTSTRAP_SERVERS_CONFIG = org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
@@ -43,22 +46,27 @@ public class ProducerFactory {
         this.bufferMemory = 33554432;
     }
 
+    @BQConfigProperty
     public void setAcks(String acks) {
         this.acks = acks;
     }
 
+    @BQConfigProperty
     public void setRetries(int retries) {
         this.retries = retries;
     }
 
+    @BQConfigProperty
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
     }
 
+    @BQConfigProperty
     public void setLingerMs(int lingerMs) {
         this.lingerMs = lingerMs;
     }
 
+    @BQConfigProperty
     public void setBufferMemory(int bufferMemory) {
         this.bufferMemory = bufferMemory;
     }

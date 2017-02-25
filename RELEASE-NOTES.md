@@ -1,3 +1,7 @@
+## 0.4
+
+* #9 Upgrade to bootique 0.22 and bootique-modules-parent 0.7
+
 ## 0.3
 
 * #8 Upgrade to Bootique 0.20
