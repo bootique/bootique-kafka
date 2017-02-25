@@ -9,4 +9,9 @@ public class KafkaClientModuleProviderTest {
     public void testPresentInJar() {
         BQModuleProviderChecker.testPresentInJar(KafkaClientModuleProvider.class);
     }
+
+    @Test
+    public void testMetadata() {
+        BQModuleProviderChecker.testMetadata(KafkaClientModuleProvider.class);
+    }
 }
