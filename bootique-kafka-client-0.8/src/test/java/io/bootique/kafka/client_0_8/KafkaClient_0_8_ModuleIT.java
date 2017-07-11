@@ -1,6 +1,6 @@
 package io.bootique.kafka.client_0_8;
 
-import io.bootique.test.BQTestRuntime;
+import io.bootique.BQRuntime;
 import io.bootique.test.junit.BQTestFactory;
 import io.bootique.kafka.client_0_8.consumer.ConsumerFactory;
 import io.bootique.kafka.client_0_8.consumer.DefaultConsumerFactory;
@@ -19,12 +19,12 @@ public class KafkaClient_0_8_ModuleIT {
 
     @Test
     public void testConsumerFactory_NoConfig() {
-        BQTestRuntime runtime  = testFactory
+        BQRuntime runtime  = testFactory
                 .app()
                 .module(KafkaClient_0_8_Module.class)
                 .createRuntime();
 
-        ConsumerFactory factory = runtime.getRuntime().getInstance(ConsumerFactory.class);
+        ConsumerFactory factory = runtime.getInstance(ConsumerFactory.class);
         assertNotNull(factory);
         assertTrue(factory instanceof DefaultConsumerFactory);
         assertEquals(0, ((DefaultConsumerFactory) factory).getConfigNames().size());
@@ -32,12 +32,12 @@ public class KafkaClient_0_8_ModuleIT {
 
     @Test
     public void testConsumerFactory_Consumers() {
-        BQTestRuntime runtime  = testFactory
+        BQRuntime runtime  = testFactory
                 .app("--config=classpath:test1.yml")
                 .module(KafkaClient_0_8_Module.class)
                 .createRuntime();
 
-        ConsumerFactory factory = runtime.getRuntime().getInstance(ConsumerFactory.class);
+        ConsumerFactory factory = runtime.getInstance(ConsumerFactory.class);
         assertNotNull(factory);
         assertTrue(factory instanceof DefaultConsumerFactory);
 
