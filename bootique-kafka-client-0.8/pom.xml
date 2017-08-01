@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.bootique.kafka.client</groupId>
         <artifactId>bootique-kafka-client-parent</artifactId>
-        <version>0.6-SNAPSHOT</version>
+        <version>0.24-SNAPSHOT</version>
     </parent>
     <artifactId>bootique-kafka-client-0.8</artifactId>
     <packaging>jar</packaging>
