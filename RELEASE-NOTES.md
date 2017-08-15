@@ -1,3 +1,7 @@
+## 0.24
+
+* #11 Upgrade to Kafka client 0.11
+
 ## 0.4
 
 * #9 Upgrade to bootique 0.22 and bootique-modules-parent 0.7
