@@ -6,6 +6,10 @@
 Integration of Kafka client for Bootique. Supports versions 0.8 and 0.10 of the Kafka client, as described below. The 
 older 0.8 client requires Zookeeper connection for consumer. 0.10 bootstraps directly with Kafka.
 
+See usage examples:
+* [bootique-kafka-producer](https://github.com/bootique-examples/bootique-kafka-producer)
+* [bootique-kafka-consumer](https://github.com/bootique-examples/bootique-kafka-consumer)
+
 ## Usage - Kafka Broker 0.10 and Newer
 
 Include the BOMs and then ```bootique-kafka-client```:
