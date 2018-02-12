@@ -19,7 +19,7 @@ Include the BOMs and then ```bootique-kafka-client```:
         <dependency>
             <groupId>io.bootique.bom</groupId>
             <artifactId>bootique-bom</artifactId>
-            <version>0.19</version>
+            <version>0.24</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -27,7 +27,7 @@ Include the BOMs and then ```bootique-kafka-client```:
 </dependencyManagement>
 ...
 <dependency>
-	<groupId>io.bootique.kafka</groupId>
+	<groupId>io.bootique.kafka.client</groupId>
 	<artifactId>bootique-kafka-client</artifactId>
 </dependency>
 ```
@@ -108,7 +108,7 @@ Include the BOMs and then ```bootique-kafka-client-0.8```:
         <dependency>
             <groupId>io.bootique.bom</groupId>
             <artifactId>bootique-bom</artifactId>
-            <version>0.19</version>
+            <version>0.24</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -116,7 +116,7 @@ Include the BOMs and then ```bootique-kafka-client-0.8```:
 </dependencyManagement>
 ...
 <dependency>
-	<groupId>io.bootique.kafka</groupId>
+	<groupId>io.bootique.kafka.client</groupId>
 	<artifactId>bootique-kafka-client-0.8</artifactId>
 </dependency>
 ```
