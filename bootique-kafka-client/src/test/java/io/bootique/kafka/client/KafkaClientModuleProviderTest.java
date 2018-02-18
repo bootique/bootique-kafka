@@ -6,8 +6,8 @@ import org.junit.Test;
 public class KafkaClientModuleProviderTest {
 
     @Test
-    public void testPresentInJar() {
-        BQModuleProviderChecker.testPresentInJar(KafkaClientModuleProvider.class);
+    public void testAutoLoadable() {
+        BQModuleProviderChecker.testAutoLoadable(KafkaClientModuleProvider.class);
     }
 
     @Test
