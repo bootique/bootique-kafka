@@ -34,12 +34,12 @@ public class ConsumerFactory {
 
     private String defaultGroup;
     private boolean autoCommit;
-    private long autoCommitIntervalMs;
+    private int autoCommitIntervalMs;
     private int sessionTimeoutMs;
 
     public ConsumerFactory() {
         this.autoCommit = true;
-        this.autoCommitIntervalMs = 1000l;
+        this.autoCommitIntervalMs = 1000;
         this.sessionTimeoutMs = 30000;
     }
 
@@ -54,7 +54,7 @@ public class ConsumerFactory {
     }
 
     @BQConfigProperty
-    public void setAutoCommitIntervalMs(long autoCommitIntervalMs) {
+    public void setAutoCommitIntervalMs(int autoCommitIntervalMs) {
         this.autoCommitIntervalMs = autoCommitIntervalMs;
     }
 
