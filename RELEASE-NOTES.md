@@ -1,3 +1,7 @@
+## 0.25
+
+* #13 autoCommitIntervalMs must be int instead of long.
+
 ## 0.24
 
 * #11 Upgrade to Kafka client 0.11
