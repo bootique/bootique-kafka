@@ -1,6 +1,7 @@
 ## 0.25
 
 * #13 autoCommitIntervalMs must be int instead of long.
+* #14 Upgrade to bootique-modules-parent 0.8
 
 ## 0.24
 
