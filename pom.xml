@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.bootique.modules.parent</groupId>
         <artifactId>bootique-modules-parent</artifactId>
-        <version>0.8</version>
+        <version>0.10</version>
     </parent>
 
     <groupId>io.bootique.kafka.client</groupId>
@@ -16,7 +16,7 @@
     <description>Provides integration of various versions of Kafka clients with Bootique</description>
 
     <properties>
-        <bootique-version>${project.version}</bootique-version>
+        <bootique.version>${project.version}</bootique.version>
     </properties>
 
     <modules>
@@ -43,12 +43,12 @@
             <dependency>
                 <groupId>io.bootique</groupId>
                 <artifactId>bootique</artifactId>
-                <version>${bootique-version}</version>
+                <version>${bootique.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.bootique</groupId>
                 <artifactId>bootique-test</artifactId>
-                <version>${bootique-version}</version>
+                <version>${bootique.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
