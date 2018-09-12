@@ -29,7 +29,7 @@
 
     <groupId>io.bootique.kafka.client</groupId>
     <artifactId>bootique-kafka-client-parent</artifactId>
-    <version>0.26-SNAPSHOT</version>
+    <version>1.0.RC1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>bootique-kafka-parent: Integration of various versions of Kafka clients with Bootique</name>
     <description>Provides integration of various versions of Kafka clients with Bootique</description>
