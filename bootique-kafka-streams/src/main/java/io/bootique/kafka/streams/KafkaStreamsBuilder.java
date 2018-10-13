@@ -39,12 +39,13 @@ public interface KafkaStreamsBuilder {
     KafkaStreamsBuilder properties(Properties properties);
 
     /**
-     * Sets explicit cluster name. If not set, a default cluster will be located in the config.
+     * Sets a symbolic Kafka cluster name to use. The cluster under this name should have been configured in the
+     * the Bootique app. If not set, a default cluster will be located in the config.
      *
-     * @param cluster
+     * @param clusterName
      * @return this builder instance
      */
-    KafkaStreamsBuilder cluster(String cluster);
+    KafkaStreamsBuilder cluster(String clusterName);
 
     KafkaStreamsRunner create();
 

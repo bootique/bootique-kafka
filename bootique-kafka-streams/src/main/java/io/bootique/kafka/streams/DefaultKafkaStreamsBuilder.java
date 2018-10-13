@@ -18,7 +18,10 @@
  */
 package io.bootique.kafka.streams;
 
+import io.bootique.kafka.BootstrapServers;
+import io.bootique.kafka.BootstrapServersCollection;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
 import java.util.Objects;
@@ -30,12 +33,20 @@ import java.util.Properties;
 public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
 
     private KafkaStreamsManager streamsManager;
+    private BootstrapServersCollection clusters;
+
     private Topology topology;
     private Properties properties;
-    private String cluster;
+    private String clusterName;
 
-    public DefaultKafkaStreamsBuilder(KafkaStreamsManager streamsManager, Properties properties) {
+    public DefaultKafkaStreamsBuilder(
+            KafkaStreamsManager streamsManager,
+            BootstrapServersCollection clusters,
+            Properties properties) {
+
         this.streamsManager = streamsManager;
+        this.clusters = clusters;
+
         // cloning passed properties as we may be changing them in the builder downstream
         this.properties = new Properties(properties);
     }
@@ -54,8 +65,8 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
     }
 
     @Override
-    public KafkaStreamsBuilder cluster(String cluster) {
-        this.cluster = cluster;
+    public KafkaStreamsBuilder cluster(String clusterName) {
+        this.clusterName = clusterName;
         return this;
     }
 
@@ -65,7 +76,18 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
     }
 
     protected KafkaStreams createStreams() {
+
+        this.properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, resolveBootstrapServers());
+
         Objects.requireNonNull(topology, "KafkaStreams 'topology' is not set");
         return new KafkaStreams(topology, properties);
+    }
+
+    private String resolveBootstrapServers() {
+        BootstrapServers cluster = clusterName != null
+                ? clusters.getCluster(clusterName)
+                : clusters.getDefaultCluster();
+
+        return cluster.asString();
     }
 }

@@ -16,27 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.kafka.streams;
+package io.bootique.kafka.streams.config;
 
-import io.bootique.BQRuntime;
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.Rule;
+import org.apache.kafka.streams.StreamsConfig;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
-public class KafkaStreamsModuleIT {
-
-    @Rule
-    public final BQTestFactory testFactory = new BQTestFactory();
+public class ProcessingGuaranteeTest {
 
     @Test
-    public void testKafkaStreamsFactory() {
-        BQRuntime runtime = testFactory.app("-c", "classpath:io/bootique/kafka/streams/KafkaStreamsModuleIT.yml")
-                .autoLoadModules()
-                .createRuntime();
-
-        KafkaStreamsFactory factory = runtime.getInstance(KafkaStreamsFactory.class);
-        assertNotNull(factory);
+    public void testEnumMatchesKafka() {
+        // sanity check that may be useful as we upgrade kafka-streams in the future
+        assertEquals(StreamsConfig.AT_LEAST_ONCE, ProcessingGuarantee.at_least_once.name());
+        assertEquals(StreamsConfig.EXACTLY_ONCE, ProcessingGuarantee.exactly_once.name());
     }
 }

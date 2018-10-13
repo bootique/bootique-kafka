@@ -18,6 +18,7 @@
  */
 package io.bootique.kafka.streams;
 
+import io.bootique.kafka.BootstrapServersCollection;
 import org.apache.kafka.streams.Topology;
 
 import java.util.Properties;
@@ -27,16 +28,22 @@ import java.util.Properties;
  */
 public class DefaultKafkaStreamsFactory implements KafkaStreamsFactory {
 
+    private BootstrapServersCollection clusters;
     private KafkaStreamsManager streamsManager;
     private Properties properties;
 
-    public DefaultKafkaStreamsFactory(KafkaStreamsManager streamsManager, Properties properties) {
+    public DefaultKafkaStreamsFactory(
+            KafkaStreamsManager streamsManager,
+            BootstrapServersCollection clusters,
+            Properties properties) {
+
         this.streamsManager = streamsManager;
+        this.clusters = clusters;
         this.properties = properties;
     }
 
     @Override
     public KafkaStreamsBuilder topology(Topology topology) {
-        return new DefaultKafkaStreamsBuilder(streamsManager, properties).topology(topology);
+        return new DefaultKafkaStreamsBuilder(streamsManager, clusters, properties).topology(topology);
     }
 }
