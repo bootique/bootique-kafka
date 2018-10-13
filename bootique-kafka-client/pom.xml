@@ -30,12 +30,16 @@
     <packaging>jar</packaging>
     <name>bootique-kafka-client: Bootique wrapper for Kafka client for brokers version 0.10 and newer</name>
 
+    <properties>
+        <kafka.version>2.0.0</kafka.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
-                <version>0.11.0.0</version>
+                <version>${kafka.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
