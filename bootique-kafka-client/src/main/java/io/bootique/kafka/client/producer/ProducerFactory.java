@@ -21,7 +21,8 @@ package io.bootique.kafka.client.producer;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
-import io.bootique.kafka.client.BootstrapServers;
+import io.bootique.kafka.BootstrapServers;
+import io.bootique.kafka.client.FactoryUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.slf4j.Logger;
@@ -32,7 +33,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static io.bootique.kafka.client.FactoryUtils.setProperty;
-import static io.bootique.kafka.client.FactoryUtils.setRequiredProperty;
 
 /**
  * @since 0.2
@@ -94,7 +94,7 @@ public class ProducerFactory {
 
         Map<String, Object> properties = new HashMap<>();
 
-        setRequiredProperty(properties,
+        FactoryUtils.setRequiredProperty(properties,
                 BOOTSTRAP_SERVERS_CONFIG,
                 Objects.requireNonNull(bootstrapServers).asString());
 

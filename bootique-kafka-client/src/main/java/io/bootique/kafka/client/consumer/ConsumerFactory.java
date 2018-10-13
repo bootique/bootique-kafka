@@ -21,7 +21,7 @@ package io.bootique.kafka.client.consumer;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
-import io.bootique.kafka.client.BootstrapServers;
+import io.bootique.kafka.BootstrapServers;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;

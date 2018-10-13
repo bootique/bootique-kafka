@@ -19,6 +19,7 @@
 
 package io.bootique.kafka.client;
 
+import io.bootique.kafka.BootstrapServers;
 import io.bootique.kafka.client.consumer.ConsumerConfig;
 import io.bootique.kafka.client.consumer.ConsumerFactory;
 import io.bootique.kafka.client.producer.ProducerConfig;

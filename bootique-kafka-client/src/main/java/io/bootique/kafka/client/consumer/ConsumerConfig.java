@@ -19,7 +19,7 @@
 
 package io.bootique.kafka.client.consumer;
 
-import io.bootique.kafka.client.BootstrapServers;
+import io.bootique.kafka.BootstrapServers;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -132,7 +132,7 @@ public class ConsumerConfig<K, V> {
 
         public Builder<K, V> bootstrapServers(Collection<String> bootstrapServers) {
             config.bootstrapServers = bootstrapServers != null && !bootstrapServers.isEmpty()
-                    ? new BootstrapServers(bootstrapServers)
+                    ? BootstrapServers.create(bootstrapServers)
                     : null;
             return this;
         }

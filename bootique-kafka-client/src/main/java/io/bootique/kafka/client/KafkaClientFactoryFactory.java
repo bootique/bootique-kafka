@@ -21,6 +21,7 @@ package io.bootique.kafka.client;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
+import io.bootique.kafka.BootstrapServers;
 import io.bootique.kafka.client.consumer.ConsumerFactory;
 import io.bootique.kafka.client.producer.ProducerFactory;
 

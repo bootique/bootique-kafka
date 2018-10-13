@@ -18,8 +18,7 @@
   under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -27,46 +26,14 @@
         <artifactId>bootique-kafka-client-parent</artifactId>
         <version>1.0.RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>bootique-kafka-client</artifactId>
+    <!-- TODO: use parent group id once https://github.com/bootique/bootique-kafka-client/issues/19 is in place -->
+    <groupId>io.bootique.kafka</groupId>
+    <artifactId>bootique-kafka-base</artifactId>
     <packaging>jar</packaging>
-    <name>bootique-kafka-client: Bootique wrapper for Kafka client for brokers version 0.10 and newer</name>
-
-    <properties>
-        <kafka.version>2.0.0</kafka.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.bootique.kafka</groupId>
-                <artifactId>bootique-kafka-base</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <name>bootique-kafka-base: Code common between client and streams</name>
 
     <dependencies>
         <!-- Compile dependencies -->
-        <dependency>
-            <groupId>io.bootique.kafka</groupId>
-            <artifactId>bootique-kafka-base</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>io.bootique</groupId>
             <artifactId>bootique</artifactId>

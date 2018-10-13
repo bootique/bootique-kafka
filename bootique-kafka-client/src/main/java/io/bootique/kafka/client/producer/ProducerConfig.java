@@ -19,7 +19,7 @@
 
 package io.bootique.kafka.client.producer;
 
-import io.bootique.kafka.client.BootstrapServers;
+import io.bootique.kafka.BootstrapServers;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -145,7 +145,7 @@ public class ProducerConfig<K, V> {
 
         public Builder<K, V> bootstrapServers(Collection<String> bootstrapServers) {
             config.bootstrapServers = bootstrapServers != null && !bootstrapServers.isEmpty()
-                    ? new BootstrapServers(bootstrapServers)
+                    ? BootstrapServers.create(bootstrapServers)
                     : null;
             return this;
         }

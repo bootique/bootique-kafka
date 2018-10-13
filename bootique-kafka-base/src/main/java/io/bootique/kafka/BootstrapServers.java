@@ -17,14 +17,17 @@
  * under the License.
  */
 
-package io.bootique.kafka.client;
+package io.bootique.kafka;
 
 import io.bootique.annotation.BQConfig;
+import io.bootique.annotation.BQConfigProperty;
 
 import java.util.Collection;
 import java.util.Objects;
 
 /**
+ * A value object representing Kafka bootstrap servers, which is a comma-separated String of server names with ports.
+ *
  * @since 0.2
  */
 @BQConfig
@@ -32,20 +35,17 @@ public class BootstrapServers {
 
     private String bootstrapServers;
 
-    // TODO: allow @BQConfigProperty to be used on constructors
-    // https://github.com/bootique/bootique/issues/127
+    @BQConfigProperty
     public BootstrapServers(String bootstrapServers) {
         this.bootstrapServers = Objects.requireNonNull(bootstrapServers);
     }
 
-    // TODO: allow @BQConfigProperty to be used on constructors
-    // https://github.com/bootique/bootique/issues/127
-    public BootstrapServers(Collection<String> bootstrapServers) {
+    public static BootstrapServers create(Collection<String> bootstrapServers) {
         if (Objects.requireNonNull(bootstrapServers).isEmpty()) {
             throw new IllegalArgumentException("Empty list of bootstrap servers");
         }
 
-        this.bootstrapServers = String.join(",", bootstrapServers);
+        return new BootstrapServers(String.join(",", bootstrapServers));
     }
 
     public String asString() {
