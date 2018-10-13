@@ -40,6 +40,8 @@ public class KafkaStreamsFactoryFactory {
     private Bytes cacheMaxBytesBuffering;
     private ProcessingGuarantee processingGuarantee;
 
+    // TODO: other StreamsConfig.*_CONFIG properties
+
     public DefaultKafkaStreamsFactory createFactory(KafkaStreamsManager streamsManager) {
         return new DefaultKafkaStreamsFactory(streamsManager, getClusters(), createProperties());
     }
@@ -47,13 +49,14 @@ public class KafkaStreamsFactoryFactory {
     protected Properties createProperties() {
         Properties properties = new Properties();
 
+        // Note that below we are converting all values to Strings. Kafka would probably work if we preserve some of them
+        // as ints/longs/etc, but let's honor an implied contract of the Properties class - its values must be Strings.
+
         if (applicationId != null) {
             properties.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
         }
 
         if (cacheMaxBytesBuffering != null) {
-            // Kafka would probably work if we set the value as long, but let's honor an implied contract
-            // of all Properties' values being String...
             properties.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, String.valueOf(cacheMaxBytesBuffering.getBytes()));
         }
 
