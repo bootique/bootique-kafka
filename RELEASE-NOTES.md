@@ -1,6 +1,7 @@
 ## 1.0.RC1
 
 * #17 Upgrade bootique-kafka-client to Kafka 2.0
+* #18 bootique-kafka-streams: a new module to support Kafka streams
 
 ## 0.25
 
