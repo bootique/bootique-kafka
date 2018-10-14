@@ -37,7 +37,8 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
     private BootstrapServersCollection clusters;
 
     private Topology topology;
-    private Properties properties;
+    private Properties defaultProperties;
+    private Properties perStreamProperties;
     private String clusterName;
     private String applicationId;
     private Class<? extends Serde<?>> keySerde;
@@ -46,13 +47,11 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
     public DefaultKafkaStreamsBuilder(
             KafkaStreamsManager streamsManager,
             BootstrapServersCollection clusters,
-            Properties properties) {
+            Properties defaultProperties) {
 
-        this.streamsManager = streamsManager;
-        this.clusters = clusters;
-
-        // cloning passed properties as we may be changing them in the builder downstream
-        this.properties = new Properties(properties);
+        this.streamsManager = Objects.requireNonNull(streamsManager);
+        this.clusters = Objects.requireNonNull(clusters);
+        this.defaultProperties = Objects.requireNonNull(defaultProperties);
     }
 
     @Override
@@ -63,8 +62,7 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
 
     @Override
     public KafkaStreamsBuilder properties(Properties properties) {
-        // custom properties override everything in the default props
-        this.properties.putAll(properties);
+        this.perStreamProperties = properties;
         return this;
     }
 
@@ -98,26 +96,36 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
     }
 
     protected KafkaStreams createStreams() {
+        Objects.requireNonNull(topology, "KafkaStreams 'topology' is not set");
+        return new KafkaStreams(topology, resolveProperties());
+    }
 
-        properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, resolveBootstrapServers());
+    protected Properties resolveProperties() {
+
+        Properties combined = new Properties(defaultProperties);
+
+        if (perStreamProperties != null) {
+            combined.putAll(perStreamProperties);
+        }
+
+        combined.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, resolveBootstrapServers());
 
         if (applicationId != null) {
-            properties.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
+            combined.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
         }
 
         if (keySerde != null) {
-            properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, keySerde.getName());
+            combined.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, keySerde.getName());
         }
 
         if (valueSerde != null) {
-            properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, valueSerde.getName());
+            combined.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, valueSerde.getName());
         }
 
-        Objects.requireNonNull(topology, "KafkaStreams 'topology' is not set");
-        return new KafkaStreams(topology, properties);
+        return combined;
     }
 
-    private String resolveBootstrapServers() {
+    protected String resolveBootstrapServers() {
         BootstrapServers cluster = clusterName != null
                 ? clusters.getCluster(clusterName)
                 : clusters.getDefaultCluster();

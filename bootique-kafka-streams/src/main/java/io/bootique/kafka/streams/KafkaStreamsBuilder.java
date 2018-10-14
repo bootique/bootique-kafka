@@ -24,6 +24,17 @@ import org.apache.kafka.streams.Topology;
 import java.util.Properties;
 
 /**
+ * A builder of a custom {@link org.apache.kafka.streams.KafkaStreams} instance. Returned instance is wrapped in a
+ * {@link KafkaStreamsRunner} to manage its startup and shutdown. The order of configuration loading (configs lower on
+ * the list override those higher on the list):
+ *
+ * <ul>
+ * <li>Configs from YAML. Those are the default properties for all streams that can be overridden during each
+ * instance creation.</li>
+ * <li>Configs passed to the {@link #properties(Properties)} method</li>
+ * <li>Configs set via "named" builder methods like {@link #applicationId(String)}, etc.</li>
+ * </ul>
+ *
  * @since 1.0.RC1
  */
 public interface KafkaStreamsBuilder {
@@ -43,7 +54,7 @@ public interface KafkaStreamsBuilder {
      * Sets a symbolic Kafka cluster name to use. The cluster under this name should have been configured in the
      * the Bootique app. If not set, a default cluster will be located in the config.
      *
-     * @param clusterName
+     * @param clusterName symbolic name of the cluster that must reference a known cluster in config.
      * @return this builder instance
      */
     KafkaStreamsBuilder cluster(String clusterName);

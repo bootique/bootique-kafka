@@ -1,0 +1,6 @@
+kafkastreams:
+  clusters:
+    default: example.org:9092
+  applicationId: "appid_from_yaml"
+  cacheMaxBytesBuffering: "12MB"
+  processingGuarantee: "at_least_once"

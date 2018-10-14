@@ -58,8 +58,8 @@ public class BootstrapServersCollection {
             case 1:
                 return allNames.iterator().next();
             default:
-                throw new IllegalStateException("More then one cluster is provided in configuration. " +
-                        "Can't determine which one is default");
+                throw new IllegalStateException("More then one cluster is available in configuration. " +
+                        "Can't determine which one is the default. Configured cluser names: " + allNames);
         }
     }
 }
