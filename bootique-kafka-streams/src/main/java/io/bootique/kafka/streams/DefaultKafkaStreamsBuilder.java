@@ -25,6 +25,8 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -38,7 +40,7 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
 
     private Topology topology;
     private Properties defaultProperties;
-    private Properties perStreamProperties;
+    private Map<Object, Object> perStreamProperties;
     private String clusterName;
     private String applicationId;
     private Class<? extends Serde<?>> keySerde;
@@ -52,7 +54,7 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
         this.streamsManager = Objects.requireNonNull(streamsManager);
         this.clusters = Objects.requireNonNull(clusters);
         this.defaultProperties = Objects.requireNonNull(defaultProperties);
-        this.perStreamProperties = new Properties();
+        this.perStreamProperties = new HashMap<>();
     }
 
     @Override
@@ -63,13 +65,14 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
 
     @Override
     public KafkaStreamsBuilder properties(Properties properties) {
-        this.perStreamProperties = new Properties(properties);
+        this.perStreamProperties.clear();
+        this.perStreamProperties.putAll(properties);
         return this;
     }
 
     @Override
     public KafkaStreamsBuilder property(String key, String value) {
-        this.perStreamProperties.setProperty(key, value);
+        this.perStreamProperties.put(key, value);
         return this;
     }
 
