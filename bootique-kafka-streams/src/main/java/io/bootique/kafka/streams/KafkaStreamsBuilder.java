@@ -43,12 +43,23 @@ public interface KafkaStreamsBuilder {
 
     /**
      * Sets custom properties for the KafkaStreams object being built. These properties will override any defaults,
-     * specified via Bootique config.
+     * specified via Bootique config. Also this will replace any properties previously set via this method or via
+     * {@link #property(String, String)}.
      *
      * @param properties
      * @return this builder instance
      */
     KafkaStreamsBuilder properties(Properties properties);
+
+    /**
+     * Sets a custom property for the KafkaStreams object being built. This property will override any defaults,
+     * specified via Bootique config.
+     *
+     * @param key
+     * @param value
+     * @return this builder instance
+     */
+    KafkaStreamsBuilder property(String key, String value);
 
     /**
      * Sets a symbolic Kafka cluster name to use. The cluster under this name should have been configured in the

@@ -52,6 +52,7 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
         this.streamsManager = Objects.requireNonNull(streamsManager);
         this.clusters = Objects.requireNonNull(clusters);
         this.defaultProperties = Objects.requireNonNull(defaultProperties);
+        this.perStreamProperties = new Properties();
     }
 
     @Override
@@ -62,7 +63,13 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
 
     @Override
     public KafkaStreamsBuilder properties(Properties properties) {
-        this.perStreamProperties = properties;
+        this.perStreamProperties = new Properties(properties);
+        return this;
+    }
+
+    @Override
+    public KafkaStreamsBuilder property(String key, String value) {
+        this.perStreamProperties.setProperty(key, value);
         return this;
     }
 
