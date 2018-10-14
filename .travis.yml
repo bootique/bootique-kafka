@@ -53,8 +53,8 @@ jobs:
       script:
         - mvn clean verify
 
-# travis encrypt -r bootique/bootique-kafka-client "CI_DEPLOY_USERNAME='name'"
-# travis encrypt -r bootique/bootique-kafka-client "CI_DEPLOY_PASSWORD='password'"
+# travis encrypt -r bootique/bootique-kafka "CI_DEPLOY_USERNAME='name'"
+# travis encrypt -r bootique/bootique-kafka "CI_DEPLOY_PASSWORD='password'"
 env:
   global:
     - secure: "UBFTOqDv61K++n8L4V2G8lKfluy4feh0OZL+LNdH67vUmyddXpLPknr20xuZYMvjpJfNk/39UdUDgb2tbsy5Df6usPWc3OmzEwx4hVA2413EVI59Kq9hB1+Kxv18Cr5yMcOeCKoqCBdUlHfzI5ikRnWMVb9WoiyipS0Bnk51Qeuu/X3oKFIinYpTFqyoMZjju3DmfffBrZXI1dpENV9IGXy1FVSAxkA+fWCcndO0cFJKlFbMrkMIf+6tMlB5zt7tJxKmJqEBoz0zell7pfud1hao/1TOGPaxfkRfZhOGRQQ0iMnD9qkzGImysKmKdnXxP8fJznSJKwU+nmtQqMEhbI2QfEYtnEWNcBZCE1qqESDeYiwzebvExxIIA6Y7EmAMzbLGwxLvFZoBjB3JpUpK4XjAk55QB9gKeuMzXcf3CGUM+eHoo59pRpoAN93dAt99DX7jpXvmlgPEeGibpTL2Zi1Ku/mWKN2ZCkS77uZ9wLF6MdqnIkl8nWdSE29r9Fp8mzx5lT+JcNeQGSwogrpHJxXI74BJ7J+fxkisdpn6w6kmj6qYmBcIjfEYYNVjyzAxpuKptJXnomd+LCx8WyBfYO5iFv64Aw1K9wbqM+NdwnflYTj3Qts2J82jLcrv+LJPO5NLByRSL0fey+09SRb8oxU5mvukwO58OA7vrRLP8Os="

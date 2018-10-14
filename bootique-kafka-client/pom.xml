@@ -23,13 +23,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.bootique.kafka.client</groupId>
-        <artifactId>bootique-kafka-client-parent</artifactId>
+        <groupId>io.bootique.kafka</groupId>
+        <artifactId>bootique-kafka-parent</artifactId>
         <version>1.0.RC1-SNAPSHOT</version>
     </parent>
     <artifactId>bootique-kafka-client</artifactId>
     <packaging>jar</packaging>
-    <name>bootique-kafka-client: Bootique wrapper for Kafka client for brokers version 0.10 and newer</name>
+    <name>bootique-kafka-client: Bootique wrapper for Kafka client</name>
 
     <properties>
         <kafka.version>2.0.0</kafka.version>

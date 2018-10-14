@@ -17,15 +17,13 @@
   under the License.
   -->
 
-[![Build Status](https://travis-ci.org/bootique/bootique-kafka-client.svg)](https://travis-ci.org/bootique/bootique-kafka-client)
-[![Maven Central](https://img.shields.io/maven-central/v/io.bootique.kafka.client/bootique-kafka-client.svg?colorB=brightgreen)](https://search.maven.org/artifact/io.bootique.kafka.client/bootique-kafka-client/)
+[![Build Status](https://travis-ci.org/bootique/bootique-kafka-client.svg)](https://travis-ci.org/bootique/bootique-kafka)
+[![Maven Central](https://img.shields.io/maven-central/v/io.bootique.kafka/bootique-kafka.svg?colorB=brightgreen)](https://search.maven.org/artifact/io.bootique.kafka/bootique-kafka/)
 
-# bootique-kafka-client
+# bootique-kafka
 
-Integration of Kafka client for Bootique. Supports versions 0.8 and 0.10 of the Kafka client, as described below. The 
-older 0.8 client requires Zookeeper connection for consumer. 0.10 bootstraps directly with Kafka.
+Integration of Kafka client and Kafka streams for Bootique. See usage examples:
 
-See usage examples:
 * [bootique-kafka-producer](https://github.com/bootique-examples/bootique-kafka-producer)
 * [bootique-kafka-consumer](https://github.com/bootique-examples/bootique-kafka-consumer)
 
@@ -38,7 +36,7 @@ Include the BOMs and then ```bootique-kafka-client```:
         <dependency>
             <groupId>io.bootique.bom</groupId>
             <artifactId>bootique-bom</artifactId>
-            <version>0.25</version>
+            <version>1.0.RC1</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -46,7 +44,7 @@ Include the BOMs and then ```bootique-kafka-client```:
 </dependencyManagement>
 ...
 <dependency>
-	<groupId>io.bootique.kafka.client</groupId>
+	<groupId>io.bootique.kafka</groupId>
 	<artifactId>bootique-kafka-client</artifactId>
 </dependency>
 ```
@@ -135,7 +133,7 @@ Include the BOMs and then ```bootique-kafka-client-0.8```:
 </dependencyManagement>
 ...
 <dependency>
-	<groupId>io.bootique.kafka.client</groupId>
+	<groupId>io.bootique.kafka</groupId>
 	<artifactId>bootique-kafka-client-0.8</artifactId>
 </dependency>
 ```

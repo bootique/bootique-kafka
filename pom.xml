@@ -27,8 +27,8 @@
         <version>0.13</version>
     </parent>
 
-    <groupId>io.bootique.kafka.client</groupId>
-    <artifactId>bootique-kafka-client-parent</artifactId>
+    <groupId>io.bootique.kafka</groupId>
+    <artifactId>bootique-kafka-parent</artifactId>
     <version>1.0.RC1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>bootique-kafka-parent: Integration of various versions of Kafka clients with Bootique</name>
@@ -46,8 +46,8 @@
     </modules>
 
     <scm>
-        <developerConnection>scm:git:ssh://git@github.com/bootique/bootique-kafka-client</developerConnection>
-        <url>https://github.com/bootique/bootique-kafka-client</url>
+        <developerConnection>scm:git:ssh://git@github.com/bootique/bootique-kafka</developerConnection>
+        <url>https://github.com/bootique/bootique-kafka</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -55,7 +55,7 @@
         <repository>
             <id>bintray-bootique-releases</id>
             <name>bintray-bootique-releases</name>
-            <url>https://api.bintray.com/maven/bootique/releases/bootique-kafka-client/;publish=1</url>
+            <url>https://api.bintray.com/maven/bootique/releases/bootique-kafka/;publish=1</url>
         </repository>
     </distributionManagement>
 
