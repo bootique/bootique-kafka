@@ -41,6 +41,7 @@ public class KafkaStreamsFactoryFactory {
     private ProcessingGuarantee processingGuarantee;
 
     // TODO: other StreamsConfig.*_CONFIG properties
+    // TODO: properties for adminClient, consumer, globalConsumer, producer, restoreConsumer
 
     public DefaultKafkaStreamsFactory createFactory(KafkaStreamsManager streamsManager) {
         return new DefaultKafkaStreamsFactory(streamsManager, getClusters(), createProperties());

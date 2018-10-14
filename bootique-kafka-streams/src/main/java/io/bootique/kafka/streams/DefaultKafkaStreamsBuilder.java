@@ -20,6 +20,7 @@ package io.bootique.kafka.streams;
 
 import io.bootique.kafka.BootstrapServers;
 import io.bootique.kafka.BootstrapServersCollection;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
@@ -38,6 +39,9 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
     private Topology topology;
     private Properties properties;
     private String clusterName;
+    private String applicationId;
+    private Class<? extends Serde<?>> keySerde;
+    private Class<? extends Serde<?>> valueSerde;
 
     public DefaultKafkaStreamsBuilder(
             KafkaStreamsManager streamsManager,
@@ -71,13 +75,43 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
     }
 
     @Override
+    public KafkaStreamsBuilder keySerde(Class<? extends Serde<?>> serializerDeserializer) {
+        this.keySerde = serializerDeserializer;
+        return this;
+    }
+
+    @Override
+    public KafkaStreamsBuilder valueSerde(Class<? extends Serde<?>> serializerDeserializer) {
+        this.valueSerde = serializerDeserializer;
+        return this;
+    }
+
+    @Override
+    public KafkaStreamsBuilder applicationId(String applicationId) {
+        this.applicationId = applicationId;
+        return this;
+    }
+
+    @Override
     public KafkaStreamsRunner create() {
         return new KafkaStreamsRunner(streamsManager, createStreams());
     }
 
     protected KafkaStreams createStreams() {
 
-        this.properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, resolveBootstrapServers());
+        properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, resolveBootstrapServers());
+
+        if (applicationId != null) {
+            properties.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
+        }
+
+        if (keySerde != null) {
+            properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, keySerde.getName());
+        }
+
+        if (valueSerde != null) {
+            properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, valueSerde.getName());
+        }
 
         Objects.requireNonNull(topology, "KafkaStreams 'topology' is not set");
         return new KafkaStreams(topology, properties);

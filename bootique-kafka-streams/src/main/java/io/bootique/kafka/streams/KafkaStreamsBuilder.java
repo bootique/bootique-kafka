@@ -18,6 +18,7 @@
  */
 package io.bootique.kafka.streams;
 
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.Topology;
 
 import java.util.Properties;
@@ -46,6 +47,12 @@ public interface KafkaStreamsBuilder {
      * @return this builder instance
      */
     KafkaStreamsBuilder cluster(String clusterName);
+
+    KafkaStreamsBuilder applicationId(String applicationId);
+
+    KafkaStreamsBuilder keySerde(Class<? extends Serde<?>> serializerDeserializer);
+
+    KafkaStreamsBuilder valueSerde(Class<? extends Serde<?>> serializerDeserializer);
 
     KafkaStreamsRunner create();
 
