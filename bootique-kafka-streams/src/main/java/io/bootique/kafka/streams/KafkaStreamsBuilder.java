@@ -21,8 +21,6 @@ package io.bootique.kafka.streams;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.Topology;
 
-import java.util.Properties;
-
 /**
  * A builder of a custom {@link org.apache.kafka.streams.KafkaStreams} instance. Returned instance is wrapped in a
  * {@link KafkaStreamsRunner} to manage its startup and shutdown. The order of configuration loading (configs lower on
@@ -31,7 +29,7 @@ import java.util.Properties;
  * <ul>
  * <li>Configs from YAML. Those are the default properties for all streams that can be overridden during each
  * instance creation.</li>
- * <li>Configs passed to the {@link #properties(Properties)} method</li>
+ * <li>Configs passed to the {@link #property(String, String)} method</li>
  * <li>Configs set via "named" builder methods like {@link #applicationId(String)}, etc.</li>
  * </ul>
  *
@@ -40,16 +38,6 @@ import java.util.Properties;
 public interface KafkaStreamsBuilder {
 
     KafkaStreamsBuilder topology(Topology topology);
-
-    /**
-     * Sets custom properties for the KafkaStreams object being built. These properties will override any defaults,
-     * specified via Bootique config. Also this will replace any properties previously set via this method or via
-     * {@link #property(String, String)}.
-     *
-     * @param properties
-     * @return this builder instance
-     */
-    KafkaStreamsBuilder properties(Properties properties);
 
     /**
      * Sets a custom property for the KafkaStreams object being built. This property will override any defaults,

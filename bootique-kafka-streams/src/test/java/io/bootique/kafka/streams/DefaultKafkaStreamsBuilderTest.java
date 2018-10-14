@@ -24,6 +24,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsConfig;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -45,7 +46,7 @@ public class DefaultKafkaStreamsBuilderTest {
         DefaultKafkaStreamsBuilder builder = new DefaultKafkaStreamsBuilder(
                 mock(KafkaStreamsManager.class),
                 clusters,
-                new Properties()
+                Collections.emptyMap()
         );
 
         builder.cluster("c1");
@@ -64,7 +65,7 @@ public class DefaultKafkaStreamsBuilderTest {
         DefaultKafkaStreamsBuilder builder = new DefaultKafkaStreamsBuilder(
                 mock(KafkaStreamsManager.class),
                 clusters,
-                new Properties()
+                Collections.emptyMap()
         );
 
         Properties resolved = builder.resolveProperties();
@@ -83,7 +84,7 @@ public class DefaultKafkaStreamsBuilderTest {
         DefaultKafkaStreamsBuilder builder = new DefaultKafkaStreamsBuilder(
                 mock(KafkaStreamsManager.class),
                 clusters,
-                new Properties()
+                Collections.emptyMap()
         );
 
         builder.resolveProperties();
@@ -95,15 +96,10 @@ public class DefaultKafkaStreamsBuilderTest {
         Map<String, BootstrapServers> clustersMap = new HashMap<>();
         clustersMap.put("c", new BootstrapServers("example.org:5679"));
 
-        Properties defaultProps = new Properties();
+        Map<String, String> defaultProps = new HashMap<>();
         defaultProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "dappid");
         defaultProps.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.BytesSerde.class.getName());
         defaultProps.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.BytesSerde.class.getName());
-
-        Properties customProps = new Properties();
-        defaultProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "cappid");
-        defaultProps.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName());
-        defaultProps.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName());
 
         DefaultKafkaStreamsBuilder builder = new DefaultKafkaStreamsBuilder(
                 mock(KafkaStreamsManager.class),
@@ -111,10 +107,12 @@ public class DefaultKafkaStreamsBuilderTest {
                 defaultProps
         );
 
-        builder.properties(customProps)
-                .applicationId("eappid")
+        builder.applicationId("eappid")
+                .property(StreamsConfig.APPLICATION_ID_CONFIG, "cappid")
+                .property(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName())
                 .keySerde(Serdes.StringSerde.class)
-                .valueSerde(Serdes.IntegerSerde.class);
+                .valueSerde(Serdes.IntegerSerde.class)
+                .property(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName());
 
         Properties resolved = builder.resolveProperties();
         assertEquals("eappid", resolved.getProperty(StreamsConfig.APPLICATION_ID_CONFIG));
@@ -128,15 +126,10 @@ public class DefaultKafkaStreamsBuilderTest {
         Map<String, BootstrapServers> clustersMap = new HashMap<>();
         clustersMap.put("c", new BootstrapServers("example.org:5679"));
 
-        Properties defaultProps = new Properties();
+        Map<String, String> defaultProps = new HashMap<>();
         defaultProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "dappid");
         defaultProps.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.BytesSerde.class.getName());
         defaultProps.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.BytesSerde.class.getName());
-
-        Properties customProps = new Properties();
-        defaultProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "cappid");
-        defaultProps.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName());
-        defaultProps.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName());
 
         DefaultKafkaStreamsBuilder builder = new DefaultKafkaStreamsBuilder(
                 mock(KafkaStreamsManager.class),
@@ -144,7 +137,10 @@ public class DefaultKafkaStreamsBuilderTest {
                 defaultProps
         );
 
-        builder.properties(customProps);
+        builder
+                .property(StreamsConfig.APPLICATION_ID_CONFIG, "cappid")
+                .property(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName())
+                .property(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName());
 
         Properties resolved = builder.resolveProperties();
         assertEquals("cappid", resolved.getProperty(StreamsConfig.APPLICATION_ID_CONFIG));
@@ -158,7 +154,7 @@ public class DefaultKafkaStreamsBuilderTest {
         Map<String, BootstrapServers> clustersMap = new HashMap<>();
         clustersMap.put("c", new BootstrapServers("example.org:5679"));
 
-        Properties defaultProps = new Properties();
+        Map<String, String> defaultProps = new HashMap<>();
         defaultProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "dappid");
         defaultProps.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.BytesSerde.class.getName());
         defaultProps.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.BytesSerde.class.getName());

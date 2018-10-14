@@ -26,8 +26,8 @@ import io.bootique.kafka.streams.config.ProcessingGuarantee;
 import io.bootique.value.Bytes;
 import org.apache.kafka.streams.StreamsConfig;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * @since 1.0.RC1
@@ -47,8 +47,8 @@ public class KafkaStreamsFactoryFactory {
         return new DefaultKafkaStreamsFactory(streamsManager, getClusters(), createProperties());
     }
 
-    protected Properties createProperties() {
-        Properties properties = new Properties();
+    protected Map<String, String> createProperties() {
+        Map<String, String> properties = new HashMap<>();
 
         // Note that below we are converting all values to Strings. Kafka would probably work if we preserve some of them
         // as ints/longs/etc, but let's honor an implied contract of the Properties class - its values must be Strings.

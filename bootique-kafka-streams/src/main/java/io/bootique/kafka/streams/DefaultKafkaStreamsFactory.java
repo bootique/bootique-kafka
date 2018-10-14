@@ -21,6 +21,7 @@ package io.bootique.kafka.streams;
 import io.bootique.kafka.BootstrapServersCollection;
 import org.apache.kafka.streams.Topology;
 
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -30,12 +31,12 @@ public class DefaultKafkaStreamsFactory implements KafkaStreamsFactory {
 
     private BootstrapServersCollection clusters;
     private KafkaStreamsManager streamsManager;
-    private Properties properties;
+    private Map<String, String> properties;
 
     public DefaultKafkaStreamsFactory(
             KafkaStreamsManager streamsManager,
             BootstrapServersCollection clusters,
-            Properties properties) {
+            Map<String, String> properties) {
 
         this.streamsManager = streamsManager;
         this.clusters = clusters;

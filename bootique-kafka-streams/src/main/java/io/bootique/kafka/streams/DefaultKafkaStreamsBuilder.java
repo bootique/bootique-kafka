@@ -39,8 +39,8 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
     private BootstrapServersCollection clusters;
 
     private Topology topology;
-    private Properties defaultProperties;
-    private Map<Object, Object> perStreamProperties;
+    private Map<String, String> defaultProperties;
+    private Map<String, String> perStreamProperties;
     private String clusterName;
     private String applicationId;
     private Class<? extends Serde<?>> keySerde;
@@ -49,7 +49,7 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
     public DefaultKafkaStreamsBuilder(
             KafkaStreamsManager streamsManager,
             BootstrapServersCollection clusters,
-            Properties defaultProperties) {
+            Map<String, String> defaultProperties) {
 
         this.streamsManager = Objects.requireNonNull(streamsManager);
         this.clusters = Objects.requireNonNull(clusters);
@@ -60,13 +60,6 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
     @Override
     public KafkaStreamsBuilder topology(Topology topology) {
         this.topology = topology;
-        return this;
-    }
-
-    @Override
-    public KafkaStreamsBuilder properties(Properties properties) {
-        this.perStreamProperties.clear();
-        this.perStreamProperties.putAll(properties);
         return this;
     }
 
@@ -112,11 +105,11 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
 
     protected Properties resolveProperties() {
 
-        Properties combined = new Properties(defaultProperties);
+        Properties combined = new Properties();
 
-        if (perStreamProperties != null) {
-            combined.putAll(perStreamProperties);
-        }
+        // resolution order is significant... default -> per-stream -> explicit
+        combined.putAll(defaultProperties);
+        combined.putAll(perStreamProperties);
 
         combined.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, resolveBootstrapServers());
 

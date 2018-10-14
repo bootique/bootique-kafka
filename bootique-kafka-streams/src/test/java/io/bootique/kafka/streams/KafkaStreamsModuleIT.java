@@ -54,16 +54,13 @@ public class KafkaStreamsModuleIT {
                 .app("-c", "classpath:io/bootique/kafka/streams/KafkaStreamsModule_AllConfigsIT.yml")
                 .autoLoadModules()
                 .createRuntime();
-
-        Properties props = new Properties();
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName());
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName());
-
+        
         KafkaStreamsFactory factory = runtime.getInstance(KafkaStreamsFactory.class);
         DefaultKafkaStreamsBuilder builder = (DefaultKafkaStreamsBuilder) factory
                 .topology(mock(Topology.class))
                 .valueSerde(Serdes.IntegerSerde.class)
-                .properties(props);
+                .property(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName())
+                .property(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.LongSerde.class.getName());
 
         Properties mergedProps = builder.resolveProperties();
         // from YAML
