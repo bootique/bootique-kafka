@@ -26,6 +26,7 @@ import io.bootique.kafka.streams.config.ProcessingGuarantee;
 import io.bootique.value.Bytes;
 import org.apache.kafka.streams.StreamsConfig;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ public class KafkaStreamsFactoryFactory {
 
     private Map<String, BootstrapServers> clusters;
     private String applicationId;
+    private File stateDir;
     private Bytes cacheMaxBytesBuffering;
     private ProcessingGuarantee processingGuarantee;
 
@@ -63,6 +65,10 @@ public class KafkaStreamsFactoryFactory {
 
         if (processingGuarantee != null) {
             properties.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, processingGuarantee.name());
+        }
+
+        if (stateDir != null) {
+            properties.put(StreamsConfig.STATE_DIR_CONFIG, stateDir.getAbsolutePath());
         }
 
         // TODO: load consumer/producer/etc properties...
@@ -103,5 +109,10 @@ public class KafkaStreamsFactoryFactory {
     )
     public void setProcessingGuarantee(ProcessingGuarantee processingGuarantee) {
         this.processingGuarantee = processingGuarantee;
+    }
+
+    @BQConfigProperty
+    public void setStateDir(File stateDir) {
+        this.stateDir = stateDir;
     }
 }
