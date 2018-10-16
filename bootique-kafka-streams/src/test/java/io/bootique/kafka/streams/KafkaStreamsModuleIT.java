@@ -54,7 +54,7 @@ public class KafkaStreamsModuleIT {
                 .app("-c", "classpath:io/bootique/kafka/streams/KafkaStreamsModule_AllConfigsIT.yml")
                 .autoLoadModules()
                 .createRuntime();
-        
+
         KafkaStreamsFactory factory = runtime.getInstance(KafkaStreamsFactory.class);
         DefaultKafkaStreamsBuilder builder = (DefaultKafkaStreamsBuilder) factory
                 .topology(mock(Topology.class))

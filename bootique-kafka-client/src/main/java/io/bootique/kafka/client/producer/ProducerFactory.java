@@ -23,6 +23,7 @@ import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.kafka.BootstrapServers;
 import io.bootique.kafka.client.FactoryUtils;
+import io.bootique.value.Duration;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.slf4j.Logger;
@@ -53,7 +54,7 @@ public class ProducerFactory {
     private String acks;
     private int retries;
     private int batchSize;
-    private int lingerMs;
+    private Duration linger;
     private int bufferMemory;
 
     public ProducerFactory() {
@@ -61,7 +62,6 @@ public class ProducerFactory {
         this.acks = "all";
         this.retries = 0;
         this.batchSize = 16384;
-        this.lingerMs = 1;
         this.bufferMemory = 33554432;
     }
 
@@ -80,12 +80,22 @@ public class ProducerFactory {
         this.batchSize = batchSize;
     }
 
-    @BQConfigProperty
-    public void setLingerMs(int lingerMs) {
-        this.lingerMs = lingerMs;
+    @BQConfigProperty("The producer groups together any records that arrive in between request transmissions into a single batched request. "
+            + "Normally this occurs only under load when records arrive faster than they can be sent out. However in some circumstances the client may want to "
+            + "reduce the number of requests even under moderate load. This setting accomplishes this by adding a small amount "
+            + "of artificial delay, that is, rather than immediately sending out a record the producer will wait for up to "
+            + "the given delay to allow other records to be sent so that the sends can be batched together. This can be thought "
+            + "of as analogous to Nagle's algorithm in TCP. This setting gives the upper bound on the delay for batching: once "
+            + "we get 'batchSize' worth of records for a partition it will be sent immediately regardless of this "
+            + "setting, however if we have fewer than this many bytes accumulated for this partition we will 'linger' for the "
+            + "specified time waiting for more records to show up. This setting defaults to 0 (i.e. no delay).")
+    public void setLinger(Duration linger) {
+        this.linger = linger;
     }
 
-    @BQConfigProperty
+    @BQConfigProperty("The total bytes of memory the producer can use to buffer records waiting to be sent to the server. If records are " +
+            "sent faster than they can be delivered to the server the producer will block for \" + MAX_BLOCK_MS_CONFIG + \" after which it " +
+            "will throw an exception. This setting should correspond roughly to the total memory the producer will use.")
     public void setBufferMemory(int bufferMemory) {
         this.bufferMemory = bufferMemory;
     }
@@ -113,7 +123,7 @@ public class ProducerFactory {
         setProperty(properties,
                 LINGER_MS_CONFIG,
                 config.getLingerMs(),
-                lingerMs);
+                getLingerMs());
         setProperty(properties,
                 BUFFER_MEMORY_CONFIG,
                 config.getBufferMemory(),
@@ -126,6 +136,10 @@ public class ProducerFactory {
         }
 
         return new KafkaProducer<>(properties, config.getKeySerializer(), config.getValueSerializer());
+    }
+
+    private int getLingerMs() {
+        return linger != null ? (int) linger.getDuration().toMillis() : 0;
     }
 
 }
