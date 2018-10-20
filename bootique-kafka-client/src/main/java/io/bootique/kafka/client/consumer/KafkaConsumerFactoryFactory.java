@@ -22,6 +22,7 @@ package io.bootique.kafka.client.consumer;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.kafka.BootstrapServersCollection;
+import io.bootique.value.Duration;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 import java.util.HashMap;
@@ -37,17 +38,10 @@ import java.util.Map;
 public class KafkaConsumerFactoryFactory {
 
     private String defaultGroup;
-    private boolean autoCommit;
+    private Boolean autoCommit;
     private AutoOffsetReset autoOffsetReset;
-    private int autoCommitIntervalMs;
-    private int sessionTimeoutMs;
-
-    public KafkaConsumerFactoryFactory() {
-        this.autoOffsetReset = AutoOffsetReset.latest;
-        this.autoCommit = true;
-        this.autoCommitIntervalMs = 1000;
-        this.sessionTimeoutMs = 30000;
-    }
+    private Duration autoCommitInterval;
+    private Duration sessionTimeout;
 
     @BQConfigProperty
     public void setDefaultGroup(String defaultGroup) {
@@ -60,13 +54,13 @@ public class KafkaConsumerFactoryFactory {
     }
 
     @BQConfigProperty
-    public void setAutoCommitIntervalMs(int autoCommitIntervalMs) {
-        this.autoCommitIntervalMs = autoCommitIntervalMs;
+    public void setAutoCommitInterval(Duration autoCommitInterval) {
+        this.autoCommitInterval = autoCommitInterval;
     }
 
     @BQConfigProperty
-    public void setSessionTimeoutMs(int sessionTimeoutMs) {
-        this.sessionTimeoutMs = sessionTimeoutMs;
+    public void setSessionTimeout(Duration sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
     }
 
     @BQConfigProperty
@@ -90,10 +84,17 @@ public class KafkaConsumerFactoryFactory {
         if (defaultGroup != null) {
             properties.put(ConsumerConfig.GROUP_ID_CONFIG, defaultGroup);
         }
-
+        
+        boolean autoCommit = this.autoCommit != null ? this.autoCommit : true;
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(autoCommit));
+
+        long autoCommitIntervalMs = autoCommitInterval != null ? autoCommitInterval.getDuration().toMillis() : 1000L;
         properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, String.valueOf(autoCommitIntervalMs));
+
+        long sessionTimeoutMs = sessionTimeout != null ? sessionTimeout.getDuration().toMillis() : 30000L;
         properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, String.valueOf(sessionTimeoutMs));
+
+        AutoOffsetReset autoOffsetReset = this.autoOffsetReset != null ? this.autoOffsetReset : AutoOffsetReset.latest;
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset.name());
 
         return properties;
