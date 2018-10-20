@@ -92,7 +92,6 @@ KafkaProducerFactory factory;
 public void runProducer() {
 
     Producer<byte[], String> producer = factory
-        .charValueConfig()
         .charValueProducer()
         .cluster("cluster2")
         .create();
@@ -107,12 +106,6 @@ Consumer example (also see [this code sample](https://github.com/bootique-exampl
 KafkaConsumerFactory factory;
 
 public void runConsumer() {
-    
-    // overriding group default
-    ConsumerConfig<byte[], String> config = ConsumerConfig
-        .charValueConfig()
-        .group("somegroup")
-        .build();
     
     KafkaConsumerRunner<byte[], String> consumer = factory
         .charValueConsumer()
