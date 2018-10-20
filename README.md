@@ -97,6 +97,9 @@ public void runProducer() {
         .create();
 
     producer.send(new ProducerRecord<>("mytopic", "Hi!"));
+
+    // close if there's nothing else to send
+    producer.close();
 }
 ```
 
@@ -118,6 +121,9 @@ public void runConsumer() {
     for (ConsumerRecord<byte[], String> r : consumer) {
         System.out.println(r.topic() + "_" + r.partition() + "_" + r.offset() + ": " + r.value());
     }
+
+    // close if there's nothing else to send
+    consumer.close();
 }
 ```
 
