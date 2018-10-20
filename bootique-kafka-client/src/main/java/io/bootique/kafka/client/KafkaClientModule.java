@@ -25,6 +25,10 @@ import com.google.inject.Singleton;
 import io.bootique.BQCoreModule;
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.kafka.client.consumer.DefaultKafkaConsumerFactory;
+import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
+import io.bootique.kafka.client.consumer.KafkaConsumersManager;
+import io.bootique.shutdown.ShutdownManager;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
@@ -47,5 +51,19 @@ public class KafkaClientModule extends ConfigModule {
     @Provides
     KafkaClientFactory provideClientFactory(ConfigurationFactory configFactory) {
         return configFactory.config(KafkaClientFactoryFactory.class, configPrefix).createFactory();
+    }
+
+    @Singleton
+    @Provides
+    KafkaConsumersManager provideConsumersManager(ShutdownManager shutdownManager) {
+        KafkaConsumersManager cm = new KafkaConsumersManager();
+        shutdownManager.addShutdownHook(cm);
+        return cm;
+    }
+
+    @Singleton
+    @Provides
+    KafkaConsumerFactory provideConsumerFactory(KafkaConsumersManager consumersManager, KafkaClientFactory clientFactory) {
+        return new DefaultKafkaConsumerFactory(consumersManager, clientFactory);
     }
 }

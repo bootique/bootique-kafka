@@ -5,6 +5,7 @@
 * #19 Rename the project to "bootique-kafka"
 * #21 "kafkaclient.producer.lingerMs" - rename to "linger" and use Duration type
 * #22 Support for "auto.offset.reset" property for consumers
+* #23 User-friendly consumer interface 
 
 ## 0.25
 

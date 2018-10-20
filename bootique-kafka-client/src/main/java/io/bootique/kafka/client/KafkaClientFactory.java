@@ -25,9 +25,11 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.producer.Producer;
 
 /**
- * An injectable service that helps to create Kafka producers and consumers based on Bootique configuration and
- * user-provided settings.
+ * A low-level injectable service that helps to create Kafka producers and consumers based on Bootique configuration and
+ * user-provided settings. When working with consumers, consider injecting {@link io.bootique.kafka.client.consumer.KafkaConsumerFactory}
+ * instead.
  *
+ * @see io.bootique.kafka.client.consumer.KafkaConsumerFactory
  * @since 0.2
  */
 public interface KafkaClientFactory {
@@ -43,6 +45,8 @@ public interface KafkaClientFactory {
      * @param <V>    Consumed message value type.
      * @return a new instance of Consumer.
      */
+    // TODO: ConsumerConfig is obsolete with the advent of higher-level API under KafkaConsumerFactory. Deprecate it, and
+    // change to a simple map of properties.
     <K, V> Consumer<K, V> createConsumer(ConsumerConfig<K, V> config);
 
     /**
@@ -58,7 +62,7 @@ public interface KafkaClientFactory {
      */
     <K, V> Consumer<K, V> createConsumer(String clusterName, ConsumerConfig<K, V> config);
 
-    <K, V> Producer<K, V> createProducer(ProducerConfig<K, V>config);
+    <K, V> Producer<K, V> createProducer(ProducerConfig<K, V> config);
 
-    <K, V> Producer<K, V> createProducer(String clusterName, ProducerConfig<K, V>config);
+    <K, V> Producer<K, V> createProducer(String clusterName, ProducerConfig<K, V> config);
 }

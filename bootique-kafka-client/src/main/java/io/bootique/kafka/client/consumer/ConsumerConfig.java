@@ -25,6 +25,8 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -33,6 +35,8 @@ import java.util.Objects;
  *
  * @since 0.2
  */
+// TODO: ConsumerConfig is obsolete with the advent of higher-level API under KafkaConsumerFactory. Deprecate it, and
+// change to a simple map of properties.
 public class ConsumerConfig<K, V> {
 
     private Deserializer<K> keyDeserializer;
@@ -43,8 +47,10 @@ public class ConsumerConfig<K, V> {
     private AutoOffsetReset autoOffsetReset;
     private Integer sessionTimeoutMs;
     private BootstrapServers bootstrapServers;
+    private Map<String, String> properties;
 
     private ConsumerConfig() {
+        this.properties = new HashMap<>();
     }
 
     public static Builder<byte[], byte[]> binaryConfig() {
@@ -114,6 +120,17 @@ public class ConsumerConfig<K, V> {
             return config;
         }
 
+        /**
+         * @param key
+         * @param value
+         * @return this builder instance
+         * @since 1.0.RC1
+         */
+        public Builder<K, V> property(String key, String value) {
+            config.properties.put(key, value);
+            return this;
+        }
+
         public Builder<K, V> group(String group) {
             config.group = group;
             return this;
@@ -129,6 +146,11 @@ public class ConsumerConfig<K, V> {
             return this;
         }
 
+        /**
+         * @param autoOffsetReset
+         * @return this builder instance
+         * @since 1.0.RC1
+         */
         public Builder<K, V> autoOffsetRest(AutoOffsetReset autoOffsetReset) {
             config.autoOffsetReset = autoOffsetReset;
             return this;

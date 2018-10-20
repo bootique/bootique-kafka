@@ -135,6 +135,4 @@ public class ConsumerFactory {
 
         return new KafkaConsumer<>(properties, config.getKeyDeserializer(), config.getValueDeserializer());
     }
-
-
 }
