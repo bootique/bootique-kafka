@@ -151,7 +151,7 @@ public class ConsumerConfig<K, V> {
          * @return this builder instance
          * @since 1.0.RC1
          */
-        public Builder<K, V> autoOffsetRest(AutoOffsetReset autoOffsetReset) {
+        public Builder<K, V> autoOffsetReset(AutoOffsetReset autoOffsetReset) {
             config.autoOffsetReset = autoOffsetReset;
             return this;
         }

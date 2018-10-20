@@ -41,6 +41,7 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
 
     private Collection<String> topics;
     private String cluster;
+    private Duration pollInterval;
 
     public DefaultKafkaConsumerBuilder(
             KafkaConsumersManager consumersManager,
@@ -61,23 +62,58 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
     }
 
     @Override
+    public KafkaConsumerBuilder<K, V> topics(String... topics) {
+        for (String t : topics) {
+            this.topics.add(t);
+        }
+
+        return this;
+    }
+
+    @Override
     public KafkaConsumerBuilder<K, V> property(String key, String value) {
         config.property(key, value);
         return this;
     }
 
     @Override
+    public KafkaConsumerBuilder<K, V> group(String group) {
+        config.group(group);
+        return this;
+    }
+
+    @Override
+    public KafkaConsumerBuilder<K, V> autoCommitInterval(Duration duration) {
+        config.autoCommitIntervalMs((int) duration.toMillis());
+        return this;
+    }
+
+    @Override
+    public KafkaConsumerBuilder<K, V> autoCommit(boolean autoCommit) {
+        config.autoCommit(autoCommit);
+        return this;
+    }
+
+    @Override
+    public KafkaConsumerBuilder<K, V> autoOffsetRest(AutoOffsetReset autoOffsetReset) {
+        config.autoOffsetReset(autoOffsetReset);
+        return this;
+    }
+
+    @Override
+    public KafkaConsumerBuilder<K, V> sessionTimeout(Duration duration) {
+        config.sessionTimeoutMs((int) duration.toMillis());
+        return this;
+    }
+
+    @Override
     public KafkaConsumerRunner<K, V> create() {
-        return new KafkaConsumerRunner(consumersManager, createConsumer(), createTopics(), createDuration());
+        return new KafkaConsumerRunner(consumersManager, createConsumer(), createTopics(), createPollInterval());
     }
 
     protected Consumer<K, V> createConsumer() {
-        ConsumerConfig<K, V> config = createConfig();
+        ConsumerConfig<K, V> config = this.config.build();
         return cluster != null ? clientFactory.createConsumer(cluster, config) : clientFactory.createConsumer(config);
-    }
-
-    protected ConsumerConfig<K, V> createConfig() {
-
     }
 
     protected Collection<String> createTopics() {
@@ -89,7 +125,7 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
         return topics;
     }
 
-    protected Duration createDuration() {
-
+    protected Duration createPollInterval() {
+        return pollInterval != null ? pollInterval : Duration.ofMillis(100);
     }
 }

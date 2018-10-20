@@ -18,10 +18,14 @@
  */
 package io.bootique.kafka.client.consumer;
 
+import java.time.Duration;
+
 /**
  * @since 1.0.RC1
  */
 public interface KafkaConsumerBuilder<K, V> {
+
+    KafkaConsumerRunner<K, V> create();
 
     /**
      * Sets a custom property for the underlying Consumer object being built. This property will override any defaults,
@@ -42,5 +46,15 @@ public interface KafkaConsumerBuilder<K, V> {
      */
     KafkaConsumerBuilder<K, V> cluster(String clusterName);
 
-    KafkaConsumerRunner<K, V> create();
+    KafkaConsumerBuilder<K, V> topics(String... topics);
+
+    KafkaConsumerBuilder<K, V> group(String group);
+
+    KafkaConsumerBuilder<K, V> autoCommitInterval(Duration duration);
+
+    KafkaConsumerBuilder<K, V> autoCommit(boolean autoCommit);
+
+    KafkaConsumerBuilder<K, V> autoOffsetRest(AutoOffsetReset autoOffsetReset);
+
+    KafkaConsumerBuilder<K, V> sessionTimeout(Duration duration);
 }
