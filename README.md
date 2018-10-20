@@ -109,7 +109,7 @@ public void runConsumer() {
     
     KafkaConsumerRunner<byte[], String> consumer = factory
         .charValueConsumer()
-        .cluser("cluster1")
+        .cluster("cluster1")
         .group("somegroup")
         .topic("mytopic")
         .pollInterval(Duration.ofSeconds(1))
