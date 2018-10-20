@@ -27,6 +27,7 @@ import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
 import io.bootique.kafka.client.consumer.KafkaConsumersManager;
+import io.bootique.kafka.client.producer.KafkaProducerFactory;
 import io.bootique.shutdown.ShutdownManager;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -54,8 +55,8 @@ public class KafkaClientModule extends ConfigModule {
 
     @Singleton
     @Provides
-    KafkaClientFactory provideClientFactory(KafkaClientFactoryFactory parentFactory) {
-        return parentFactory.createFactory();
+    KafkaProducerFactory provideClientFactory(KafkaClientFactoryFactory parentFactory) {
+        return parentFactory.createProducerFactory();
     }
 
     @Singleton

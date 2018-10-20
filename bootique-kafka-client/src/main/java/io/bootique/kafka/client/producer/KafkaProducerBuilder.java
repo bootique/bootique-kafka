@@ -16,23 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package io.bootique.kafka.client.producer;
 
-package io.bootique.kafka.client;
-
-import io.bootique.kafka.client.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.Producer;
 
-/**
- * A low-level injectable service that helps to create Kafka producers and consumers based on Bootique configuration and
- * user-provided settings. When working with consumers, consider injecting {@link io.bootique.kafka.client.consumer.KafkaConsumerFactory}
- * instead.
- *
- * @see io.bootique.kafka.client.consumer.KafkaConsumerFactory
- * @since 0.2
- */
-public interface KafkaClientFactory {
-    
-    <K, V> Producer<K, V> createProducer(ProducerConfig<K, V> config);
+import java.time.Duration;
 
-    <K, V> Producer<K, V> createProducer(String clusterName, ProducerConfig<K, V> config);
+public interface KafkaProducerBuilder<K, V> {
+
+    Producer<K, V> create();
+
+    KafkaProducerBuilder<K, V> property(String key, String value);
+
+    KafkaProducerBuilder<K, V> cluster(String clusterName);
+
+    KafkaProducerBuilder<K, V> allAcks();
+
+    KafkaProducerBuilder<K, V> acks(int acks);
+
+    KafkaProducerBuilder<K, V> retries(int retries);
+
+    KafkaProducerBuilder<K, V> batchSize(int batchSize);
+
+    KafkaProducerBuilder<K, V> linger(Duration linger);
+
+    KafkaProducerBuilder<K, V> bufferMemory(int bufferMemory);
 }

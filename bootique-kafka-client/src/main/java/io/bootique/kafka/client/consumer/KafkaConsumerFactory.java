@@ -18,18 +18,26 @@
  */
 package io.bootique.kafka.client.consumer;
 
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 
 /**
  * @since 1.0.RC1
  */
 public interface KafkaConsumerFactory {
 
-    KafkaConsumerBuilder<byte[], byte[]> binaryConsumer();
+    default KafkaConsumerBuilder<byte[], byte[]> binaryConsumer() {
+        return consumer(new ByteArrayDeserializer(), new ByteArrayDeserializer());
+    }
 
-    KafkaConsumerBuilder<byte[], String> charValueConsumer();
+    default KafkaConsumerBuilder<byte[], String> charValueConsumer() {
+        return consumer(new ByteArrayDeserializer(), new StringDeserializer());
+    }
 
-    <V> KafkaConsumerBuilder<byte[], V> binaryKeyConsumer(Deserializer<V> valueDeserializer);
+    default <V> KafkaConsumerBuilder<byte[], V> binaryKeyConsumer(Deserializer<V> valueDeserializer) {
+        return consumer(new ByteArrayDeserializer(), valueDeserializer);
+    }
 
     <K, V> KafkaConsumerBuilder<K, V> consumer(Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer);
 

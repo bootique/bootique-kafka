@@ -16,39 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.kafka.client.consumer;
+
+package io.bootique.kafka.client.producer;
 
 import io.bootique.kafka.BootstrapServersCollection;
-import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serializer;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @since 1.0.RC1
  */
-public class DefaultKafkaConsumerFactory implements KafkaConsumerFactory {
+public class DefaultKafkaProducerFactory implements KafkaProducerFactory {
 
-    private KafkaConsumersManager consumersManager;
     private BootstrapServersCollection clusters;
     private Map<String, String> properties;
 
-    public DefaultKafkaConsumerFactory(
-            KafkaConsumersManager consumersManager,
-            BootstrapServersCollection clusters,
-            Map<String, String> properties) {
-
-        this.consumersManager = consumersManager;
-        this.clusters = clusters;
-        this.properties = properties;
+    public DefaultKafkaProducerFactory(BootstrapServersCollection clusters, Map<String, String> properties) {
+        this.clusters = Objects.requireNonNull(clusters);
+        this.properties = Objects.requireNonNull(properties);
     }
 
     @Override
-    public <K, V> KafkaConsumerBuilder<K, V> consumer(Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer) {
-        return new DefaultKafkaConsumerBuilder<>(
-                consumersManager,
-                clusters,
-                properties,
-                keyDeserializer,
-                valueDeserializer);
+    public <K, V> DefaultKafkaProducerBuilder<K, V> producer(Serializer<K> keySerializer, Serializer<V> valueSerializer) {
+        return new DefaultKafkaProducerBuilder<>(clusters, properties, keySerializer, valueSerializer);
     }
 }

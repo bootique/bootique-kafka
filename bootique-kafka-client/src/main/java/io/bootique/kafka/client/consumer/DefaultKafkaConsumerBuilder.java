@@ -24,6 +24,8 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.Deserializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -38,10 +40,12 @@ import java.util.Properties;
  */
 public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K, V> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaConsumerBuilder.class);
+
     private KafkaConsumersManager consumersManager;
     private BootstrapServersCollection clusters;
     private Map<String, String> defaultProperties;
-    private Map<String, String> perStreamProperties;
+    private Map<String, String> builderProperties;
     private Deserializer<K> keyDeserializer;
     private Deserializer<V> valueDeserializer;
 
@@ -67,7 +71,7 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
         this.keyDeserializer = Objects.requireNonNull(keyDeserializer);
         this.valueDeserializer = Objects.requireNonNull(valueDeserializer);
 
-        this.perStreamProperties = new HashMap<>();
+        this.builderProperties = new HashMap<>();
         this.topics = new ArrayList<>(3);
     }
 
@@ -88,7 +92,7 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
 
     @Override
     public KafkaConsumerBuilder<K, V> property(String key, String value) {
-        this.perStreamProperties.put(key, value);
+        this.builderProperties.put(key, value);
         return this;
     }
 
@@ -130,11 +134,19 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
 
     @Override
     public KafkaConsumerRunner<K, V> create() {
-        return new KafkaConsumerRunner(consumersManager, createConsumer(), createTopics(), createPollInterval());
+
+        Properties properties = resolveProperties();
+        Collection<String> topics = createTopics();
+
+        LOGGER.info("Creating consumer. Cluster: {}, topics: {}.",
+                properties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG),
+                topics);
+
+        return new KafkaConsumerRunner(consumersManager, createConsumer(properties), createTopics(), createPollInterval());
     }
 
-    protected Consumer<K, V> createConsumer() {
-        return new KafkaConsumer<>(resolveProperties(), keyDeserializer, valueDeserializer);
+    protected Consumer<K, V> createConsumer(Properties properties) {
+        return new KafkaConsumer<>(properties, keyDeserializer, valueDeserializer);
     }
 
     protected Collection<String> createTopics() {
@@ -156,7 +168,7 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
 
         // resolution order is significant... default (common, coming from YAML) -> per-stream generic -> explicit
         combined.putAll(defaultProperties);
-        combined.putAll(perStreamProperties);
+        combined.putAll(builderProperties);
 
         combined.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, resolveBootstrapServers());
 

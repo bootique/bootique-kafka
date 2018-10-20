@@ -26,9 +26,9 @@ import io.bootique.kafka.BootstrapServersCollection;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactoryFactory;
 import io.bootique.kafka.client.consumer.KafkaConsumersManager;
-import io.bootique.kafka.client.producer.ProducerFactory;
+import io.bootique.kafka.client.producer.DefaultKafkaProducerFactory;
+import io.bootique.kafka.client.producer.KafkaProducerFactoryFactory;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -42,7 +42,7 @@ public class KafkaClientFactoryFactory {
 
     private Map<String, BootstrapServers> clusters;
     private KafkaConsumerFactoryFactory consumer;
-    private ProducerFactory producer;
+    private KafkaProducerFactoryFactory producer;
 
     public KafkaClientFactoryFactory() {
         this.consumer = new KafkaConsumerFactoryFactory();
@@ -54,22 +54,32 @@ public class KafkaClientFactoryFactory {
     }
 
     @BQConfigProperty
-    public void setProducer(ProducerFactory producer) {
+    public void setProducer(KafkaProducerFactoryFactory producer) {
         this.producer = producer;
     }
 
+    /**
+     * @return a new consumer factory.
+     * @since 1.0.RC1
+     */
     public KafkaConsumerFactory createConsumerFactory(KafkaConsumersManager consumersManager) {
         return nonNullConsumer().createConsumer(consumersManager, getClusters());
     }
 
-    public DefaultKafkaClientFactory createFactory() {
-        Map<String, BootstrapServers> clusters = this.clusters != null ? this.clusters : Collections.emptyMap();
-        ProducerFactory producerTemplate = this.producer != null ? this.producer : new ProducerFactory();
-        return new DefaultKafkaClientFactory(clusters, producerTemplate);
+    /**
+     * @return a new producer factory.
+     * @since 1.0.RC1
+     */
+    public DefaultKafkaProducerFactory createProducerFactory() {
+        return nonNullProducer().createProducer(getClusters());
     }
 
     private KafkaConsumerFactoryFactory nonNullConsumer() {
         return consumer != null ? consumer : new KafkaConsumerFactoryFactory();
+    }
+
+    private KafkaProducerFactoryFactory nonNullProducer() {
+        return this.producer != null ? this.producer : new KafkaProducerFactoryFactory();
     }
 
     private BootstrapServersCollection getClusters() {

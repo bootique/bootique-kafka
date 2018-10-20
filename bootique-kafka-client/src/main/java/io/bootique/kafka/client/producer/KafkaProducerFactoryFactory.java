@@ -21,47 +21,26 @@ package io.bootique.kafka.client.producer;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
-import io.bootique.kafka.BootstrapServers;
-import io.bootique.kafka.client.FactoryUtils;
+import io.bootique.kafka.BootstrapServersCollection;
 import io.bootique.value.Duration;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-
-import static io.bootique.kafka.client.FactoryUtils.setProperty;
 
 /**
- * @since 0.2
+ * @since 1.0.RC1
  */
 @BQConfig
-public class ProducerFactory {
-
-    private static final String BOOTSTRAP_SERVERS_CONFIG = org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
-    private static final String ACKS_CONFIG = org.apache.kafka.clients.producer.ProducerConfig.ACKS_CONFIG;
-    private static final String RETRIES_CONFIG = org.apache.kafka.clients.producer.ProducerConfig.RETRIES_CONFIG;
-    private static final String BATCH_SIZE_CONFIG = org.apache.kafka.clients.producer.ProducerConfig.BATCH_SIZE_CONFIG;
-    private static final String LINGER_MS_CONFIG = org.apache.kafka.clients.producer.ProducerConfig.LINGER_MS_CONFIG;
-    private static final String BUFFER_MEMORY_CONFIG = org.apache.kafka.clients.producer.ProducerConfig.BUFFER_MEMORY_CONFIG;
-
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProducerFactory.class);
+public class KafkaProducerFactoryFactory {
 
     private String acks;
-    private int retries;
-    private int batchSize;
+    private Integer retries;
+    private Integer batchSize;
     private Duration linger;
-    private int bufferMemory;
+    private Integer bufferMemory;
 
-    public ProducerFactory() {
-
-        this.acks = "all";
-        this.retries = 0;
-        this.batchSize = 16384;
+    public KafkaProducerFactoryFactory() {
         this.bufferMemory = 33554432;
     }
 
@@ -71,12 +50,12 @@ public class ProducerFactory {
     }
 
     @BQConfigProperty
-    public void setRetries(int retries) {
+    public void setRetries(Integer retries) {
         this.retries = retries;
     }
 
     @BQConfigProperty
-    public void setBatchSize(int batchSize) {
+    public void setBatchSize(Integer batchSize) {
         this.batchSize = batchSize;
     }
 
@@ -96,51 +75,32 @@ public class ProducerFactory {
     @BQConfigProperty("The total bytes of memory the producer can use to buffer records waiting to be sent to the server. If records are " +
             "sent faster than they can be delivered to the server the producer will block for \" + MAX_BLOCK_MS_CONFIG + \" after which it " +
             "will throw an exception. This setting should correspond roughly to the total memory the producer will use.")
-    public void setBufferMemory(int bufferMemory) {
+    public void setBufferMemory(Integer bufferMemory) {
         this.bufferMemory = bufferMemory;
     }
 
-    public <K, V> Producer<K, V> createProducer(BootstrapServers bootstrapServers, ProducerConfig<K, V> config) {
-
-        Map<String, Object> properties = new HashMap<>();
-
-        // TODO: replace FactoryUtils with consumer and streams style property merging...
-        FactoryUtils.setRequiredProperty(properties,
-                BOOTSTRAP_SERVERS_CONFIG,
-                Objects.requireNonNull(bootstrapServers).asString());
-
-        setProperty(properties,
-                ACKS_CONFIG,
-                config.getAcks(),
-                acks);
-        setProperty(properties,
-                RETRIES_CONFIG,
-                config.getRetries(),
-                retries);
-        setProperty(properties,
-                BATCH_SIZE_CONFIG,
-                config.getBatchSize(),
-                batchSize);
-        setProperty(properties,
-                LINGER_MS_CONFIG,
-                config.getLingerMs(),
-                getLingerMs());
-        setProperty(properties,
-                BUFFER_MEMORY_CONFIG,
-                config.getBufferMemory(),
-                bufferMemory);
-
-
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(String.format("Creating producer bootstrapping with %s.",
-                    properties.get(BOOTSTRAP_SERVERS_CONFIG)));
-        }
-
-        return new KafkaProducer<>(properties, config.getKeySerializer(), config.getValueSerializer());
+    public DefaultKafkaProducerFactory createProducer(BootstrapServersCollection clusters) {
+        return new DefaultKafkaProducerFactory(clusters, createDefaultProperties());
     }
 
-    private int getLingerMs() {
-        return linger != null ? (int) linger.getDuration().toMillis() : 0;
-    }
+    protected Map<String, String> createDefaultProperties() {
+        Map<String, String> properties = new HashMap<>();
 
+        String acks = this.acks != null ? this.acks : "all";
+        properties.put(ProducerConfig.ACKS_CONFIG, acks);
+
+        int retries = this.retries != null ? this.retries : 0;
+        properties.put(ProducerConfig.RETRIES_CONFIG, String.valueOf(retries));
+
+        int batchSize = this.batchSize != null ? this.batchSize : 16384;
+        properties.put(ProducerConfig.BATCH_SIZE_CONFIG, String.valueOf(batchSize));
+
+        long lingerMs = this.linger != null ? this.linger.getDuration().toMillis() : 0;
+        properties.put(ProducerConfig.LINGER_MS_CONFIG, String.valueOf(lingerMs));
+
+        int bufferMemory = this.bufferMemory != null ? this.bufferMemory : 33554432;
+        properties.put(ProducerConfig.BUFFER_MEMORY_CONFIG, String.valueOf(bufferMemory));
+
+        return properties;
+    }
 }
