@@ -83,7 +83,7 @@ kafkaclient:
     bufferMemory: 33554432
 ```
 
-Now you can inject ```io.bootique.kafka.client.KafkaClientFactory``` and request producers and consumers. Producer 
+Now you can inject producer and consumer factories and create any number of producers and consumers. Producer
 example (also see [this code sample](https://github.com/bootique-examples/bootique-kafka-producer)) :
 ```java
 @Inject
