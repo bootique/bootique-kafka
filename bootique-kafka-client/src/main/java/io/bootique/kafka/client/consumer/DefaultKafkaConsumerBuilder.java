@@ -18,13 +18,20 @@
  */
 package io.bootique.kafka.client.consumer;
 
-import io.bootique.kafka.client.KafkaClientFactory;
+import io.bootique.kafka.BootstrapServers;
+import io.bootique.kafka.BootstrapServersCollection;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.Deserializer;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
 
 /**
  * @since 1.0.RC1
@@ -32,32 +39,41 @@ import java.util.Collection;
 public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K, V> {
 
     private KafkaConsumersManager consumersManager;
-    private KafkaClientFactory clientFactory;
-
-    // TODO: ConsumerConfig is obsolete with the advent of KafkaConsumerFactory. Deprecate it, and change
-    // to a simple map of properties, similar to the StreamsBuilder.
-
-    private ConsumerConfig.Builder<K, V> config;
+    private BootstrapServersCollection clusters;
+    private Map<String, String> defaultProperties;
+    private Map<String, String> perStreamProperties;
+    private Deserializer<K> keyDeserializer;
+    private Deserializer<V> valueDeserializer;
 
     private Collection<String> topics;
-    private String cluster;
+    private String clusterName;
     private Duration pollInterval;
+    private String group;
+    private Boolean autoCommit;
+    private Duration autoCommitInterval;
+    private AutoOffsetReset autoOffsetReset;
+    private Duration sessionTimeout;
 
     public DefaultKafkaConsumerBuilder(
             KafkaConsumersManager consumersManager,
-            KafkaClientFactory clientFactory,
+            BootstrapServersCollection clusters,
+            Map<String, String> defaultProperties,
             Deserializer<K> keyDeserializer,
             Deserializer<V> valueDeserializer) {
 
-        this.consumersManager = consumersManager;
-        this.clientFactory = clientFactory;
-        this.config = ConsumerConfig.config(keyDeserializer, valueDeserializer);
+        this.consumersManager = Objects.requireNonNull(consumersManager);
+        this.clusters = Objects.requireNonNull(clusters);
+        this.defaultProperties = Objects.requireNonNull(defaultProperties);
+        this.keyDeserializer = Objects.requireNonNull(keyDeserializer);
+        this.valueDeserializer = Objects.requireNonNull(valueDeserializer);
+
+        this.perStreamProperties = new HashMap<>();
         this.topics = new ArrayList<>(3);
     }
 
     @Override
     public KafkaConsumerBuilder<K, V> cluster(String clusterName) {
-        this.cluster = clusterName;
+        this.clusterName = clusterName;
         return this;
     }
 
@@ -72,37 +88,37 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
 
     @Override
     public KafkaConsumerBuilder<K, V> property(String key, String value) {
-        config.property(key, value);
+        this.perStreamProperties.put(key, value);
         return this;
     }
 
     @Override
     public KafkaConsumerBuilder<K, V> group(String group) {
-        config.group(group);
+        this.group = group;
         return this;
     }
 
     @Override
-    public KafkaConsumerBuilder<K, V> autoCommitInterval(Duration duration) {
-        config.autoCommitIntervalMs((int) duration.toMillis());
+    public KafkaConsumerBuilder<K, V> autoCommitInterval(Duration autoCommitInterval) {
+        this.autoCommitInterval = autoCommitInterval;
         return this;
     }
 
     @Override
     public KafkaConsumerBuilder<K, V> autoCommit(boolean autoCommit) {
-        config.autoCommit(autoCommit);
+        this.autoCommit = autoCommit;
         return this;
     }
 
     @Override
     public KafkaConsumerBuilder<K, V> autoOffsetRest(AutoOffsetReset autoOffsetReset) {
-        config.autoOffsetReset(autoOffsetReset);
+        this.autoOffsetReset = autoOffsetReset;
         return this;
     }
 
     @Override
-    public KafkaConsumerBuilder<K, V> sessionTimeout(Duration duration) {
-        config.sessionTimeoutMs((int) duration.toMillis());
+    public KafkaConsumerBuilder<K, V> sessionTimeout(Duration sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
         return this;
     }
 
@@ -112,8 +128,7 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
     }
 
     protected Consumer<K, V> createConsumer() {
-        ConsumerConfig<K, V> config = this.config.build();
-        return cluster != null ? clientFactory.createConsumer(cluster, config) : clientFactory.createConsumer(config);
+        return new KafkaConsumer<>(resolveProperties(), keyDeserializer, valueDeserializer);
     }
 
     protected Collection<String> createTopics() {
@@ -127,5 +142,46 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
 
     protected Duration createPollInterval() {
         return pollInterval != null ? pollInterval : Duration.ofMillis(100);
+    }
+
+    protected Properties resolveProperties() {
+
+        Properties combined = new Properties();
+
+        // resolution order is significant... default (common, coming from YAML) -> per-stream generic -> explicit
+        combined.putAll(defaultProperties);
+        combined.putAll(perStreamProperties);
+
+        combined.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, resolveBootstrapServers());
+
+        if (group != null) {
+            combined.put(ConsumerConfig.GROUP_ID_CONFIG, group);
+        }
+
+        if (autoCommit != null) {
+            combined.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(autoCommit));
+        }
+
+        if (autoCommitInterval != null) {
+            combined.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, String.valueOf(autoCommitInterval.toMillis()));
+        }
+
+        if (sessionTimeout != null) {
+            combined.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, String.valueOf(sessionTimeout.toMillis()));
+        }
+
+        if (autoOffsetReset != null) {
+            combined.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset.name());
+        }
+
+        return combined;
+    }
+
+    protected String resolveBootstrapServers() {
+        BootstrapServers cluster = clusterName != null
+                ? clusters.getCluster(clusterName)
+                : clusters.getDefaultCluster();
+
+        return cluster.asString();
     }
 }

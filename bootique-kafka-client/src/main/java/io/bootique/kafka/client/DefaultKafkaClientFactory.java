@@ -20,11 +20,8 @@
 package io.bootique.kafka.client;
 
 import io.bootique.kafka.BootstrapServers;
-import io.bootique.kafka.client.consumer.ConsumerConfig;
-import io.bootique.kafka.client.consumer.ConsumerFactory;
 import io.bootique.kafka.client.producer.ProducerConfig;
 import io.bootique.kafka.client.producer.ProducerFactory;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.producer.Producer;
 
 import java.util.Collection;
@@ -37,33 +34,11 @@ import java.util.Objects;
 public class DefaultKafkaClientFactory implements KafkaClientFactory {
 
     private Map<String, BootstrapServers> clusters;
-    private ConsumerFactory consumerTemplate;
     private ProducerFactory producerTemplate;
 
-    public DefaultKafkaClientFactory(Map<String, BootstrapServers> clusters, ConsumerFactory consumerTemplate, ProducerFactory producerTemplate) {
+    public DefaultKafkaClientFactory(Map<String, BootstrapServers> clusters, ProducerFactory producerTemplate) {
         this.clusters = clusters;
-        this.consumerTemplate = Objects.requireNonNull(consumerTemplate);
         this.producerTemplate = Objects.requireNonNull(producerTemplate);
-    }
-
-    @Override
-    public <K, V> Consumer<K, V> createConsumer(ConsumerConfig<K, V> config) {
-        return createConsumer(getDefaultName(), config);
-    }
-
-    @Override
-    public <K, V> Consumer<K, V> createConsumer(String clusterName, ConsumerConfig<K, V> config) {
-        BootstrapServers servers = config.getBootstrapServers();
-
-        if (servers == null) {
-
-            servers = clusters.get(clusterName);
-            if (servers == null) {
-                throw new IllegalArgumentException("Kafka bootstrap servers are missing for: " + clusterName);
-            }
-        }
-
-        return consumerTemplate.createConsumer(servers, config);
     }
 
     @Override

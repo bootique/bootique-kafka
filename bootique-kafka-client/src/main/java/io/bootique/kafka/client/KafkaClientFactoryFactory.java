@@ -22,7 +22,10 @@ package io.bootique.kafka.client;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.kafka.BootstrapServers;
-import io.bootique.kafka.client.consumer.ConsumerFactory;
+import io.bootique.kafka.BootstrapServersCollection;
+import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
+import io.bootique.kafka.client.consumer.KafkaConsumerFactoryFactory;
+import io.bootique.kafka.client.consumer.KafkaConsumersManager;
 import io.bootique.kafka.client.producer.ProducerFactory;
 
 import java.util.Collections;
@@ -38,15 +41,15 @@ import java.util.Map;
 public class KafkaClientFactoryFactory {
 
     private Map<String, BootstrapServers> clusters;
-    private ConsumerFactory consumer;
+    private KafkaConsumerFactoryFactory consumer;
     private ProducerFactory producer;
 
     public KafkaClientFactoryFactory() {
-        this.consumer = new ConsumerFactory();
+        this.consumer = new KafkaConsumerFactoryFactory();
     }
 
     @BQConfigProperty
-    public void setConsumer(ConsumerFactory consumer) {
+    public void setConsumer(KafkaConsumerFactoryFactory consumer) {
         this.consumer = consumer;
     }
 
@@ -55,21 +58,32 @@ public class KafkaClientFactoryFactory {
         this.producer = producer;
     }
 
-    public Map<String, BootstrapServers> getClusters() {
-        return clusters;
+    public KafkaConsumerFactory createConsumerFactory(KafkaConsumersManager consumersManager) {
+        return nonNullConsumer().createConsumer(consumersManager, getClusters());
+    }
+
+    public DefaultKafkaClientFactory createFactory() {
+        Map<String, BootstrapServers> clusters = this.clusters != null ? this.clusters : Collections.emptyMap();
+        ProducerFactory producerTemplate = this.producer != null ? this.producer : new ProducerFactory();
+        return new DefaultKafkaClientFactory(clusters, producerTemplate);
+    }
+
+    private KafkaConsumerFactoryFactory nonNullConsumer() {
+        return consumer != null ? consumer : new KafkaConsumerFactoryFactory();
+    }
+
+    private BootstrapServersCollection getClusters() {
+
+        if (clusters == null || clusters.isEmpty()) {
+            // should we use "localhost:9092" implicitly, or is it too confusing?
+            throw new IllegalStateException("No 'clusters' configured for KafkaClient");
+        }
+
+        return new BootstrapServersCollection(clusters);
     }
 
     @BQConfigProperty
     public void setClusters(Map<String, BootstrapServers> clusters) {
         this.clusters = clusters;
-    }
-
-    public DefaultKafkaClientFactory createFactory() {
-
-        Map<String, BootstrapServers> clusters = this.clusters != null ? this.clusters : Collections.emptyMap();
-        ConsumerFactory consumerTemplate = this.consumer != null ? this.consumer : new ConsumerFactory();
-        ProducerFactory producerTemplate = this.producer != null ? this.producer : new ProducerFactory();
-
-        return new DefaultKafkaClientFactory(clusters, consumerTemplate, producerTemplate);
     }
 }

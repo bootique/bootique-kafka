@@ -1,0 +1,101 @@
+/*
+ * Licensed to ObjectStyle LLC under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ObjectStyle LLC licenses
+ * this file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package io.bootique.kafka.client.consumer;
+
+import io.bootique.annotation.BQConfig;
+import io.bootique.annotation.BQConfigProperty;
+import io.bootique.kafka.BootstrapServersCollection;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * A YAML-configurable factory for a base consumer configuration. Kafka Consumers are created by merging this
+ * configuration with user-provided properties.
+ *
+ * @since 1.0.RC1
+ */
+@BQConfig
+public class KafkaConsumerFactoryFactory {
+
+    private String defaultGroup;
+    private boolean autoCommit;
+    private AutoOffsetReset autoOffsetReset;
+    private int autoCommitIntervalMs;
+    private int sessionTimeoutMs;
+
+    public KafkaConsumerFactoryFactory() {
+        this.autoOffsetReset = AutoOffsetReset.latest;
+        this.autoCommit = true;
+        this.autoCommitIntervalMs = 1000;
+        this.sessionTimeoutMs = 30000;
+    }
+
+    @BQConfigProperty
+    public void setDefaultGroup(String defaultGroup) {
+        this.defaultGroup = defaultGroup;
+    }
+
+    @BQConfigProperty
+    public void setAutoCommit(boolean autoCommit) {
+        this.autoCommit = autoCommit;
+    }
+
+    @BQConfigProperty
+    public void setAutoCommitIntervalMs(int autoCommitIntervalMs) {
+        this.autoCommitIntervalMs = autoCommitIntervalMs;
+    }
+
+    @BQConfigProperty
+    public void setSessionTimeoutMs(int sessionTimeoutMs) {
+        this.sessionTimeoutMs = sessionTimeoutMs;
+    }
+
+    @BQConfigProperty
+    public void setAutoOffsetReset(AutoOffsetReset autoOffsetReset) {
+        this.autoOffsetReset = autoOffsetReset;
+    }
+
+    public DefaultKafkaConsumerFactory createConsumer(
+            KafkaConsumersManager consumersManager,
+            BootstrapServersCollection clusters) {
+
+        return new DefaultKafkaConsumerFactory(consumersManager, clusters, createDefaultProperties());
+    }
+
+    protected Map<String, String> createDefaultProperties() {
+        Map<String, String> properties = new HashMap<>();
+
+        // Note that below we are converting all values to Strings. Kafka would probably work if we preserve some of them
+        // as ints/longs/etc, but let's honor an implied contract of the Properties class - its values must be Strings.
+
+        if (defaultGroup != null) {
+            properties.put(ConsumerConfig.GROUP_ID_CONFIG, defaultGroup);
+        }
+
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(autoCommit));
+        properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, String.valueOf(autoCommitIntervalMs));
+        properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, String.valueOf(sessionTimeoutMs));
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset.name());
+
+        return properties;
+    }
+}
