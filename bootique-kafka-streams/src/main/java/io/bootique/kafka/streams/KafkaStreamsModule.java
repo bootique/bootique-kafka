@@ -30,7 +30,6 @@ import io.bootique.shutdown.ShutdownManager;
  */
 public class KafkaStreamsModule extends ConfigModule {
 
-
     @Provides
     @Singleton
     KafkaStreamsManager provideStreamsManager(ShutdownManager shutdownManager) {
