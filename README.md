@@ -122,7 +122,6 @@ public void runConsumer() {
         System.out.println(r.topic() + "_" + r.partition() + "_" + r.offset() + ": " + r.value());
     }
 
-    // close if there's nothing else to send
     consumer.close();
 }
 ```
