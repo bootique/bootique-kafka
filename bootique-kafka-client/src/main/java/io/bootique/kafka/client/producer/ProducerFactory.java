@@ -104,6 +104,7 @@ public class ProducerFactory {
 
         Map<String, Object> properties = new HashMap<>();
 
+        // TODO: replace FactoryUtils with consumer and streams style property merging...
         FactoryUtils.setRequiredProperty(properties,
                 BOOTSTRAP_SERVERS_CONFIG,
                 Objects.requireNonNull(bootstrapServers).asString());

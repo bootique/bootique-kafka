@@ -92,7 +92,7 @@ public class ConsumerConfig<K, V> {
     }
 
     /**
-     * @return
+     * @return offset reset strategy
      * @since 1.0.RC1
      */
     public AutoOffsetReset getAutoOffsetReset() {
@@ -105,6 +105,14 @@ public class ConsumerConfig<K, V> {
 
     public BootstrapServers getBootstrapServers() {
         return bootstrapServers;
+    }
+
+    /**
+     * @return named consumer properties
+     * @since 1.0.RC1
+     */
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
     public static class Builder<K, V> {

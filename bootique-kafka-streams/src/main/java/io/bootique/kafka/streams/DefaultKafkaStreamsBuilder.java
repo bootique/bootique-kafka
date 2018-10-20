@@ -107,7 +107,7 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
 
         Properties combined = new Properties();
 
-        // resolution order is significant... default -> per-stream -> explicit
+        // resolution order is significant... default (common, coming from YAML) -> per-stream generic -> explicit
         combined.putAll(defaultProperties);
         combined.putAll(perStreamProperties);
 

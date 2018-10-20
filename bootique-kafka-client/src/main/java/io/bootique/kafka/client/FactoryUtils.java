@@ -24,6 +24,7 @@ import java.util.Map;
 /**
  * @since 0.2
  */
+// TODO: deprecate and replace FactoryUtils with consumer and streams style property merging...
 public class FactoryUtils {
 
     public static void setRequiredProperty(Map<String, Object> map, String key, Object... valueChoices) {

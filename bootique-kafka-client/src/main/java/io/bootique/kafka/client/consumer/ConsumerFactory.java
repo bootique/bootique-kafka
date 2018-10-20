@@ -31,9 +31,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static io.bootique.kafka.client.FactoryUtils.setProperty;
-import static io.bootique.kafka.client.FactoryUtils.setRequiredProperty;
-
 /**
  * A YAML-configurable factory for a base consumer configuration. In runtime Kafka consumer is created by merging this
  * configuration with user-provided {@link ConsumerConfig}.
@@ -98,34 +95,33 @@ public class ConsumerFactory {
 
         Map<String, Object> properties = new HashMap<>();
 
-        setRequiredProperty(properties,
-                BOOTSTRAP_SERVERS_CONFIG,
-                Objects.requireNonNull(bootstrapServers).asString());
+        // resolution order is significant... default (common, coming from YAML) -> per-stream generic -> explicit
+        // "BOOTSTRAP_SERVERS_CONFIG" is passed from the parent, so it is not subject to these rules..
 
-        setRequiredProperty(properties,
-                GROUP_ID_CONFIG,
-                config.getGroup(),
-                defaultGroup);
+        properties.put(BOOTSTRAP_SERVERS_CONFIG, Objects.requireNonNull(bootstrapServers).asString());
 
-        setProperty(properties,
-                ENABLE_AUTO_COMMIT_CONFIG,
-                config.getAutoCommit(),
-                autoCommit);
+        properties.putAll(createDefaultProperties());
+        properties.putAll(config.getProperties());
 
-        setProperty(properties,
-                AUTO_COMMIT_INTERVAL_MS_CONFIG,
-                config.getAutoCommitIntervalMs(),
-                autoCommitIntervalMs);
+        if (config.getGroup() != null) {
+            properties.put(GROUP_ID_CONFIG, config.getGroup());
+        }
 
-        setProperty(properties,
-                SESSION_TIMEOUT_MS_CONFIG,
-                config.getSessionTimeoutMs(),
-                sessionTimeoutMs);
+        if (config.getAutoCommit() != null) {
+            properties.put(ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(config.getAutoCommit()));
+        }
 
-        setProperty(properties,
-                AUTO_OFFSET_RESET_CONFIG,
-                config.getAutoOffsetReset(),
-                autoOffsetReset);
+        if (config.getAutoCommitIntervalMs() != null) {
+            properties.put(AUTO_COMMIT_INTERVAL_MS_CONFIG, String.valueOf(config.getAutoCommitIntervalMs()));
+        }
+
+        if (config.getSessionTimeoutMs() != null) {
+            properties.put(SESSION_TIMEOUT_MS_CONFIG, String.valueOf(config.getSessionTimeoutMs()));
+        }
+
+        if (config.getAutoOffsetReset() != null) {
+            properties.put(AUTO_OFFSET_RESET_CONFIG, config.getAutoOffsetReset().name());
+        }
 
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("Creating consumer bootstrapping with %s, group id: %s.",
@@ -134,5 +130,23 @@ public class ConsumerFactory {
         }
 
         return new KafkaConsumer<>(properties, config.getKeyDeserializer(), config.getValueDeserializer());
+    }
+
+    protected Map<String, String> createDefaultProperties() {
+        Map<String, String> properties = new HashMap<>();
+
+        // Note that below we are converting all values to Strings. Kafka would probably work if we preserve some of them
+        // as ints/longs/etc, but let's honor an implied contract of the Properties class - its values must be Strings.
+
+        if (defaultGroup != null) {
+            properties.put(GROUP_ID_CONFIG, defaultGroup);
+        }
+
+        properties.put(ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(autoCommit));
+        properties.put(AUTO_COMMIT_INTERVAL_MS_CONFIG, String.valueOf(autoCommitIntervalMs));
+        properties.put(SESSION_TIMEOUT_MS_CONFIG, String.valueOf(sessionTimeoutMs));
+        properties.put(AUTO_OFFSET_RESET_CONFIG, autoOffsetReset.name());
+
+        return properties;
     }
 }
