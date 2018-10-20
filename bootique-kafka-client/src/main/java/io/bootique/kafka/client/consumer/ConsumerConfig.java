@@ -40,7 +40,7 @@ public class ConsumerConfig<K, V> {
     private String group;
     private Boolean autoCommit;
     private Integer autoCommitIntervalMs;
-    private OffsetReset autoOffsetReset;
+    private AutoOffsetReset autoOffsetReset;
     private Integer sessionTimeoutMs;
     private BootstrapServers bootstrapServers;
 
@@ -89,7 +89,7 @@ public class ConsumerConfig<K, V> {
      * @return
      * @since 1.0.RC1
      */
-    public OffsetReset getAutoOffsetReset() {
+    public AutoOffsetReset getAutoOffsetReset() {
         return autoOffsetReset;
     }
 
@@ -129,7 +129,7 @@ public class ConsumerConfig<K, V> {
             return this;
         }
 
-        public Builder<K, V> autoOffsetRest(OffsetReset autoOffsetReset) {
+        public Builder<K, V> autoOffsetRest(AutoOffsetReset autoOffsetReset) {
             config.autoOffsetReset = autoOffsetReset;
             return this;
         }

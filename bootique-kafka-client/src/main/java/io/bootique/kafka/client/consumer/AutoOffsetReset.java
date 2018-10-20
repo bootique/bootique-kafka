@@ -21,7 +21,7 @@ package io.bootique.kafka.client.consumer;
 /**
  * @since 1.0.RC1
  */
-public enum OffsetReset {
+public enum AutoOffsetReset {
 
     /**
      * A policy that would automatically reset the offset to the earliest offset

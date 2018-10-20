@@ -54,12 +54,12 @@ public class ConsumerFactory {
 
     private String defaultGroup;
     private boolean autoCommit;
-    private OffsetReset autoOffsetReset;
+    private AutoOffsetReset autoOffsetReset;
     private int autoCommitIntervalMs;
     private int sessionTimeoutMs;
 
     public ConsumerFactory() {
-        this.autoOffsetReset = OffsetReset.latest;
+        this.autoOffsetReset = AutoOffsetReset.latest;
         this.autoCommit = true;
         this.autoCommitIntervalMs = 1000;
         this.sessionTimeoutMs = 30000;
@@ -90,7 +90,7 @@ public class ConsumerFactory {
      * @since 1.0.RC1
      */
     @BQConfigProperty
-    public void setAutoOffsetReset(OffsetReset autoOffsetReset) {
+    public void setAutoOffsetReset(AutoOffsetReset autoOffsetReset) {
         this.autoOffsetReset = autoOffsetReset;
     }
 
