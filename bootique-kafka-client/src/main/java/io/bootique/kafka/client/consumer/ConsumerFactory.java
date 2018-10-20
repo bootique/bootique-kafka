@@ -49,14 +49,17 @@ public class ConsumerFactory {
     private static final String GROUP_ID_CONFIG = org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
     private static final String ENABLE_AUTO_COMMIT_CONFIG = org.apache.kafka.clients.consumer.ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG;
     private static final String AUTO_COMMIT_INTERVAL_MS_CONFIG = org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG;
+    private static final String AUTO_OFFSET_RESET_CONFIG = org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
     private static final String SESSION_TIMEOUT_MS_CONFIG = org.apache.kafka.clients.consumer.ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG;
 
     private String defaultGroup;
     private boolean autoCommit;
+    private OffsetReset autoOffsetReset;
     private int autoCommitIntervalMs;
     private int sessionTimeoutMs;
 
     public ConsumerFactory() {
+        this.autoOffsetReset = OffsetReset.latest;
         this.autoCommit = true;
         this.autoCommitIntervalMs = 1000;
         this.sessionTimeoutMs = 30000;
@@ -80,6 +83,15 @@ public class ConsumerFactory {
     @BQConfigProperty
     public void setSessionTimeoutMs(int sessionTimeoutMs) {
         this.sessionTimeoutMs = sessionTimeoutMs;
+    }
+
+    /**
+     * @param autoOffsetReset
+     * @since 1.0.RC1
+     */
+    @BQConfigProperty
+    public void setAutoOffsetReset(OffsetReset autoOffsetReset) {
+        this.autoOffsetReset = autoOffsetReset;
     }
 
     public <K, V> Consumer<K, V> createConsumer(BootstrapServers bootstrapServers, ConsumerConfig<K, V> config) {
@@ -109,6 +121,11 @@ public class ConsumerFactory {
                 SESSION_TIMEOUT_MS_CONFIG,
                 config.getSessionTimeoutMs(),
                 sessionTimeoutMs);
+
+        setProperty(properties,
+                AUTO_OFFSET_RESET_CONFIG,
+                config.getAutoOffsetReset(),
+                autoOffsetReset);
 
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("Creating consumer bootstrapping with %s, group id: %s.",
