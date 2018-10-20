@@ -84,7 +84,7 @@ public class KafkaConsumerFactoryFactory {
         if (defaultGroup != null) {
             properties.put(ConsumerConfig.GROUP_ID_CONFIG, defaultGroup);
         }
-        
+
         boolean autoCommit = this.autoCommit != null ? this.autoCommit : true;
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(autoCommit));
 
