@@ -31,21 +31,12 @@
     <packaging>jar</packaging>
     <name>bootique-kafka-client: Bootique wrapper for Kafka client</name>
 
-    <properties>
-        <kafka.version>2.0.0</kafka.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>io.bootique.kafka</groupId>
                 <artifactId>bootique-kafka-base</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-                <version>${kafka.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -55,21 +46,6 @@
         <dependency>
             <groupId>io.bootique.kafka</groupId>
             <artifactId>bootique-kafka-base</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.bootique</groupId>
-            <artifactId>bootique</artifactId>
             <scope>compile</scope>
         </dependency>
 

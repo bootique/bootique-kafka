@@ -24,6 +24,7 @@ import java.time.Duration;
 
 public interface KafkaProducerBuilder<K, V> {
 
+    // TODO: wrap in a "runner" like we do for consumer and streams to handle shutdown
     Producer<K, V> create();
 
     KafkaProducerBuilder<K, V> property(String key, String value);

@@ -19,9 +19,8 @@
 
 package io.bootique.kafka.client.producer;
 
-import io.bootique.kafka.BootstrapServers;
 import io.bootique.kafka.BootstrapServersCollection;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import io.bootique.kafka.KafkaClientBuilder;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -30,26 +29,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
 /**
- * @since 0.2
+ * @since 1.0.RC1
  */
-public class DefaultKafkaProducerBuilder<K, V> implements KafkaProducerBuilder<K, V> {
+public class DefaultKafkaProducerBuilder<K, V> extends KafkaClientBuilder<KafkaProducerBuilder<K, V>> implements KafkaProducerBuilder<K, V> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaProducerBuilder.class);
 
-    private BootstrapServersCollection clusters;
     private Serializer<K> keySerializer;
     private Serializer<V> valueSerializer;
 
-    private Map<String, String> defaultProperties;
-    private Map<String, String> builderProperties;
-
-    private String clusterName;
     private String acks;
     private Integer retries;
     private Integer batchSize;
@@ -62,23 +55,10 @@ public class DefaultKafkaProducerBuilder<K, V> implements KafkaProducerBuilder<K
             Serializer<K> keySerializer,
             Serializer<V> valueSerializer) {
 
-        this.clusters = Objects.requireNonNull(clusters);
-        this.defaultProperties = defaultProperties;
+        super(clusters, defaultProperties);
+
         this.keySerializer = Objects.requireNonNull(keySerializer);
         this.valueSerializer = Objects.requireNonNull(valueSerializer);
-        this.builderProperties = new HashMap<>();
-    }
-
-    @Override
-    public KafkaProducerBuilder<K, V> property(String key, String value) {
-        this.builderProperties.put(key, value);
-        return this;
-    }
-
-    @Override
-    public KafkaProducerBuilder<K, V> cluster(String clusterName) {
-        this.clusterName = clusterName;
-        return this;
     }
 
     @Override
@@ -124,15 +104,8 @@ public class DefaultKafkaProducerBuilder<K, V> implements KafkaProducerBuilder<K
         return new KafkaProducer<>(properties, keySerializer, valueSerializer);
     }
 
-    protected Properties resolveProperties() {
-
-        Properties combined = new Properties();
-
-        // resolution order is significant... default (common, coming from YAML) -> per-stream generic -> explicit
-        combined.putAll(defaultProperties);
-        combined.putAll(builderProperties);
-
-        combined.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, resolveBootstrapServers());
+    @Override
+    protected void appendBuilderProperties(Properties combined) {
 
         if (acks != null) {
             combined.put(ProducerConfig.ACKS_CONFIG, acks);
@@ -153,15 +126,5 @@ public class DefaultKafkaProducerBuilder<K, V> implements KafkaProducerBuilder<K
         if (bufferMemory != null) {
             combined.put(ProducerConfig.BUFFER_MEMORY_CONFIG, String.valueOf(bufferMemory));
         }
-
-        return combined;
-    }
-
-    protected String resolveBootstrapServers() {
-        BootstrapServers cluster = clusterName != null
-                ? clusters.getCluster(clusterName)
-                : clusters.getDefaultCluster();
-
-        return cluster.asString();
     }
 }

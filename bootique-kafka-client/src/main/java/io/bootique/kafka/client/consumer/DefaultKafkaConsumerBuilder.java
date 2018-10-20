@@ -18,7 +18,7 @@
  */
 package io.bootique.kafka.client.consumer;
 
-import io.bootique.kafka.BootstrapServers;
+import io.bootique.kafka.KafkaClientBuilder;
 import io.bootique.kafka.BootstrapServersCollection;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -38,19 +37,15 @@ import java.util.Properties;
 /**
  * @since 1.0.RC1
  */
-public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K, V> {
+public class DefaultKafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaConsumerBuilder<K, V>> implements KafkaConsumerBuilder<K, V> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaConsumerBuilder.class);
 
     private KafkaConsumersManager consumersManager;
-    private BootstrapServersCollection clusters;
-    private Map<String, String> defaultProperties;
-    private Map<String, String> builderProperties;
     private Deserializer<K> keyDeserializer;
     private Deserializer<V> valueDeserializer;
 
     private Collection<String> topics;
-    private String clusterName;
     private Duration pollInterval;
     private String group;
     private Boolean autoCommit;
@@ -65,20 +60,13 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
             Deserializer<K> keyDeserializer,
             Deserializer<V> valueDeserializer) {
 
+        super(clusters, defaultProperties);
+
         this.consumersManager = Objects.requireNonNull(consumersManager);
-        this.clusters = Objects.requireNonNull(clusters);
-        this.defaultProperties = Objects.requireNonNull(defaultProperties);
         this.keyDeserializer = Objects.requireNonNull(keyDeserializer);
         this.valueDeserializer = Objects.requireNonNull(valueDeserializer);
 
-        this.builderProperties = new HashMap<>();
         this.topics = new ArrayList<>(3);
-    }
-
-    @Override
-    public KafkaConsumerBuilder<K, V> cluster(String clusterName) {
-        this.clusterName = clusterName;
-        return this;
     }
 
     @Override
@@ -87,12 +75,6 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
             this.topics.add(t);
         }
 
-        return this;
-    }
-
-    @Override
-    public KafkaConsumerBuilder<K, V> property(String key, String value) {
-        this.builderProperties.put(key, value);
         return this;
     }
 
@@ -162,16 +144,9 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
         return pollInterval != null ? pollInterval : Duration.ofMillis(100);
     }
 
-    protected Properties resolveProperties() {
 
-        Properties combined = new Properties();
-
-        // resolution order is significant... default (common, coming from YAML) -> per-stream generic -> explicit
-        combined.putAll(defaultProperties);
-        combined.putAll(builderProperties);
-
-        combined.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, resolveBootstrapServers());
-
+    @Override
+    protected void appendBuilderProperties(Properties combined) {
         if (group != null) {
             combined.put(ConsumerConfig.GROUP_ID_CONFIG, group);
         }
@@ -191,15 +166,5 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
         if (autoOffsetReset != null) {
             combined.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset.name());
         }
-
-        return combined;
-    }
-
-    protected String resolveBootstrapServers() {
-        BootstrapServers cluster = clusterName != null
-                ? clusters.getCluster(clusterName)
-                : clusters.getDefaultCluster();
-
-        return cluster.asString();
     }
 }

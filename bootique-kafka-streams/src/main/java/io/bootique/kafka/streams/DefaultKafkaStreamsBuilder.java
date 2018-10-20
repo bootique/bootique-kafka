@@ -18,14 +18,13 @@
  */
 package io.bootique.kafka.streams;
 
-import io.bootique.kafka.BootstrapServers;
+import io.bootique.kafka.KafkaClientBuilder;
 import io.bootique.kafka.BootstrapServersCollection;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -33,15 +32,11 @@ import java.util.Properties;
 /**
  * @since 1.0.RC1
  */
-public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
+public class DefaultKafkaStreamsBuilder extends KafkaClientBuilder<KafkaStreamsBuilder> implements KafkaStreamsBuilder {
 
     private KafkaStreamsManager streamsManager;
-    private BootstrapServersCollection clusters;
 
     private Topology topology;
-    private Map<String, String> defaultProperties;
-    private Map<String, String> perStreamProperties;
-    private String clusterName;
     private String applicationId;
     private Class<? extends Serde<?>> keySerde;
     private Class<? extends Serde<?>> valueSerde;
@@ -51,27 +46,13 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
             BootstrapServersCollection clusters,
             Map<String, String> defaultProperties) {
 
+        super(clusters, defaultProperties);
         this.streamsManager = Objects.requireNonNull(streamsManager);
-        this.clusters = Objects.requireNonNull(clusters);
-        this.defaultProperties = Objects.requireNonNull(defaultProperties);
-        this.perStreamProperties = new HashMap<>();
     }
 
     @Override
     public KafkaStreamsBuilder topology(Topology topology) {
         this.topology = topology;
-        return this;
-    }
-
-    @Override
-    public KafkaStreamsBuilder property(String key, String value) {
-        this.perStreamProperties.put(key, value);
-        return this;
-    }
-
-    @Override
-    public KafkaStreamsBuilder cluster(String clusterName) {
-        this.clusterName = clusterName;
         return this;
     }
 
@@ -103,16 +84,8 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
         return new KafkaStreams(topology, resolveProperties());
     }
 
-    protected Properties resolveProperties() {
-
-        Properties combined = new Properties();
-
-        // resolution order is significant... default (common, coming from YAML) -> per-stream generic -> explicit
-        combined.putAll(defaultProperties);
-        combined.putAll(perStreamProperties);
-
-        combined.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, resolveBootstrapServers());
-
+    @Override
+    protected void appendBuilderProperties(Properties combined) {
         if (applicationId != null) {
             combined.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
         }
@@ -124,15 +97,5 @@ public class DefaultKafkaStreamsBuilder implements KafkaStreamsBuilder {
         if (valueSerde != null) {
             combined.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, valueSerde.getName());
         }
-
-        return combined;
-    }
-
-    protected String resolveBootstrapServers() {
-        BootstrapServers cluster = clusterName != null
-                ? clusters.getCluster(clusterName)
-                : clusters.getDefaultCluster();
-
-        return cluster.asString();
     }
 }
