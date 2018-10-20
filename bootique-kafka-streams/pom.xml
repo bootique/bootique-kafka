@@ -31,7 +31,6 @@
     <packaging>jar</packaging>
     <name>bootique-kafka-streams: Bootique wrapper for Kafka Streams API</name>
 
-
     <dependencyManagement>
         <dependencies>
             <dependency>
