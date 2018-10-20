@@ -70,13 +70,11 @@ kafkaclient:
   clusters:
     cluster1: 127.0.0.1:9092
     cluster2: host1:9092,host2:9092
-  # Optional consumer configuration template
   consumer:
     autoCommit: true
-    autoCommitIntervalMs: 200
+    autoCommitInterval: "200ms"
     defaultGroup: myappgroup
-    sessionTimeoutMs: 20000
-  # Optional producer configuration template
+    sessionTimeout: "2s"
   producer:
     acks: all # values are "all" or numeric number for min acks
     retries: 1
@@ -89,23 +87,24 @@ Now you can inject ```io.bootique.kafka.client.KafkaClientFactory``` and request
 example (also see [this code sample](https://github.com/bootique-examples/bootique-kafka-producer)) :
 ```java
 @Inject
-KafkaClientFactory factory;
+KafkaProducerFactory factory;
 
 public void runProducer() {
-    
-    // not overriding any defaults here...
-    ProducerConfig<byte[], String> config = ProducerConfig
+
+    Producer<byte[], String> producer = factory
         .charValueConfig()
-        .build();
-    
-    Producer<byte[], String> producer = factory.createProducer("cluster2", config);
+        .charValueProducer()
+        .cluster("cluster2")
+        .create();
+
     producer.send(new ProducerRecord<>("mytopic", "Hi!"));
 }
 ```
+
 Consumer example (also see [this code sample](https://github.com/bootique-examples/bootique-kafka-consumer)) :
 ```java
 @Inject
-KafkaClientFactory factory;
+KafkaConsumerFactory factory;
 
 public void runConsumer() {
     
@@ -115,16 +114,20 @@ public void runConsumer() {
         .group("somegroup")
         .build();
     
-    Consumer<byte[], String> consumer = factory.createConsumer("cluster1", config);
-    consumer.subscribe(Collections.singletonList("mytopic"));
-    while (true) {
-        for (ConsumerRecord<byte[], String> r : consumer.poll(1000)) {
-            System.out.println(r.topic() + "_" + r.partition() + "_" + r.offset() + ": " + r.value());
-        }
+    KafkaConsumerRunner<byte[], String> consumer = factory
+        .charValueConsumer()
+        .cluser("cluster1")
+        .group("somegroup")
+        .topic("mytopic")
+        .pollInterval(Duration.ofSeconds(1))
+        .create();
+
+    for (ConsumerRecord<byte[], String> r : consumer) {
+        System.out.println(r.topic() + "_" + r.partition() + "_" + r.offset() + ": " + r.value());
     }
 }
 ```
 
-## Client Configuration
+## Streams Configuration
 
 TODO

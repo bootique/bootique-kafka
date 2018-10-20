@@ -28,7 +28,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
  */
 public interface KafkaProducerFactory {
 
-    default DefaultKafkaProducerBuilder<byte[], String> charValueConfig() {
+    default DefaultKafkaProducerBuilder<byte[], String> charValueProducer() {
         return producer(new ByteArraySerializer(), new StringSerializer());
     }
 
@@ -36,7 +36,7 @@ public interface KafkaProducerFactory {
         return producer(new ByteArraySerializer(), new ByteArraySerializer());
     }
 
-    default <V> DefaultKafkaProducerBuilder<byte[], V> binaryKeyProoducer(Serializer<V> valueSerializer) {
+    default <V> DefaultKafkaProducerBuilder<byte[], V> binaryKeyProducer(Serializer<V> valueSerializer) {
         return producer(new ByteArraySerializer(), valueSerializer);
     }
 
