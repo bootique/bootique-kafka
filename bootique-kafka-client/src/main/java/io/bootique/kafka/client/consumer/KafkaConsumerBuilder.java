@@ -57,4 +57,6 @@ public interface KafkaConsumerBuilder<K, V> {
     KafkaConsumerBuilder<K, V> autoOffsetRest(AutoOffsetReset autoOffsetReset);
 
     KafkaConsumerBuilder<K, V> sessionTimeout(Duration duration);
+
+    KafkaConsumerBuilder<K, V> pollInterval(Duration pollInterval);
 }

@@ -123,6 +123,12 @@ public class DefaultKafkaConsumerBuilder<K, V> implements KafkaConsumerBuilder<K
     }
 
     @Override
+    public KafkaConsumerBuilder<K, V> pollInterval(Duration pollInterval) {
+        this.pollInterval = pollInterval;
+        return this;
+    }
+
+    @Override
     public KafkaConsumerRunner<K, V> create() {
         return new KafkaConsumerRunner(consumersManager, createConsumer(), createTopics(), createPollInterval());
     }
