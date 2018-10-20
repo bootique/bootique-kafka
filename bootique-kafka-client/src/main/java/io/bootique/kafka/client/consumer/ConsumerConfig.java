@@ -125,11 +125,25 @@ public class ConsumerConfig<K, V> {
             return this;
         }
 
+        /**
+         * Sets a comma-separated list of Kafka bootstrap servers for the consumer. Usually this method is not used,
+         * as the servers are set in configuration under "kafkaclient.clusters" key.
+         *
+         * @param bootstrapServers a comma-separated list of Kafka bootstrap servers. E.g. "localhost:9092".
+         * @return
+         */
         public Builder<K, V> bootstrapServers(String bootstrapServers) {
             config.bootstrapServers = bootstrapServers != null ? new BootstrapServers(bootstrapServers) : null;
             return this;
         }
 
+        /**
+         * Sets a collection of Kafka bootstrap servers for the consumer. Usually this method is not used, as the
+         * servers are set in configuration under "kafkaclient.clusters" key.
+         *
+         * @param bootstrapServers a collection of Kafka bootstrap servers with ports.
+         * @return
+         */
         public Builder<K, V> bootstrapServers(Collection<String> bootstrapServers) {
             config.bootstrapServers = bootstrapServers != null && !bootstrapServers.isEmpty()
                     ? BootstrapServers.create(bootstrapServers)
