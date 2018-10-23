@@ -107,15 +107,24 @@ public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>>
         @Override
         public ConsumerRecord<K, V> next() {
 
-            if (!running) {
-                throw new NoSuchElementException("Can't read more records. The Consumer was stopped.");
-            }
+            checkStopped();
 
             if (!buffer.hasNext()) {
-                buffer = nextBatch();
+                while (!buffer.hasNext()) {
+                    buffer = nextBatch();
+                }
+
+                // check stopped state again if we had to refill the buffer
+                checkStopped();
             }
 
             return buffer.next();
+        }
+
+        protected void checkStopped() {
+            if (!running) {
+                throw new NoSuchElementException("Can't read more records. The Consumer was stopped.");
+            }
         }
 
         protected Iterator<ConsumerRecord<K, V>> nextBatch() {
