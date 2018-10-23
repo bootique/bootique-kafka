@@ -54,7 +54,7 @@ public interface KafkaConsumerBuilder<K, V> {
 
     KafkaConsumerBuilder<K, V> autoCommit(boolean autoCommit);
 
-    KafkaConsumerBuilder<K, V> autoOffsetRest(AutoOffsetReset autoOffsetReset);
+    KafkaConsumerBuilder<K, V> autoOffsetReset(AutoOffsetReset autoOffsetReset);
 
     KafkaConsumerBuilder<K, V> sessionTimeout(Duration duration);
 
