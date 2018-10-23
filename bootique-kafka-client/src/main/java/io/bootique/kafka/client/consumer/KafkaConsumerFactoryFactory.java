@@ -42,6 +42,7 @@ public class KafkaConsumerFactoryFactory {
     private AutoOffsetReset autoOffsetReset;
     private Duration autoCommitInterval;
     private Duration sessionTimeout;
+    private Duration heartbeatInterval;
 
     @BQConfigProperty
     public void setDefaultGroup(String defaultGroup) {
@@ -66,6 +67,11 @@ public class KafkaConsumerFactoryFactory {
     @BQConfigProperty
     public void setAutoOffsetReset(AutoOffsetReset autoOffsetReset) {
         this.autoOffsetReset = autoOffsetReset;
+    }
+
+    @BQConfigProperty
+    public void setHeartbeatInterval(Duration heartbeatInterval) {
+        this.heartbeatInterval = heartbeatInterval;
     }
 
     public DefaultKafkaConsumerFactory createConsumer(
@@ -96,6 +102,9 @@ public class KafkaConsumerFactoryFactory {
 
         AutoOffsetReset autoOffsetReset = this.autoOffsetReset != null ? this.autoOffsetReset : AutoOffsetReset.latest;
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset.name());
+
+        long heartbeatIntervalMs = heartbeatInterval != null ? heartbeatInterval.getDuration().toMillis(): 3000L;
+        properties.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, String.valueOf(heartbeatIntervalMs));
 
         return properties;
     }
