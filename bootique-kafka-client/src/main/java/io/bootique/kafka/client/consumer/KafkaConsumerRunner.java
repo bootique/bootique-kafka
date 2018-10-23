@@ -20,6 +20,7 @@ package io.bootique.kafka.client.consumer;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.errors.InterruptException;
 import org.apache.kafka.common.errors.WakeupException;
 
 import java.time.Duration;
@@ -130,7 +131,7 @@ public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>>
         protected Iterator<ConsumerRecord<K, V>> nextBatch() {
             try {
                 return consumer.poll(pollInterval).iterator();
-            } catch (WakeupException e) {
+            } catch (WakeupException | InterruptException e) {
                 running = false;
                 consumersManager.close(consumer);
                 return null;
