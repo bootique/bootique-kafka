@@ -101,24 +101,28 @@ public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>>
 
         @Override
         public boolean hasNext() {
+
             // this is an infinite iterator, until it is stopped
+            if(!running) {
+                return false;
+            }
+
+            // fetch the next buffer in "hasNext()"... Getting it in "next" will result in a broken iterator state if
+            // the underlying consumer got closed.
+
+            if(!buffer.hasNext()) {
+                while (buffer != null && !buffer.hasNext()) {
+                    buffer = nextBatch();
+                }
+            }
+
+            // we may have been shutdown while processing the loop above, so don't assume "true" here.
             return running;
         }
 
         @Override
         public ConsumerRecord<K, V> next() {
-
             checkStopped();
-
-            if (!buffer.hasNext()) {
-                while (!buffer.hasNext()) {
-                    buffer = nextBatch();
-                }
-
-                // check stopped state again if we had to refill the buffer
-                checkStopped();
-            }
-
             return buffer.next();
         }
 
