@@ -20,6 +20,7 @@ package io.bootique.kafka.client.consumer;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.errors.InterruptException;
 import org.apache.kafka.common.errors.WakeupException;
 
 import java.time.Duration;
@@ -100,28 +101,41 @@ public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>>
 
         @Override
         public boolean hasNext() {
+
             // this is an infinite iterator, until it is stopped
+            if(!running) {
+                return false;
+            }
+
+            // fetch the next buffer in "hasNext()"... Getting it in "next" will result in a broken iterator state if
+            // the underlying consumer got closed.
+
+            if(!buffer.hasNext()) {
+                while (buffer != null && !buffer.hasNext()) {
+                    buffer = nextBatch();
+                }
+            }
+
+            // we may have been shutdown while processing the loop above, so don't assume "true" here.
             return running;
         }
 
         @Override
         public ConsumerRecord<K, V> next() {
+            checkStopped();
+            return buffer.next();
+        }
 
+        protected void checkStopped() {
             if (!running) {
                 throw new NoSuchElementException("Can't read more records. The Consumer was stopped.");
             }
-
-            if (!buffer.hasNext()) {
-                buffer = nextBatch();
-            }
-
-            return buffer.next();
         }
 
         protected Iterator<ConsumerRecord<K, V>> nextBatch() {
             try {
                 return consumer.poll(pollInterval).iterator();
-            } catch (WakeupException e) {
+            } catch (WakeupException | InterruptException e) {
                 running = false;
                 consumersManager.close(consumer);
                 return null;

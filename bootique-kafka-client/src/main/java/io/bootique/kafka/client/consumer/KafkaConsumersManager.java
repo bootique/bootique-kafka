@@ -19,6 +19,7 @@
 package io.bootique.kafka.client.consumer;
 
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.common.errors.InterruptException;
 
 import java.io.Closeable;
 import java.time.Duration;
@@ -64,7 +65,12 @@ public class KafkaConsumersManager implements Closeable {
      * @param consumer a consumer to close.
      */
     public void close(Consumer<?, ?> consumer) {
-        consumer.close(CLOSE_TIMEOUT);
+        try {
+            consumer.close(CLOSE_TIMEOUT);
+        }
+        // these actually happen when we stop the app... Let's ignore
+        catch (InterruptException e) {
+        }
         consumersMap.remove(consumer);
     }
 

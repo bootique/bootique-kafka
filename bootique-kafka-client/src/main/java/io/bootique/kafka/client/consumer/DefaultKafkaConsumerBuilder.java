@@ -97,7 +97,7 @@ public class DefaultKafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaC
     }
 
     @Override
-    public KafkaConsumerBuilder<K, V> autoOffsetRest(AutoOffsetReset autoOffsetReset) {
+    public KafkaConsumerBuilder<K, V> autoOffsetReset(AutoOffsetReset autoOffsetReset) {
         this.autoOffsetReset = autoOffsetReset;
         return this;
     }
