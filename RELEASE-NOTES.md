@@ -5,6 +5,7 @@
 * #18 bootique-kafka-streams: a new module to support Kafka streams
 * #19 Rename the project to "bootique-kafka"
 * #21 "kafkaclient.producer.lingerMs" - rename to "linger" and use Duration type
+* #20 Solution for testing kafka
 * #22 Support for "auto.offset.reset" property for consumers
 * #23 User-friendly consumer interface 
 
