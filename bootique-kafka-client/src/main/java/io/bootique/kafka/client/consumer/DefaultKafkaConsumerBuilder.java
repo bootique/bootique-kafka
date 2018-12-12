@@ -124,7 +124,7 @@ public class DefaultKafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaC
                 properties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG),
                 topics);
 
-        return new KafkaConsumerRunner(consumersManager, createConsumer(properties), createTopics(), createPollInterval());
+        return new KafkaConsumerRunner<>(consumersManager, createConsumer(properties), createTopics(), createPollInterval());
     }
 
     protected Consumer<K, V> createConsumer(Properties properties) {

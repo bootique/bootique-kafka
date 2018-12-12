@@ -1,3 +1,7 @@
+## 1.0.RC2
+
+#26 KafkaConsumersManager seems to never register the consumer. 
+
 ## 1.0.RC1
 
 * #16 Enrich consumer configuration with `heartbeat.interval.ms`

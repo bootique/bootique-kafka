@@ -54,6 +54,7 @@ public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>>
         this.consumer = consumer;
         this.topics = topics;
         this.pollInterval = pollInterval;
+        this.consumersManager.register(consumer);
     }
 
     /**
