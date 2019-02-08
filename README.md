@@ -79,7 +79,7 @@ kafkaclient:
     acks: all # values are "all" or numeric number for min acks
     retries: 1
     batchSize: 16384
-    lingerMs: 1
+    linger: "1ms"
     bufferMemory: 33554432
 ```
 
