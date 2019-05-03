@@ -1,4 +1,4 @@
-## 1.0.RC2
+## 1.0
 
 #26 KafkaConsumersManager seems to never register the consumer. 
 
