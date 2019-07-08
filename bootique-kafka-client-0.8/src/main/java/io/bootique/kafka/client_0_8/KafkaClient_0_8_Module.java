@@ -43,7 +43,7 @@ public class KafkaClient_0_8_Module extends ConfigModule {
     // make factory itself injectable to avoid parsing config twice for producer and consumer
     @Provides
     @Singleton
-    KafkaClient_0_8_Factory provideFactory(ConfigurationFactory configurationFactory) {
-        return configurationFactory.config(KafkaClient_0_8_Factory.class, configPrefix);
+    KafkaClient_0_8_Factory provideFactory(ConfigurationFactory configFactory) {
+        return config(KafkaClient_0_8_Factory.class, configFactory);
     }
 }

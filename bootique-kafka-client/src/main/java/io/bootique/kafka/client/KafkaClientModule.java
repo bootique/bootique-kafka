@@ -50,7 +50,7 @@ public class KafkaClientModule extends ConfigModule {
     @Singleton
     @Provides
     KafkaClientFactoryFactory provideClientFactoryFactory(ConfigurationFactory configFactory) {
-        return configFactory.config(KafkaClientFactoryFactory.class, configPrefix);
+        return config(KafkaClientFactoryFactory.class, configFactory);
     }
 
     @Singleton

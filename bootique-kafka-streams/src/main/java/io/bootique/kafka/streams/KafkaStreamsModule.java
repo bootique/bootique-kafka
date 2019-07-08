@@ -43,6 +43,6 @@ public class KafkaStreamsModule extends ConfigModule {
     @Provides
     @Singleton
     KafkaStreamsFactory provideStreamsFactory(ConfigurationFactory configFactory, KafkaStreamsManager streamsManager) {
-        return configFactory.config(KafkaStreamsFactoryFactory.class, configPrefix).createFactory(streamsManager);
+        return config(KafkaStreamsFactoryFactory.class, configFactory).createFactory(streamsManager);
     }
 }
