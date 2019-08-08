@@ -1,4 +1,8 @@
-## 1.0.RC2
+## 1.1
+
+#27 Update zookeeper in bootique-kafka-client-0.8
+
+## 1.0
 
 #26 KafkaConsumersManager seems to never register the consumer. 
 
