@@ -19,12 +19,11 @@
 
 package io.bootique.kafka.client;
 
-import com.google.inject.Binder;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
 import io.bootique.BQCoreModule;
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.di.Binder;
+import io.bootique.di.Provides;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
 import io.bootique.kafka.client.consumer.KafkaConsumersManager;
 import io.bootique.kafka.client.producer.KafkaProducerFactory;
@@ -33,6 +32,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.util.logging.Level;
+import javax.inject.Singleton;
 
 /**
  * @since 0.2

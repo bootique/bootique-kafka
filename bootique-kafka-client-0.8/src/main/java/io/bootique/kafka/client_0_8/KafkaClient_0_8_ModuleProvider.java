@@ -19,10 +19,9 @@
 
 package io.bootique.kafka.client_0_8;
 
-
-import com.google.inject.Module;
-import io.bootique.BQModule;
+import io.bootique.BQModuleMetadata;
 import io.bootique.BQModuleProvider;
+import io.bootique.di.BQModule;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -31,7 +30,7 @@ import java.util.Map;
 public class KafkaClient_0_8_ModuleProvider implements BQModuleProvider {
 
     @Override
-    public Module module() {
+    public BQModule module() {
         return new KafkaClient_0_8_Module();
     }
 
@@ -43,7 +42,7 @@ public class KafkaClient_0_8_ModuleProvider implements BQModuleProvider {
     }
 
     @Override
-    public BQModule.Builder moduleBuilder() {
+    public BQModuleMetadata.Builder moduleBuilder() {
         return BQModuleProvider.super
                 .moduleBuilder()
                 .description("Provides integration with Apache Kafka client library, v.0.8");

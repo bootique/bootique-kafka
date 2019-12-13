@@ -19,10 +19,11 @@
 
 package io.bootique.kafka.client_0_8;
 
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
+import javax.inject.Singleton;
+
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.di.Provides;
 import io.bootique.kafka.client_0_8.consumer.ConsumerFactory;
 
 public class KafkaClient_0_8_Module extends ConfigModule {
