@@ -2,6 +2,7 @@
 
 * Migrated from Guice to "bootique-di"
 * #28 Remove kafka-client 0.8 
+* #29 Upgrade Kafka client libs from 2.0.0 to 2.4.0
 
 ## 1.1
 
