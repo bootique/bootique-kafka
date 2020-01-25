@@ -1,5 +1,6 @@
 ## 2.0
 
+* Migrated from Guice to "bootique-di"
 * #28 Remove kafka-client 0.8 
 
 ## 1.1
