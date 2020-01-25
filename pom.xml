@@ -42,7 +42,6 @@
     <modules>
         <module>bootique-kafka-base</module>
         <module>bootique-kafka-client</module>
-        <module>bootique-kafka-client-0.8</module>
         <module>bootique-kafka-streams</module>
     </modules>
 

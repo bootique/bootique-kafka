@@ -1,3 +1,7 @@
+## 2.0
+
+* #28 Remove kafka-client 0.8 
+
 ## 1.1
 
 #27 Update zookeeper in bootique-kafka-client-0.8
