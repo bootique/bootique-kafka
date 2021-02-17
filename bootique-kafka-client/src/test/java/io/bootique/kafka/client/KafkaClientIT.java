@@ -34,8 +34,8 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.rnorth.ducttape.unreliables.Unreliables;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.util.Iterator;
@@ -51,14 +51,7 @@ public class KafkaClientIT {
     private static final String TEST_TOPIC = "test_topic";
 
     @ClassRule
-    public static KafkaContainer kafka = new KafkaContainer()
-            .withExternalZookeeper("zookeeper:2181");
-
-    @ClassRule
-    public static GenericContainer zookeeper = new GenericContainer("confluentinc/cp-zookeeper:4.0.0")
-            .withNetwork(kafka.getNetwork())
-            .withNetworkAliases("zookeeper")
-            .withEnv("ZOOKEEPER_CLIENT_PORT", "2181");
+    public static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.5.3"));
 
     @Rule
     public BQTestFactory testFactory = new BQTestFactory();
