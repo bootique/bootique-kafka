@@ -17,7 +17,7 @@
   under the License.
   -->
 
-[![Build Status](https://travis-ci.org/bootique/bootique-kafka.svg)](https://travis-ci.org/bootique/bootique-kafka)
+[![build test deploy 1.x](https://github.com/bootique/bootique-kafka/actions/workflows/maven-1x.yml/badge.svg)](https://github.com/bootique/bootique-kafka/actions/workflows/maven-1x.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.bootique.kafka/bootique-kafka-client.svg?colorB=brightgreen)](https://search.maven.org/artifact/io.bootique.kafka/bootique-kafka-client/)
 
 # bootique-kafka
