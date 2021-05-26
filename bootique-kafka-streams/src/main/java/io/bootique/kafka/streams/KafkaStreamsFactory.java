@@ -24,8 +24,6 @@ import org.apache.kafka.streams.Topology;
 /**
  * An injectable factory of the custom KafkaStreams. Streams are configured via a special builder
  * (see {@link #topology(Topology)} method) and returned wrapped in {@link KafkaStreamsRunner}.
- *
- * @since 1.0.RC1
  */
 public interface KafkaStreamsFactory {
 

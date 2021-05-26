@@ -32,8 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * as well as a collection close operation. Registered with Bootique {@link io.bootique.shutdown.ShutdownManager}. Since
  * explicitly-closed consumers are removed from the manager, we are able to prevent memory leaks if the app starts
  * and stops a lot of consumers.
- *
- * @since 1.0.RC1
  */
 public class KafkaConsumersManager implements Closeable {
 

@@ -23,9 +23,7 @@ import org.apache.kafka.common.serialization.Deserializer;
 
 import java.util.Map;
 
-/**
- * @since 1.0.RC1
- */
+
 public class DefaultKafkaConsumerFactory implements KafkaConsumerFactory {
 
     private KafkaConsumersManager consumersManager;

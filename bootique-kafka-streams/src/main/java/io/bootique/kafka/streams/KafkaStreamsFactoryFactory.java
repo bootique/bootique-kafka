@@ -30,9 +30,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @since 1.0.RC1
- */
+
 @BQConfig
 public class KafkaStreamsFactoryFactory {
 

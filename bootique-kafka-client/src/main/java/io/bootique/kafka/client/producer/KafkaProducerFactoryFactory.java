@@ -28,9 +28,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @since 1.0.RC1
- */
+
 @BQConfig
 public class KafkaProducerFactoryFactory {
 

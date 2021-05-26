@@ -34,8 +34,6 @@ import java.util.stream.StreamSupport;
  * A wrapper for a Kafka {@link org.apache.kafka.clients.consumer.Consumer} that provides an Iterator and Stream APIs
  * to consume data from topics. Behind the scenes manages consumer subscriptions, Kafka polling and Bootique shutdown
  * sequence. Just like the underlying Consumer, this wrapper is <i>single-threaded</i>.
- *
- * @since 1.0.RC1
  */
 public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>> {
 

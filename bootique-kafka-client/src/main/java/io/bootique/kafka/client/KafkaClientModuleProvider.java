@@ -27,9 +27,6 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * @since 0.2
- */
 public class KafkaClientModuleProvider implements BQModuleProvider {
 
     @Override

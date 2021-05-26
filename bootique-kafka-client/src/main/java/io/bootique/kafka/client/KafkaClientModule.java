@@ -31,12 +31,9 @@ import io.bootique.shutdown.ShutdownManager;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
-import java.util.logging.Level;
 import javax.inject.Singleton;
+import java.util.logging.Level;
 
-/**
- * @since 0.2
- */
 public class KafkaClientModule extends ConfigModule {
 
     @Override

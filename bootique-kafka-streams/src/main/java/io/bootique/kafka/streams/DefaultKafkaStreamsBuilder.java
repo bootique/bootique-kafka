@@ -29,9 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
-/**
- * @since 1.0.RC1
- */
+
 public class DefaultKafkaStreamsBuilder extends KafkaClientBuilder<KafkaStreamsBuilder> implements KafkaStreamsBuilder {
 
     private KafkaStreamsManager streamsManager;

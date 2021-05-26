@@ -18,9 +18,7 @@
  */
 package io.bootique.kafka.streams.config;
 
-/**
- * @since 1.0.RC1
- */
+
 public enum ProcessingGuarantee {
 
     at_least_once, exactly_once

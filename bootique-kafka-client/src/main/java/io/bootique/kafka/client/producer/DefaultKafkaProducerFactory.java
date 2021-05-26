@@ -25,9 +25,7 @@ import org.apache.kafka.common.serialization.Serializer;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * @since 1.0.RC1
- */
+
 public class DefaultKafkaProducerFactory implements KafkaProducerFactory {
 
     private BootstrapServersCollection clusters;

@@ -24,9 +24,7 @@ import org.apache.kafka.streams.Topology;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * @since 1.0.RC1
- */
+
 public class DefaultKafkaStreamsFactory implements KafkaStreamsFactory {
 
     private BootstrapServersCollection clusters;

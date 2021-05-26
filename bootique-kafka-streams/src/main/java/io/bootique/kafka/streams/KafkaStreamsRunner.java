@@ -20,9 +20,7 @@ package io.bootique.kafka.streams;
 
 import org.apache.kafka.streams.KafkaStreams;
 
-/**
- * @since 1.0.RC1
- */
+
 public class KafkaStreamsRunner {
 
     private KafkaStreamsManager streamsManager;

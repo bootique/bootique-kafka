@@ -34,8 +34,6 @@ import java.util.Map;
 /**
  * A configuration object that describes a a set of Kafka servers  as well as a producer and consumer templates. Serves
  * as a factory for server producers and consumers.
- *
- * @since 0.2
  */
 @BQConfig
 public class KafkaClientFactoryFactory {
@@ -60,7 +58,6 @@ public class KafkaClientFactoryFactory {
 
     /**
      * @return a new consumer factory.
-     * @since 1.0.RC1
      */
     public KafkaConsumerFactory createConsumerFactory(KafkaConsumersManager consumersManager) {
         return nonNullConsumer().createConsumer(consumersManager, getClusters());
@@ -68,7 +65,6 @@ public class KafkaClientFactoryFactory {
 
     /**
      * @return a new producer factory.
-     * @since 1.0.RC1
      */
     public DefaultKafkaProducerFactory createProducerFactory() {
         return nonNullProducer().createProducer(getClusters());

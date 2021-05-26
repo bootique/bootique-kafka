@@ -22,9 +22,7 @@ package io.bootique.kafka;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * @since 1.0.RC1
- */
+
 public class BootstrapServersCollection {
 
     private Map<String, BootstrapServers> clusters;

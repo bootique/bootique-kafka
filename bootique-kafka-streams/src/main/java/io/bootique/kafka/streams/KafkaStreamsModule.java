@@ -26,9 +26,7 @@ import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Provides;
 import io.bootique.shutdown.ShutdownManager;
 
-/**
- * @since 1.0.RC1
- */
+
 public class KafkaStreamsModule extends ConfigModule {
 
     @Provides

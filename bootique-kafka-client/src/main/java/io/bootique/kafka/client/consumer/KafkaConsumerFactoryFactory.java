@@ -31,8 +31,6 @@ import java.util.Map;
 /**
  * A YAML-configurable factory for a base consumer configuration. Kafka Consumers are created by merging this
  * configuration with user-provided properties.
- *
- * @since 1.0.RC1
  */
 @BQConfig
 public class KafkaConsumerFactoryFactory {

@@ -27,8 +27,6 @@ import java.util.Properties;
 
 /**
  * A common superclass of Producer, Consumer and Stream builders that defines shared configuration patterns.
- *
- * @since 1.0.RC1
  */
 public abstract class KafkaClientBuilder<T> {
 

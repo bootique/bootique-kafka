@@ -28,8 +28,6 @@ import java.util.Objects;
 /**
  * A value object representing a cluster of Kafka bootstrap servers, which is a comma-separated String of server names
  * with ports.
- *
- * @since 0.2
  */
 @BQConfig
 public class BootstrapServers {

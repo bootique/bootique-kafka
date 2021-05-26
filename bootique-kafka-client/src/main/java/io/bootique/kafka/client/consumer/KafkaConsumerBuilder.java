@@ -20,9 +20,7 @@ package io.bootique.kafka.client.consumer;
 
 import java.time.Duration;
 
-/**
- * @since 1.0.RC1
- */
+
 public interface KafkaConsumerBuilder<K, V> {
 
     KafkaConsumerRunner<K, V> create();

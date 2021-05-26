@@ -32,8 +32,6 @@ import org.apache.kafka.streams.Topology;
  * <li>Configs passed to the {@link #property(String, String)} method</li>
  * <li>Configs set via "named" builder methods like {@link #applicationId(String)}, etc.</li>
  * </ul>
- *
- * @since 1.0.RC1
  */
 public interface KafkaStreamsBuilder {
 

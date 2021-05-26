@@ -34,9 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
-/**
- * @since 1.0.RC1
- */
+
 public class DefaultKafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaConsumerBuilder<K, V>> implements KafkaConsumerBuilder<K, V> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaConsumerBuilder.class);

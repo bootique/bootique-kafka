@@ -23,9 +23,7 @@ import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-/**
- * @since 1.0.RC1
- */
+
 public interface KafkaProducerFactory {
 
     default DefaultKafkaProducerBuilder<byte[], String> charValueProducer() {

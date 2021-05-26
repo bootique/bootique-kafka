@@ -22,9 +22,7 @@ import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-/**
- * @since 1.0.RC1
- */
+
 public interface KafkaConsumerFactory {
 
     default KafkaConsumerBuilder<byte[], byte[]> binaryConsumer() {

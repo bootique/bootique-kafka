@@ -33,9 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
-/**
- * @since 1.0.RC1
- */
+
 public class DefaultKafkaProducerBuilder<K, V> extends KafkaClientBuilder<KafkaProducerBuilder<K, V>> implements KafkaProducerBuilder<K, V> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaProducerBuilder.class);
