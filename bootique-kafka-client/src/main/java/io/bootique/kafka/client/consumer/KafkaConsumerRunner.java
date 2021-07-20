@@ -22,6 +22,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.errors.InterruptException;
 import org.apache.kafka.common.errors.WakeupException;
+import org.apache.kafka.common.serialization.Deserializer;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -37,7 +38,7 @@ import java.util.stream.StreamSupport;
  *
  * <p>WARNING: This object is rather limited and will only work properly in the offset auto-commit mode. E.g. it is
  * not suitable for "at least once" consumption. Consider using Kafka <code>Consumer</code> instead, that can be
- * obtained via {@link KafkaConsumerBuilder#createConsumer()}</p>
+ * obtained via {@link KafkaConsumerFactory#consumer(Deserializer, Deserializer)} ()}</p>
  */
 public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>> {
 
