@@ -19,53 +19,51 @@
 
 package io.bootique.kafka.client;
 
+import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
+import io.bootique.Bootique;
+import io.bootique.junit5.BQApp;
+import io.bootique.junit5.BQTest;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
 import io.bootique.kafka.client.consumer.KafkaConsumerRunner;
 import io.bootique.kafka.client.producer.KafkaProducerFactory;
-import io.bootique.test.junit.BQTestFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
+@Testcontainers
+@BQTest
 public class KafkaClientIT {
 
     private static final String TEST_CLUSTER = "test_cluster";
     private static final String TEST_TOPIC = "test_topic";
 
-    @ClassRule
-    public static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.5.3"));
+    @Container
+    final static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.5.3"));
 
-    @Rule
-    public BQTestFactory testFactory = new BQTestFactory();
-
-    private BQRuntime runtime;
-
-    @Before
-    public void before() {
-        runtime  = testFactory
-                .app("--config=classpath:config.yml")
-                .property("bq.kafkaclient.clusters." + TEST_CLUSTER, kafka.getBootstrapServers())
-                .module(KafkaClientModule.class)
-                .createRuntime();
-    }
+    // TODO: have to start the app in the instance scope, to ensure Kafka container in the static scope was started
+    //   How do we ensure Kafka startup when the app is in the static context?
+    @BQApp(skipRun = true)
+    final BQRuntime runtime = Bootique
+            .app("--config=classpath:config.yml")
+            .modules(b -> BQCoreModule.extend(b).setProperty("bq.kafkaclient.clusters." + TEST_CLUSTER, kafka.getBootstrapServers()))
+            .module(KafkaClientModule.class)
+            .createRuntime();
 
     @Test
     public void testKafka() throws Exception {
