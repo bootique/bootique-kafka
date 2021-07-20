@@ -123,6 +123,7 @@ public void runConsumer() {
             for (ConsumerRecord<byte[], String> r : data) {
                 System.out.println(r.topic() + "_" + r.offset() + ": " + r.value());
             }
+            consumer.commitSync();
         }
         catch(WakeupException e) {
             break;
