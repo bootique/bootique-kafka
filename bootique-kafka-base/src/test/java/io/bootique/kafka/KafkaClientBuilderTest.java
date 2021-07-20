@@ -19,14 +19,15 @@
 package io.bootique.kafka;
 
 import org.apache.kafka.clients.CommonClientConfigs;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class KafkaClientBuilderTest {
 
@@ -68,7 +69,7 @@ public class KafkaClientBuilderTest {
         assertEquals("example.org:5679", resolved.getProperty(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testResolveProperties_Clusters_NoDefault() {
 
         Map<String, BootstrapServers> clustersMap = new HashMap<>();
@@ -83,7 +84,7 @@ public class KafkaClientBuilderTest {
                 Collections.emptyMap()
         );
 
-        builder.resolveProperties();
+        assertThrows(IllegalStateException.class, () -> builder.resolveProperties());
     }
 
     @Test
