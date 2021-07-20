@@ -48,6 +48,13 @@ public class KafkaConsumersManager implements Closeable {
     }
 
     /**
+     * @since 3.0.M1
+     */
+    public void unregister(Consumer<?, ?> consumer) {
+        consumersMap.remove(consumer);
+    }
+
+    /**
      * Wakes up the consumer to break out of polling Kafka. Expecting that "close" will be called when the
      * WakeupException (caused by attempt to poll after the wakeup), is caught inside KafkaConsumerRunner.
      *

@@ -27,7 +27,9 @@ import io.bootique.junit5.BQTest;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
 import io.bootique.kafka.client.consumer.KafkaConsumerRunner;
 import io.bootique.kafka.client.producer.KafkaProducerFactory;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -42,6 +44,7 @@ import org.testcontainers.utility.DockerImageName;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,7 +54,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class KafkaClientIT {
 
     private static final String TEST_CLUSTER = "test_cluster";
-    private static final String TEST_TOPIC = "test_topic";
 
     @Container
     final static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.5.3"));
@@ -59,24 +61,111 @@ public class KafkaClientIT {
     // TODO: have to start the app in the instance scope, to ensure Kafka container in the static scope was started
     //   How do we ensure Kafka startup when the app is in the static context?
     @BQApp(skipRun = true)
-    final BQRuntime runtime = Bootique
+    final BQRuntime app = Bootique
             .app("--config=classpath:config.yml")
             .modules(b -> BQCoreModule.extend(b).setProperty("bq.kafkaclient.clusters." + TEST_CLUSTER, kafka.getBootstrapServers()))
             .module(KafkaClientModule.class)
             .createRuntime();
 
     @Test
-    public void testKafka() throws Exception {
-        Producer<String, String> producer = runtime.getInstance(KafkaProducerFactory.class)
+    public void testConsumer_AtLeastOnce_Delivery() throws Exception {
+        Producer<String, String> producer = app.getInstance(KafkaProducerFactory.class)
                 .producer(new StringSerializer(), new StringSerializer())
                 .cluster(TEST_CLUSTER)
                 .create();
-        producer.send(new ProducerRecord<>(TEST_TOPIC, "bootique", "kafka")).get();
 
-        KafkaConsumerRunner<String, String> consumer = runtime.getInstance(KafkaConsumerFactory.class)
+        Supplier<Consumer<String, String>> consumerMaker = () -> app.getInstance(KafkaConsumerFactory.class)
                 .consumer(new StringDeserializer(), new StringDeserializer())
+                // must disable auto-commit, as we'll be committing manually
+                .autoCommit(false)
                 .cluster(TEST_CLUSTER)
-                .topics(TEST_TOPIC)
+                .topics("topic1")
+                .group("group1")
+                .create();
+
+        Consumer<String, String> c1 = consumerMaker.get();
+        try {
+            producer.send(new ProducerRecord<>("topic1", "k1", "v1")).get();
+            Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> {
+
+                ConsumerRecords<String, String> rs = c1.poll(Duration.ofSeconds(1));
+                assertEquals(1, rs.count());
+                ConsumerRecord<String, String> r1 = rs.iterator().next();
+                assertEquals("k1", r1.key());
+                assertEquals("v1", r1.value());
+
+                // no commit... the record above will be seen again by future consumers
+
+                return true;
+            });
+        } finally {
+            c1.close();
+        }
+
+        Consumer<String, String> c2 = consumerMaker.get();
+        try {
+
+            producer.send(new ProducerRecord<>("topic1", "k2", "v2")).get();
+
+            Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> {
+
+                ConsumerRecords<String, String> rs = c2.poll(Duration.ofSeconds(1));
+
+                assertEquals(2, rs.count());
+                Iterator<ConsumerRecord<String, String>> it = rs.iterator();
+                ConsumerRecord<String, String> r1 = it.next();
+                assertEquals("k1", r1.key());
+                assertEquals("v1", r1.value());
+
+                ConsumerRecord<String, String> r2 = it.next();
+                assertEquals("k2", r2.key());
+                assertEquals("v2", r2.value());
+
+                // commit... the records above should not be seen by future consumers
+                c2.commitSync();
+
+                return true;
+            });
+        } finally {
+            c2.close();
+        }
+
+        Consumer<String, String> c3 = consumerMaker.get();
+        try {
+
+            producer.send(new ProducerRecord<>("topic1", "k3", "v3")).get();
+
+            Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> {
+
+                ConsumerRecords<String, String> rs = c3.poll(Duration.ofSeconds(1));
+                assertEquals(1, rs.count());
+                Iterator<ConsumerRecord<String, String>> it = rs.iterator();
+                ConsumerRecord<String, String> r3 = it.next();
+                assertEquals("k3", r3.key());
+                assertEquals("v3", r3.value());
+
+                c3.commitSync();
+
+                return true;
+            });
+        } finally {
+            c3.close();
+        }
+    }
+
+    @Test
+    public void testConsumerRunner() throws Exception {
+        Producer<String, String> producer = app.getInstance(KafkaProducerFactory.class)
+                .producer(new StringSerializer(), new StringSerializer())
+                .cluster(TEST_CLUSTER)
+                .create();
+        producer.send(new ProducerRecord<>("topic2", "bootique", "kafka")).get();
+
+        KafkaConsumerRunner<String, String> consumer = app.getInstance(KafkaConsumerFactory.class)
+                .consumerRunner(new StringDeserializer(), new StringDeserializer())
+                .cluster(TEST_CLUSTER)
+                .group("group2")
+                .topics("topic2")
                 .pollInterval(Duration.ofSeconds(1))
                 .create();
         try {

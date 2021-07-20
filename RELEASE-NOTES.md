@@ -1,3 +1,7 @@
+## 3.0.M1
+
+* #30 Kafka own Consumer as a more capbale alternative of KafkaConsumerRunner
+
 ## 2.0.M1
 
 * Migrated from Guice to "bootique-di"

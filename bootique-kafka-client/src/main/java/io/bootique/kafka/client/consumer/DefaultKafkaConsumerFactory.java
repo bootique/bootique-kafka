@@ -23,7 +23,6 @@ import org.apache.kafka.common.serialization.Deserializer;
 
 import java.util.Map;
 
-
 public class DefaultKafkaConsumerFactory implements KafkaConsumerFactory {
 
     private KafkaConsumersManager consumersManager;
@@ -43,6 +42,16 @@ public class DefaultKafkaConsumerFactory implements KafkaConsumerFactory {
     @Override
     public <K, V> KafkaConsumerBuilder<K, V> consumer(Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer) {
         return new DefaultKafkaConsumerBuilder<>(
+                consumersManager,
+                clusters,
+                properties,
+                keyDeserializer,
+                valueDeserializer);
+    }
+
+    @Override
+    public <K, V> KafkaConsumerRunnerBuilder<K, V> consumerRunner(Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer) {
+        return new DefaultKafkaConsumerRunnerBuilder<>(
                 consumersManager,
                 clusters,
                 properties,

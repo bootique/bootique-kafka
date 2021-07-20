@@ -34,6 +34,10 @@ import java.util.stream.StreamSupport;
  * A wrapper for a Kafka {@link org.apache.kafka.clients.consumer.Consumer} that provides an Iterator and Stream APIs
  * to consume data from topics. Behind the scenes manages consumer subscriptions, Kafka polling and Bootique shutdown
  * sequence. Just like the underlying Consumer, this wrapper is <i>single-threaded</i>.
+ *
+ * <p>WARNING: This object is rather limited and will only work properly in the offset auto-commit mode. E.g. it is
+ * not suitable for "at least once" consumption. Consider using Kafka <code>Consumer</code> instead, that can be
+ * obtained via {@link KafkaConsumerBuilder#createConsumer()}</p>
  */
 public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>> {
 
@@ -89,8 +93,6 @@ public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>>
 
     protected class ConsumeIterator implements Iterator<ConsumerRecord<K, V>> {
 
-        // TODO: buffering ConsumerRecords may lead to lost data if the app crashes or is stopped after the underlying
-        //  consumer commits the offset, but before the iterator is fully read.
         private Iterator<ConsumerRecord<K, V>> buffer;
         private boolean running;
 
@@ -104,16 +106,17 @@ public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>>
         public boolean hasNext() {
 
             // this is an infinite iterator, until it is stopped
-            if(!running) {
+            if (!running) {
                 return false;
             }
 
             // fetch the next buffer in "hasNext()"... Getting it in "next" will result in a broken iterator state if
             // the underlying consumer got closed.
 
-            if(!buffer.hasNext()) {
+            if (!buffer.hasNext()) {
                 while (buffer != null && !buffer.hasNext()) {
-                    // TODO: potential data loss. See the TODO above
+                    // Note: this will cause data loss, as we are in auto-commit mode. So this is not suitable for
+                    // "at least once" consumption mode, as mentioned in the Javadocs above
                     buffer = nextBatch();
                 }
             }

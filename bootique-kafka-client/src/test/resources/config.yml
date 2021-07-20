@@ -16,7 +16,6 @@
 kafkaclient:
   # Optional consumer configuration template
   consumer:
-    defaultGroup: tc-dasd
     autoCommit: true
     autoOffsetReset: earliest
     autoCommitInterval: 200 ms

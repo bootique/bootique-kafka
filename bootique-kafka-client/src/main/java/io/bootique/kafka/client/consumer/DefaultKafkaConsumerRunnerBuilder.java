@@ -18,8 +18,8 @@
  */
 package io.bootique.kafka.client.consumer;
 
-import io.bootique.kafka.KafkaClientBuilder;
 import io.bootique.kafka.BootstrapServersCollection;
+import io.bootique.kafka.KafkaClientBuilder;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -30,25 +30,29 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.util.*;
 
+/**
+ * @since 3.0.M1
+ */
+// TODO: is this useful at all? Should we deprecate the Runner?
+public class DefaultKafkaConsumerRunnerBuilder<K, V>
+        extends KafkaClientBuilder<KafkaConsumerRunnerBuilder<K, V>>
+        implements KafkaConsumerRunnerBuilder<K, V> {
 
-public class DefaultKafkaConsumerBuilder<K, V>
-        extends KafkaClientBuilder<KafkaConsumerBuilder<K, V>>
-        implements KafkaConsumerBuilder<K, V> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaConsumerBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaConsumerRunnerBuilder.class);
 
     private final KafkaConsumersManager consumersManager;
     private final Deserializer<K> keyDeserializer;
     private final Deserializer<V> valueDeserializer;
 
     private final Collection<String> topics;
+    private Duration pollInterval;
     private String group;
     private Boolean autoCommit;
     private Duration autoCommitInterval;
     private AutoOffsetReset autoOffsetReset;
     private Duration sessionTimeout;
 
-    public DefaultKafkaConsumerBuilder(
+    public DefaultKafkaConsumerRunnerBuilder(
             KafkaConsumersManager consumersManager,
             BootstrapServersCollection clusters,
             Map<String, String> defaultProperties,
@@ -65,54 +69,66 @@ public class DefaultKafkaConsumerBuilder<K, V>
     }
 
     @Override
-    public KafkaConsumerBuilder<K, V> topics(String... topics) {
+    public KafkaConsumerRunnerBuilder<K, V> topics(String... topics) {
         Collections.addAll(this.topics, topics);
+
         return this;
     }
 
     @Override
-    public KafkaConsumerBuilder<K, V> group(String group) {
+    public KafkaConsumerRunnerBuilder<K, V> group(String group) {
         this.group = group;
         return this;
     }
 
     @Override
-    public KafkaConsumerBuilder<K, V> autoCommitInterval(Duration autoCommitInterval) {
+    public KafkaConsumerRunnerBuilder<K, V> autoCommitInterval(Duration autoCommitInterval) {
         this.autoCommitInterval = autoCommitInterval;
         return this;
     }
 
     @Override
-    public KafkaConsumerBuilder<K, V> autoCommit(boolean autoCommit) {
+    public KafkaConsumerRunnerBuilder<K, V> autoCommit(boolean autoCommit) {
         this.autoCommit = autoCommit;
         return this;
     }
 
     @Override
-    public KafkaConsumerBuilder<K, V> autoOffsetReset(AutoOffsetReset autoOffsetReset) {
+    public KafkaConsumerRunnerBuilder<K, V> autoOffsetReset(AutoOffsetReset autoOffsetReset) {
         this.autoOffsetReset = autoOffsetReset;
         return this;
     }
 
     @Override
-    public KafkaConsumerBuilder<K, V> sessionTimeout(Duration sessionTimeout) {
+    public KafkaConsumerRunnerBuilder<K, V> sessionTimeout(Duration sessionTimeout) {
         this.sessionTimeout = sessionTimeout;
         return this;
     }
 
     @Override
-    public Consumer<K, V> create() {
+    public KafkaConsumerRunnerBuilder<K, V> pollInterval(Duration pollInterval) {
+        this.pollInterval = pollInterval;
+        return this;
+    }
+
+    @Override
+    public KafkaConsumerRunner<K, V> create() {
 
         Properties properties = resolveProperties();
+
+        // sanity check - KafkaConsumerRunner doesn't really work without auto-commit
+        // see https://github.com/bootique/bootique-kafka/issues/30
+        if (!"true".equals(properties.getProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG))) {
+            throw new IllegalStateException("'KafkaConsumerRunner' can only be used when 'kafka.consumer.autoCommit' is 'true'");
+        }
+
         Collection<String> topics = createTopics();
 
         LOGGER.info("Creating consumer. Cluster: {}, topics: {}.",
                 properties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG),
                 topics);
 
-        Consumer<K, V> consumer = new ManagedConsumer<>(consumersManager, createConsumer(properties));
-        consumer.subscribe(topics);
-        return consumer;
+        return new KafkaConsumerRunner<>(consumersManager, createConsumer(properties), createTopics(), createPollInterval());
     }
 
     protected Consumer<K, V> createConsumer(Properties properties) {
@@ -127,6 +143,11 @@ public class DefaultKafkaConsumerBuilder<K, V>
 
         return topics;
     }
+
+    protected Duration createPollInterval() {
+        return pollInterval != null ? pollInterval : Duration.ofMillis(100);
+    }
+
 
     @Override
     protected void appendBuilderProperties(Properties combined) {

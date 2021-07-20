@@ -18,19 +18,15 @@
  */
 package io.bootique.kafka.client.consumer;
 
-import org.apache.kafka.clients.consumer.Consumer;
-
 import java.time.Duration;
 
+/**
+ * @since 3.0.M1
+ */
+// TODO: is this useful at all? Should we deprecate the Runner?
+public interface KafkaConsumerRunnerBuilder<K, V> {
 
-public interface KafkaConsumerBuilder<K, V> {
-
-    /**
-     * Creates preconfigured consumer that is subscribed to the builder topics.
-     *
-     * @since 3.0.M1
-     */
-    Consumer<K, V> create();
+    KafkaConsumerRunner<K, V> create();
 
     /**
      * Sets a custom property for the underlying Consumer object being built. This property will override any defaults,
@@ -40,7 +36,7 @@ public interface KafkaConsumerBuilder<K, V> {
      * @param value
      * @return this builder instance
      */
-    KafkaConsumerBuilder<K, V> property(String key, String value);
+    KafkaConsumerRunnerBuilder<K, V> property(String key, String value);
 
     /**
      * Sets a symbolic Kafka cluster name to use. The cluster under this name should have been configured in the
@@ -49,17 +45,19 @@ public interface KafkaConsumerBuilder<K, V> {
      * @param clusterName symbolic name of the cluster that must reference a known cluster in config.
      * @return this builder instance
      */
-    KafkaConsumerBuilder<K, V> cluster(String clusterName);
+    KafkaConsumerRunnerBuilder<K, V> cluster(String clusterName);
 
-    KafkaConsumerBuilder<K, V> topics(String... topics);
+    KafkaConsumerRunnerBuilder<K, V> topics(String... topics);
 
-    KafkaConsumerBuilder<K, V> group(String group);
+    KafkaConsumerRunnerBuilder<K, V> group(String group);
 
-    KafkaConsumerBuilder<K, V> autoCommitInterval(Duration duration);
+    KafkaConsumerRunnerBuilder<K, V> autoCommitInterval(Duration duration);
 
-    KafkaConsumerBuilder<K, V> autoCommit(boolean autoCommit);
+    KafkaConsumerRunnerBuilder<K, V> autoCommit(boolean autoCommit);
 
-    KafkaConsumerBuilder<K, V> autoOffsetReset(AutoOffsetReset autoOffsetReset);
+    KafkaConsumerRunnerBuilder<K, V> autoOffsetReset(AutoOffsetReset autoOffsetReset);
 
-    KafkaConsumerBuilder<K, V> sessionTimeout(Duration duration);
+    KafkaConsumerRunnerBuilder<K, V> sessionTimeout(Duration duration);
+
+    KafkaConsumerRunnerBuilder<K, V> pollInterval(Duration pollInterval);
 }

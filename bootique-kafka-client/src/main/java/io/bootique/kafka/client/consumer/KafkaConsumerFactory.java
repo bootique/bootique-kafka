@@ -37,6 +37,14 @@ public interface KafkaConsumerFactory {
         return consumer(new ByteArrayDeserializer(), valueDeserializer);
     }
 
+    /**
+     * @since 3.0.M1
+     */
     <K, V> KafkaConsumerBuilder<K, V> consumer(Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer);
 
+    /**
+     * @since 3.0.M1
+     */
+    // TODO: is the runner still valuable, or should we deprecate it?
+    <K, V> KafkaConsumerRunnerBuilder<K, V> consumerRunner(Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer);
 }
