@@ -42,10 +42,10 @@ import java.util.stream.StreamSupport;
  */
 public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>> {
 
-    private KafkaConsumersManager consumersManager;
-    private Consumer<K, V> consumer;
-    private Collection<String> topics;
-    private Duration pollInterval;
+    private final KafkaConsumersManager consumersManager;
+    private final Consumer<K, V> consumer;
+    private final Collection<String> topics;
+    private final Duration pollInterval;
 
     public KafkaConsumerRunner(
             KafkaConsumersManager consumersManager,
