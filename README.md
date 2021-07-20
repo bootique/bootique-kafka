@@ -118,9 +118,14 @@ public void runConsumer() {
         .create();
 
     while(true) {
-        ConsumerRecords<byte[], String> data = consumer.poll(Duration.ofSeconds(1));
-        for (ConsumerRecord<byte[], String> r : data) {
-            System.out.println(r.topic() + "_" + r.partition() + "_" + r.offset() + ": " + r.value());
+        try {
+            ConsumerRecords<byte[], String> data = consumer.poll(Duration.ofSeconds(1));
+            for (ConsumerRecord<byte[], String> r : data) {
+                System.out.println(r.topic() + "_" + r.offset() + ": " + r.value());
+            }
+        }
+        catch(WakeupException e) {
+            break;
         }
     }
 
