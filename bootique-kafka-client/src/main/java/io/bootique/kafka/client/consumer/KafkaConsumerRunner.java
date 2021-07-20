@@ -89,6 +89,8 @@ public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>>
 
     protected class ConsumeIterator implements Iterator<ConsumerRecord<K, V>> {
 
+        // TODO: buffering ConsumerRecords may lead to lost data if the app crashes or is stopped after the underlying
+        //  consumer commits the offset, but before the iterator is fully read.
         private Iterator<ConsumerRecord<K, V>> buffer;
         private boolean running;
 
@@ -111,6 +113,7 @@ public class KafkaConsumerRunner<K, V> implements Iterable<ConsumerRecord<K, V>>
 
             if(!buffer.hasNext()) {
                 while (buffer != null && !buffer.hasNext()) {
+                    // TODO: potential data loss. See the TODO above
                     buffer = nextBatch();
                 }
             }
