@@ -36,7 +36,7 @@ Include the BOMs and then ```bootique-kafka-client```:
         <dependency>
             <groupId>io.bootique.bom</groupId>
             <artifactId>bootique-bom</artifactId>
-            <version>2.0.B1</version>
+            <version>3.0.M1-SNAPSHOT</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -110,16 +110,18 @@ KafkaConsumerFactory factory;
 
 public void runConsumer() {
     
-    KafkaConsumerRunner<byte[], String> consumer = factory
+    Consumer<byte[], String> consumer = factory
         .charValueConsumer()
         .cluster("cluster1")
         .group("somegroup")
         .topic("mytopic")
-        .pollInterval(Duration.ofSeconds(1))
         .create();
 
-    for (ConsumerRecord<byte[], String> r : consumer) {
-        System.out.println(r.topic() + "_" + r.partition() + "_" + r.offset() + ": " + r.value());
+    while(true) {
+        ConsumerRecords<byte[], String> data = consumer.poll(Duration.ofSeconds(1));
+        for (ConsumerRecord<byte[], String> r : data) {
+            System.out.println(r.topic() + "_" + r.partition() + "_" + r.offset() + ": " + r.value());
+        }
     }
 
     consumer.close();
