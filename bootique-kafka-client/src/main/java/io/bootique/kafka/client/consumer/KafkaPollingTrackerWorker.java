@@ -18,7 +18,6 @@
  */
 package io.bootique.kafka.client.consumer;
 
-import io.bootique.kafka.client.KafkaResourceManager;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.InterruptException;
@@ -32,29 +31,25 @@ import java.util.Objects;
 /**
  * @since 3.0.M1
  */
-class KafkaPollingTrackerWorker<K, V> implements AutoCloseable {
+class KafkaPollingTrackerWorker<K, V> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPollingTrackerWorker.class);
 
     private final Consumer<K, V> consumer;
     private final KafkaConsumerCallback<K, V> callback;
     private final Duration pollInterval;
-    private final KafkaResourceManager resourceManager;
     private final Runnable runAfterClose;
 
     protected KafkaPollingTrackerWorker(
-            KafkaResourceManager resourceManager,
             Runnable runAfterClose,
             Consumer<K, V> consumer,
             KafkaConsumerCallback<K, V> callback,
             Duration pollInterval) {
 
-        this.resourceManager = Objects.requireNonNull(resourceManager);
         this.consumer = Objects.requireNonNull(consumer);
         this.callback = Objects.requireNonNull(callback);
         this.pollInterval = Objects.requireNonNull(pollInterval);
         this.runAfterClose = Objects.requireNonNull(runAfterClose);
-        resourceManager.register(this);
     }
 
     public void poll() {
@@ -71,19 +66,10 @@ class KafkaPollingTrackerWorker<K, V> implements AutoCloseable {
         }
     }
 
-    @Override
-    public void close() {
-        close(Duration.ZERO);
-    }
-
     public void close(Duration timeout) {
-        // allowing consumer to finish processing of the current batch
-        LOGGER.info("Stopping consumer {}", System.identityHashCode(consumer));
 
+        LOGGER.info("Stopping consumer {}", System.identityHashCode(consumer));
         consumer.wakeup();
-        resourceManager.unregister(this);
-
-        LOGGER.info("Stopping consumer {}", System.identityHashCode(consumer));
 
         try {
             // closing with non-zero timeout gives Kafka a chance to commit offsets, etc.

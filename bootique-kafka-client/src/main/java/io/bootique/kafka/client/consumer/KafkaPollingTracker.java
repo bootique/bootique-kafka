@@ -22,6 +22,7 @@ import io.bootique.kafka.client.KafkaResourceManager;
 import org.apache.kafka.clients.consumer.Consumer;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,6 +35,7 @@ import java.util.concurrent.Executors;
 public class KafkaPollingTracker implements AutoCloseable {
 
     private final KafkaPollingTrackerWorker<?, ?> worker;
+    private final KafkaResourceManager resourceManager;
 
     private ExecutorService threadPool;
 
@@ -43,10 +45,12 @@ public class KafkaPollingTracker implements AutoCloseable {
             KafkaConsumerCallback<K, V> callback,
             Duration pollInterval) {
 
+        this.resourceManager = Objects.requireNonNull(resourceManager);
+
         // since the consumer will occupy a pool thread for a long period of time, there's no point in a shared
         // thread pool. We can manage our own single-threaded pool instead
         this.threadPool = Executors.newSingleThreadExecutor(new ConsumerThreadFactory());
-        this.worker = new KafkaPollingTrackerWorker<>(resourceManager,
+        this.worker = new KafkaPollingTrackerWorker<>(
                 this::stopThreadPool,
                 consumer,
                 callback,
@@ -56,19 +60,18 @@ public class KafkaPollingTracker implements AutoCloseable {
     }
 
     protected void start() {
-        // submit workload
+        this.resourceManager.register(this);
         this.threadPool.submit(worker::poll);
     }
 
     @Override
     public void close() {
-        if (isRunning()) {
-            worker.close();
-        }
+        close(Duration.ZERO);
     }
 
     public void close(Duration timeout) {
         if (isRunning()) {
+            resourceManager.unregister(this);
             worker.close(timeout);
         }
     }
