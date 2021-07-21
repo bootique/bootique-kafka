@@ -18,36 +18,123 @@
  */
 package io.bootique.kafka.client.consumer;
 
+import io.bootique.kafka.BootstrapServersCollection;
+import io.bootique.kafka.KafkaClientBuilder;
+import io.bootique.kafka.client.KafkaResourceManager;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.internals.NoOpConsumerRebalanceListener;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.*;
 
-public interface KafkaConsumerBuilder<K, V> {
+/**
+ * @since 3.0.M1
+ */
+public class KafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaConsumerBuilder<K, V>>  {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerBuilder.class);
+
+    private final KafkaResourceManager resourceManager;
+    private final Deserializer<K> keyDeserializer;
+    private final Deserializer<V> valueDeserializer;
+    private final Collection<String> topics;
+
+    private String group;
+    private Boolean autoCommit;
+    private Duration autoCommitInterval;
+    private AutoOffsetReset autoOffsetReset;
+    private Duration sessionTimeout;
+    private ConsumerRebalanceListener rebalanceListener;
+
+    public KafkaConsumerBuilder(
+            BootstrapServersCollection clusters,
+            Map<String, String> defaultProperties,
+            KafkaResourceManager resourceManager,
+            Deserializer<K> keyDeserializer,
+            Deserializer<V> valueDeserializer) {
+
+        super(clusters, defaultProperties);
+
+        this.resourceManager = Objects.requireNonNull(resourceManager);
+        this.keyDeserializer = Objects.requireNonNull(keyDeserializer);
+        this.valueDeserializer = Objects.requireNonNull(valueDeserializer);
+
+        this.topics = new ArrayList<>(3);
+    }
 
     /**
      * Provides a quick way to consume Kafka messages. Internally creates a new consumer, subscribes it to the specified
      * topics, and starts Kafka polling, invoking the provided callback on each batch of data read. This method
-     * is non-blocking, and returns immediately. To stop consumption, you may call {@link KafkaPoller#stop()} on the
+     * is non-blocking, and returns immediately. To stop consumption, you may call {@link KafkaPoller#close()} on the
      * returned "poller" object.
-     *
-     * @since 3.0.M1
      */
-    KafkaPoller<K, V> consume(KafkaConsumerCallback<K, V> callback, Duration pollInterval);
+    public KafkaPoller<K, V> consume(KafkaConsumerCallback<K, V> callback, Duration pollInterval) {
+        Consumer<K, V> unmanaged = createUnmanagedConsumer();
+        Consumer<K, V> subscribed = subscribe(unmanaged);
+        KafkaPoller<K, V> poller = new KafkaPoller<>(resourceManager, subscribed, callback, pollInterval);
+        poller.start();
+        return poller;
+    }
 
     /**
      * Creates a consumer, configures it using builder settings, and subscribes it to the builder topics. This method
      * should be used if {@link #consume(KafkaConsumerCallback, Duration)} is not sufficient, and the caller needs
      * more fine-grained control over the process of reading Kafka queue.
-     *
-     * @since 3.0.M1
      */
-    Consumer<K, V> createConsumer();
+    public Consumer<K, V> createConsumer() {
+        Consumer<K, V> unmanaged = createUnmanagedConsumer();
+        Consumer<K, V> managed = new ManagedConsumer<>(resourceManager, unmanaged);
+        return subscribe(managed);
+    }
 
-    /**
-     * @since 3.0.M1
-     */
-    KafkaConsumerBuilder<K, V> rebalanceListener(ConsumerRebalanceListener rebalanceListener);
+    protected Consumer<K, V> subscribe(Consumer<K, V> consumer) {
+
+        if (topics.isEmpty()) {
+            throw new IllegalStateException("No consumption topics configured");
+        }
+
+        LOGGER.info("Subscribing consumer. Topics: {}", topics);
+        ConsumerRebalanceListener rebalanceListener = this.rebalanceListener != null
+                ? this.rebalanceListener
+                : new NoOpConsumerRebalanceListener();
+        consumer.subscribe(topics, rebalanceListener);
+        return consumer;
+    }
+
+    protected Consumer<K, V> createUnmanagedConsumer() {
+        Properties properties = resolveProperties();
+        LOGGER.info("Creating consumer. Cluster: {}", properties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
+        return new KafkaConsumer<>(properties, keyDeserializer, valueDeserializer);
+    }
+
+    @Override
+    protected void appendBuilderProperties(Properties combined) {
+        if (group != null) {
+            combined.put(ConsumerConfig.GROUP_ID_CONFIG, group);
+        }
+
+        if (autoCommit != null) {
+            combined.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(autoCommit));
+        }
+
+        if (autoCommitInterval != null) {
+            combined.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, String.valueOf(autoCommitInterval.toMillis()));
+        }
+
+        if (sessionTimeout != null) {
+            combined.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, String.valueOf(sessionTimeout.toMillis()));
+        }
+
+        if (autoOffsetReset != null) {
+            combined.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset.name());
+        }
+    }
 
     /**
      * Sets a custom property for the underlying Consumer object being built. This property will override any defaults,
@@ -55,7 +142,10 @@ public interface KafkaConsumerBuilder<K, V> {
      *
      * @return this builder instance
      */
-    KafkaConsumerBuilder<K, V> property(String key, String value);
+    @Override
+    public KafkaConsumerBuilder<K, V> property(String key, String value) {
+        return super.property(key, value);
+    }
 
     /**
      * Sets a symbolic Kafka cluster name to use. The cluster under this name should have been configured in the
@@ -64,17 +154,43 @@ public interface KafkaConsumerBuilder<K, V> {
      * @param clusterName symbolic name of the cluster that must reference a known cluster in config.
      * @return this builder instance
      */
-    KafkaConsumerBuilder<K, V> cluster(String clusterName);
+    @Override
+    public KafkaConsumerBuilder<K, V> cluster(String clusterName) {
+        return super.cluster(clusterName);
+    }
 
-    KafkaConsumerBuilder<K, V> topics(String... topics);
+    public KafkaConsumerBuilder<K, V> topics(String... topics) {
+        Collections.addAll(this.topics, topics);
+        return this;
+    }
 
-    KafkaConsumerBuilder<K, V> group(String group);
+    public KafkaConsumerBuilder<K, V> group(String group) {
+        this.group = group;
+        return this;
+    }
 
-    KafkaConsumerBuilder<K, V> autoCommitInterval(Duration duration);
+    public KafkaConsumerBuilder<K, V> autoCommitInterval(Duration autoCommitInterval) {
+        this.autoCommitInterval = autoCommitInterval;
+        return this;
+    }
 
-    KafkaConsumerBuilder<K, V> autoCommit(boolean autoCommit);
+    public KafkaConsumerBuilder<K, V> autoCommit(boolean autoCommit) {
+        this.autoCommit = autoCommit;
+        return this;
+    }
 
-    KafkaConsumerBuilder<K, V> autoOffsetReset(AutoOffsetReset autoOffsetReset);
+    public KafkaConsumerBuilder<K, V> autoOffsetReset(AutoOffsetReset autoOffsetReset) {
+        this.autoOffsetReset = autoOffsetReset;
+        return this;
+    }
 
-    KafkaConsumerBuilder<K, V> sessionTimeout(Duration duration);
+    public KafkaConsumerBuilder<K, V> sessionTimeout(Duration sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
+        return this;
+    }
+
+    public KafkaConsumerBuilder<K, V> rebalanceListener(ConsumerRebalanceListener rebalanceListener) {
+        this.rebalanceListener = rebalanceListener;
+        return this;
+    }
 }
