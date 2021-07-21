@@ -19,22 +19,23 @@
 package io.bootique.kafka.client.consumer;
 
 import io.bootique.kafka.BootstrapServersCollection;
+import io.bootique.kafka.client.KafkaResourceManager;
 import org.apache.kafka.common.serialization.Deserializer;
 
 import java.util.Map;
 
 public class DefaultKafkaConsumerFactory implements KafkaConsumerFactory {
 
-    private KafkaConsumersManager consumersManager;
-    private BootstrapServersCollection clusters;
-    private Map<String, String> properties;
+    private final KafkaResourceManager resourceManager;
+    private final BootstrapServersCollection clusters;
+    private final Map<String, String> properties;
 
     public DefaultKafkaConsumerFactory(
-            KafkaConsumersManager consumersManager,
+            KafkaResourceManager resourceManager,
             BootstrapServersCollection clusters,
             Map<String, String> properties) {
 
-        this.consumersManager = consumersManager;
+        this.resourceManager = resourceManager;
         this.clusters = clusters;
         this.properties = properties;
     }
@@ -42,19 +43,9 @@ public class DefaultKafkaConsumerFactory implements KafkaConsumerFactory {
     @Override
     public <K, V> KafkaConsumerBuilder<K, V> consumer(Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer) {
         return new DefaultKafkaConsumerBuilder<>(
-                clusters, properties, consumersManager,
+                clusters, properties, resourceManager,
                 keyDeserializer,
                 valueDeserializer
         );
-    }
-
-    @Override
-    public <K, V> KafkaConsumerRunnerBuilder<K, V> consumerRunner(Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer) {
-        return new DefaultKafkaConsumerRunnerBuilder<>(
-                consumersManager,
-                clusters,
-                properties,
-                keyDeserializer,
-                valueDeserializer);
     }
 }

@@ -22,13 +22,12 @@ package io.bootique.kafka.client.consumer;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.kafka.BootstrapServersCollection;
+import io.bootique.kafka.client.KafkaResourceManager;
 import io.bootique.value.Duration;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * A YAML-configurable factory for a base consumer configuration. Kafka Consumers are created by merging this
@@ -75,10 +74,10 @@ public class KafkaConsumerFactoryFactory {
     }
 
     public DefaultKafkaConsumerFactory createConsumer(
-            KafkaConsumersManager consumersManager,
+            KafkaResourceManager resourceManager,
             BootstrapServersCollection clusters) {
 
-        return new DefaultKafkaConsumerFactory(consumersManager, clusters, createDefaultProperties());
+        return new DefaultKafkaConsumerFactory(resourceManager, clusters, createDefaultProperties());
     }
 
     protected Map<String, String> createDefaultProperties() {

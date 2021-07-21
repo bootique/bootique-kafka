@@ -25,7 +25,6 @@ import io.bootique.kafka.BootstrapServers;
 import io.bootique.kafka.BootstrapServersCollection;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactoryFactory;
-import io.bootique.kafka.client.consumer.KafkaConsumersManager;
 import io.bootique.kafka.client.producer.DefaultKafkaProducerFactory;
 import io.bootique.kafka.client.producer.KafkaProducerFactoryFactory;
 
@@ -59,8 +58,8 @@ public class KafkaClientFactoryFactory {
     /**
      * @return a new consumer factory.
      */
-    public KafkaConsumerFactory createConsumerFactory(KafkaConsumersManager consumersManager) {
-        return nonNullConsumer().createConsumer(consumersManager, getClusters());
+    public KafkaConsumerFactory createConsumerFactory(KafkaResourceManager resourceManager) {
+        return nonNullConsumer().createConsumer(resourceManager, getClusters());
     }
 
     /**

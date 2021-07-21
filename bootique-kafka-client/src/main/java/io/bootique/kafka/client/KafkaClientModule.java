@@ -25,7 +25,6 @@ import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
-import io.bootique.kafka.client.consumer.KafkaConsumersManager;
 import io.bootique.kafka.client.producer.KafkaProducerFactory;
 import io.bootique.shutdown.ShutdownManager;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -58,15 +57,15 @@ public class KafkaClientModule extends ConfigModule {
 
     @Singleton
     @Provides
-    KafkaConsumersManager provideConsumersManager(ShutdownManager shutdownManager) {
-        KafkaConsumersManager cm = new KafkaConsumersManager();
-        shutdownManager.addShutdownHook(cm);
-        return cm;
+    KafkaResourceManager provideResourceManager(ShutdownManager shutdownManager) {
+        KafkaResourceManager rm = new KafkaResourceManager();
+        shutdownManager.addShutdownHook(rm);
+        return rm;
     }
 
     @Singleton
     @Provides
-    KafkaConsumerFactory provideConsumerFactory(KafkaConsumersManager consumersManager, KafkaClientFactoryFactory parentFactory) {
+    KafkaConsumerFactory provideConsumerFactory(KafkaResourceManager consumersManager, KafkaClientFactoryFactory parentFactory) {
         return parentFactory.createConsumerFactory(consumersManager);
     }
 }

@@ -18,6 +18,7 @@
  */
 package io.bootique.kafka.client.consumer;
 
+import io.bootique.kafka.client.KafkaResourceManager;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.WakeupException;
@@ -34,27 +35,30 @@ import java.util.concurrent.Executors;
  *
  * @since 3.0.M1
  */
-public class KafkaPoller<K, V> {
+public class KafkaPoller<K, V> implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPoller.class);
 
     private final Consumer<K, V> consumer;
     private final KafkaConsumerCallback<K, V> callback;
     private final Duration pollInterval;
+    private final KafkaResourceManager resourceManager;
 
     private ExecutorService threadPool;
 
     public KafkaPoller(
+            KafkaResourceManager resourceManager,
             Consumer<K, V> consumer,
             KafkaConsumerCallback<K, V> callback,
             Duration pollInterval) {
 
+        this.resourceManager = Objects.requireNonNull(resourceManager);
         this.consumer = Objects.requireNonNull(consumer);
         this.callback = Objects.requireNonNull(callback);
         this.pollInterval = Objects.requireNonNull(pollInterval);
     }
 
-    public void start() {
+    protected void start() {
         if (isStarted()) {
             throw new IllegalStateException("Already running, can't start again");
         }
@@ -65,9 +69,11 @@ public class KafkaPoller<K, V> {
         threadPool.submit(this::pollBlocking);
     }
 
-    public void stop() {
+    @Override
+    public void close() {
         if (isStarted()) {
             // allowing consumer to finish processing of the current batch
+            // TODO: will this reliably close the resource? Should we wait a bit and then do "forceClose"?
             consumer.wakeup();
         }
     }
@@ -84,11 +90,13 @@ public class KafkaPoller<K, V> {
             }
         } catch (WakeupException e) {
             LOGGER.debug("Consumer polling is stopped");
-            forceStop();
+            forceClose();
         }
     }
 
-    protected void forceStop() {
+    protected void forceClose() {
+
+        resourceManager.unregister(this);
 
         ExecutorService threadPool = this.threadPool;
         this.threadPool = null;

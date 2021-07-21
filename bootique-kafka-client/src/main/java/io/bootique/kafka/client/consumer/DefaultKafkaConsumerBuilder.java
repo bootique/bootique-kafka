@@ -20,6 +20,7 @@ package io.bootique.kafka.client.consumer;
 
 import io.bootique.kafka.BootstrapServersCollection;
 import io.bootique.kafka.KafkaClientBuilder;
+import io.bootique.kafka.client.KafkaResourceManager;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
@@ -39,7 +40,7 @@ public class DefaultKafkaConsumerBuilder<K, V>
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaConsumerBuilder.class);
 
-    private final KafkaConsumersManager consumersManager;
+    private final KafkaResourceManager resourceManager;
     private final Deserializer<K> keyDeserializer;
     private final Deserializer<V> valueDeserializer;
 
@@ -55,13 +56,13 @@ public class DefaultKafkaConsumerBuilder<K, V>
     public DefaultKafkaConsumerBuilder(
             BootstrapServersCollection clusters,
             Map<String, String> defaultProperties,
-            KafkaConsumersManager consumersManager,
+            KafkaResourceManager resourceManager,
             Deserializer<K> keyDeserializer,
             Deserializer<V> valueDeserializer) {
 
         super(clusters, defaultProperties);
 
-        this.consumersManager = Objects.requireNonNull(consumersManager);
+        this.resourceManager = Objects.requireNonNull(resourceManager);
         this.keyDeserializer = Objects.requireNonNull(keyDeserializer);
         this.valueDeserializer = Objects.requireNonNull(valueDeserializer);
 
@@ -112,34 +113,32 @@ public class DefaultKafkaConsumerBuilder<K, V>
 
     @Override
     public KafkaPoller<K, V> consume(KafkaConsumerCallback<K, V> callback, Duration pollInterval) {
-        Consumer<K, V> consumer = createConsumer();
-
-        // Using
-        KafkaPoller<K, V> poller = new KafkaPoller<>(consumer, callback, pollInterval);
+        Consumer<K, V> unmanaged = createUnmanagedConsumer();
+        Consumer<K, V> subscribed = subscribe(unmanaged);
+        KafkaPoller<K, V> poller = new KafkaPoller<>(resourceManager, subscribed, callback, pollInterval);
         poller.start();
-
         return poller;
     }
 
     @Override
     public Consumer<K, V> createConsumer() {
+        Consumer<K, V> unmanaged = createUnmanagedConsumer();
+        Consumer<K, V> managed = new ManagedConsumer<>(resourceManager, unmanaged);
+        return subscribe(managed);
+    }
 
-        Properties properties = resolveProperties();
-        Collection<String> topics = createTopics();
+    protected Consumer<K, V> subscribe(Consumer<K, V> consumer) {
+        LOGGER.info("Subscribing consumer. Topics: {}", topics);
         ConsumerRebalanceListener rebalanceListener = this.rebalanceListener != null
                 ? this.rebalanceListener
                 : new NoOpConsumerRebalanceListener();
-
-        LOGGER.info("Creating consumer. Cluster: {}, topics: {}.",
-                properties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG),
-                topics);
-
-        Consumer<K, V> consumer = new ManagedConsumer<>(consumersManager, createConsumer(properties));
         consumer.subscribe(topics, rebalanceListener);
         return consumer;
     }
 
-    protected Consumer<K, V> createConsumer(Properties properties) {
+    protected Consumer<K, V> createUnmanagedConsumer() {
+        Properties properties = resolveProperties();
+        LOGGER.info("Creating consumer. Cluster: {}", properties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
         return new KafkaConsumer<>(properties, keyDeserializer, valueDeserializer);
     }
 

@@ -18,6 +18,7 @@
  */
 package io.bootique.kafka.client.consumer;
 
+import io.bootique.kafka.client.KafkaResourceManager;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
@@ -35,12 +36,12 @@ import java.util.regex.Pattern;
 public class ManagedConsumer<K, V> implements Consumer<K, V> {
 
     private final Consumer<K, V> delegate;
-    private final KafkaConsumersManager manager;
+    private final KafkaResourceManager resourceManager;
 
-    public ManagedConsumer(KafkaConsumersManager manager, Consumer<K, V> delegate) {
-        this.manager = Objects.requireNonNull(manager);
+    public ManagedConsumer(KafkaResourceManager resourceManager, Consumer<K, V> delegate) {
+        this.resourceManager = Objects.requireNonNull(resourceManager);
         this.delegate = Objects.requireNonNull(delegate);
-        manager.register(delegate);
+        resourceManager.register(delegate);
     }
 
     @Override
@@ -253,20 +254,20 @@ public class ManagedConsumer<K, V> implements Consumer<K, V> {
 
     @Override
     public void close() {
-        manager.unregister(this);
+        resourceManager.unregister(this);
         delegate.close();
     }
 
     @Override
     @Deprecated
     public void close(long timeout, TimeUnit unit) {
-        manager.unregister(this);
+        resourceManager.unregister(this);
         delegate.close(timeout, unit);
     }
 
     @Override
     public void close(Duration timeout) {
-        manager.unregister(this);
+        resourceManager.unregister(this);
         delegate.close(timeout);
     }
 
