@@ -71,15 +71,13 @@ public class KafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaConsumer
     /**
      * Provides a quick way to consume Kafka messages. Internally creates a new consumer, subscribes it to the specified
      * topics, and starts Kafka polling, invoking the provided callback on each batch of data read. This method
-     * is non-blocking, and returns immediately. To stop consumption, you may call {@link KafkaPoller#close()} on the
+     * is non-blocking, and returns immediately. To stop consumption, you may call {@link KafkaPollingTracker#close()} on the
      * returned "poller" object.
      */
-    public KafkaPoller<K, V> consume(KafkaConsumerCallback<K, V> callback, Duration pollInterval) {
+    public KafkaPollingTracker consume(KafkaConsumerCallback<K, V> callback, Duration pollInterval) {
         Consumer<K, V> unmanaged = createUnmanagedConsumer();
         Consumer<K, V> subscribed = subscribe(unmanaged);
-        KafkaPoller<K, V> poller = new KafkaPoller<>(resourceManager, subscribed, callback, pollInterval);
-        poller.start();
-        return poller;
+        return new KafkaPollingTracker(resourceManager, subscribed, callback, pollInterval);
     }
 
     /**

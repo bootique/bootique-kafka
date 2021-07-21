@@ -111,16 +111,19 @@ KafkaConsumerFactory factory;
 public void runConsumer() {
     
     // this will start consumer in the background
-    KafkaPoller<byte[], String> poll = factory
+    KafkaPollingTracker poll = factory
+        // configure consumer
         .charValueConsumer()
         .cluster("cluster1")
         .group("somegroup")
         .topic("mytopic")
+        
+        // start consumption in the background
         .consume((c, data) -> data.forEach(
                 r -> System.out.println(r.topic() + "_" + r.offset() + ": " + r.value())));
     
-    // optionally ity can be closed when needed.
-    // Otherwise Bootique will close it before the app exit
+    // Close when we need to stop consumption. With no explicit Bootique will
+    // close the consumer before the app exit
     // poll.close();
 }
 ```

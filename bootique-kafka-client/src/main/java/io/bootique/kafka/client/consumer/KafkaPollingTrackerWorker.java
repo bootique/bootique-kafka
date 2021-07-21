@@ -28,26 +28,21 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
- * A utility class that encapsulates common Kafka data consumption flow.
- *
  * @since 3.0.M1
  */
-public class KafkaPoller<K, V> implements AutoCloseable {
+class KafkaPollingTrackerWorker<K, V> implements AutoCloseable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPoller.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPollingTrackerWorker.class);
 
     private final Consumer<K, V> consumer;
     private final KafkaConsumerCallback<K, V> callback;
     private final Duration pollInterval;
     private final KafkaResourceManager resourceManager;
 
-    private ExecutorService threadPool;
 
-    protected KafkaPoller(
+    protected KafkaPollingTrackerWorker(
             KafkaResourceManager resourceManager,
             Consumer<K, V> consumer,
             KafkaConsumerCallback<K, V> callback,
@@ -60,31 +55,7 @@ public class KafkaPoller<K, V> implements AutoCloseable {
         resourceManager.register(this);
     }
 
-    protected void start() {
-        if (isStarted()) {
-            throw new IllegalStateException("Already running, can't start again");
-        }
-
-        // since the consumer will occupy the pool thread for a long period of time, there's no point in a shared
-        // thread pool. We can manage our own single-threaded pool instead
-        this.threadPool = Executors.newSingleThreadExecutor(new ConsumerThreadFactory());
-        threadPool.submit(this::pollBlocking);
-    }
-
-    @Override
-    public void close() {
-        if (isStarted()) {
-            // allowing consumer to finish processing of the current batch
-            // TODO: will this reliably close the resource? Should we wait a bit and then do "forceClose"?
-            consumer.wakeup();
-        }
-    }
-
-    protected boolean isStarted() {
-        return threadPool != null;
-    }
-
-    protected void pollBlocking() {
+    public void poll() {
 
         while (true) {
             ConsumerRecords<K, V> data;
@@ -94,7 +65,7 @@ public class KafkaPoller<K, V> implements AutoCloseable {
             // TODO: InterruptException was copy/pasted from somewhere. Is it really thrown here?
             catch (WakeupException | InterruptException e) {
                 LOGGER.debug("Consumer polling stopped");
-                forceClose();
+                finalClose();
                 break;
             }
 
@@ -102,25 +73,20 @@ public class KafkaPoller<K, V> implements AutoCloseable {
         }
     }
 
-    protected void forceClose() {
+    @Override
+    public void close() {
+        // allowing consumer to finish processing of the current batch,
+        consumer.wakeup();
+    }
+
+    protected void finalClose() {
 
         resourceManager.unregister(this);
-
-        ExecutorService threadPool = this.threadPool;
-        this.threadPool = null;
 
         try {
             consumer.close(pollInterval);
         } catch (Throwable th) {
             // ignoring...
-        }
-
-        if (threadPool != null) {
-            try {
-                threadPool.shutdownNow();
-            } catch (Throwable th) {
-                // ignoring
-            }
         }
     }
 }
