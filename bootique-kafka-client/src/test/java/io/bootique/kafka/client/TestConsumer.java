@@ -21,6 +21,8 @@ package io.bootique.kafka.client;
 import io.bootique.kafka.client.consumer.KafkaConsumerCallback;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +34,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TestConsumer implements KafkaConsumerCallback<String, String> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestConsumer.class);
 
     private final boolean commit;
     private final Map<String, List<String>> consumed;
@@ -45,11 +49,14 @@ class TestConsumer implements KafkaConsumerCallback<String, String> {
     @Override
     public void consume(Consumer<String, String> consumer, ConsumerRecords<String, String> data) {
 
+        LOGGER.info("will read {} record(s)", data.count());
+
         count += data.count();
 
         data.forEach(r -> consumed.computeIfAbsent(r.key(), k -> new CopyOnWriteArrayList<>()).add(r.value()));
 
-        if (commit) {
+        if (commit && data.count() > 0) {
+            LOGGER.info("will commit");
             consumer.commitSync();
         }
     }

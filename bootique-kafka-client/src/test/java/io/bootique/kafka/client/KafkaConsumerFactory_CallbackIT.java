@@ -108,7 +108,7 @@ public class KafkaConsumerFactory_CallbackIT extends KafkaConsumerFactoryTestBas
     }
 
     @Test
-    public void testAtLeastOnceDelivery() {
+    public void testAtLeastOnceDelivery() throws InterruptedException {
         Producer<String, String> producer = createProducer(app);
         String topic = getClass().getSimpleName() + "_testAtLeastOnceDelivery_topic";
         String group = getClass().getSimpleName() + "_testAtLeastOnceDelivery_group";
@@ -125,29 +125,34 @@ public class KafkaConsumerFactory_CallbackIT extends KafkaConsumerFactoryTestBas
 
         // no commit... the record above will be seen again by future consumers
         TestConsumer data1 = new TestConsumer(false);
-        try (KafkaPollingTracker t = consumerMaker.get().consume(data1, Duration.ofSeconds(1))) {
-            producer.send(new ProducerRecord<>(topic, "k1", "v1"));
-            Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> data1.consumedKey("k1"));
-        }
+        KafkaPollingTracker t1 = consumerMaker.get().consume(data1, Duration.ofSeconds(1));
+        producer.send(new ProducerRecord<>(topic, "k1", "v1"));
+        Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> data1.consumedKey("k1"));
         data1.assertSize(1);
         data1.assertKey("k1", "v1", 1);
+        t1.close(Duration.ofSeconds(1));
+
 
         // commit... the records consumed here should not be seen by future consumers
         TestConsumer data2 = new TestConsumer(true);
-        try (KafkaPollingTracker t = consumerMaker.get().consume(data2, Duration.ofSeconds(1))) {
-            producer.send(new ProducerRecord<>(topic, "k2", "v2"));
-            Unreliables.retryUntilTrue(5, TimeUnit.SECONDS,
-                    () -> data2.consumedKey("k1") && data2.consumedKey("k2"));
-        }
+        KafkaPollingTracker t2 = consumerMaker.get().consume(data2, Duration.ofSeconds(1));
+        producer.send(new ProducerRecord<>(topic, "k2", "v2"));
+        Unreliables.retryUntilTrue(5, TimeUnit.SECONDS,
+                () -> data2.consumedKey("k1") && data2.consumedKey("k2"));
         data2.assertSize(2);
         data2.assertKey("k1", "v1", 1);
         data2.assertKey("k2", "v2", 1);
 
+        // TODO: a hack to let the commits to be processed. See TODO in KafkaPollingTrackerWorker.close(Duration)
+        Thread.sleep(1000L);
+        t2.close(Duration.ofSeconds(1));
+
+
         TestConsumer data3 = new TestConsumer(true);
-        try (KafkaPollingTracker t = consumerMaker.get().consume(data3, Duration.ofSeconds(1))) {
-            producer.send(new ProducerRecord<>(topic, "k3", "v3"));
-            Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> data3.consumedKey("k3"));
-        }
+        consumerMaker.get().consume(data3, Duration.ofSeconds(1));
+        producer.send(new ProducerRecord<>(topic, "k3", "v3"));
+        Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> data3.consumedKey("k3"));
+
         data3.assertSize(1);
         data3.assertKey("k3", "v3", 1);
     }

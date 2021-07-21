@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 public class KafkaPollingTracker implements AutoCloseable {
 
     private final KafkaPollingTrackerWorker<?, ?> worker;
+
     private ExecutorService threadPool;
 
     protected <K, V> KafkaPollingTracker(
@@ -45,28 +46,34 @@ public class KafkaPollingTracker implements AutoCloseable {
         // since the consumer will occupy a pool thread for a long period of time, there's no point in a shared
         // thread pool. We can manage our own single-threaded pool instead
         this.threadPool = Executors.newSingleThreadExecutor(new ConsumerThreadFactory());
-        this.worker = new KafkaPollingTrackerWorker<>(resourceManager, consumer, callback, pollInterval);
+        this.worker = new KafkaPollingTrackerWorker<>(resourceManager,
+                this::stopThreadPool,
+                consumer,
+                callback,
+                pollInterval);
 
         start();
     }
 
     protected void start() {
-
         // submit workload
         this.threadPool.submit(worker::poll);
-
-        // thread pool is single-purpose and is single-threaded. So queue up a shutdown task
-        this.threadPool.submit(this::stopThreadPool);
     }
 
     @Override
     public void close() {
-        if (isStarted()) {
+        if (isRunning()) {
             worker.close();
         }
     }
 
-    protected boolean isStarted() {
+    public void close(Duration timeout) {
+        if (isRunning()) {
+            worker.close(timeout);
+        }
+    }
+
+    protected boolean isRunning() {
         return threadPool != null;
     }
 

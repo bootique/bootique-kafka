@@ -40,10 +40,11 @@ class KafkaPollingTrackerWorker<K, V> implements AutoCloseable {
     private final KafkaConsumerCallback<K, V> callback;
     private final Duration pollInterval;
     private final KafkaResourceManager resourceManager;
-
+    private final Runnable runAfterClose;
 
     protected KafkaPollingTrackerWorker(
             KafkaResourceManager resourceManager,
+            Runnable runAfterClose,
             Consumer<K, V> consumer,
             KafkaConsumerCallback<K, V> callback,
             Duration pollInterval) {
@@ -52,6 +53,7 @@ class KafkaPollingTrackerWorker<K, V> implements AutoCloseable {
         this.consumer = Objects.requireNonNull(consumer);
         this.callback = Objects.requireNonNull(callback);
         this.pollInterval = Objects.requireNonNull(pollInterval);
+        this.runAfterClose = Objects.requireNonNull(runAfterClose);
         resourceManager.register(this);
     }
 
@@ -61,11 +63,7 @@ class KafkaPollingTrackerWorker<K, V> implements AutoCloseable {
             ConsumerRecords<K, V> data;
             try {
                 data = consumer.poll(pollInterval);
-            }
-            // TODO: InterruptException was copy/pasted from somewhere. Is it really thrown here?
-            catch (WakeupException | InterruptException e) {
-                LOGGER.debug("Consumer polling stopped");
-                finalClose();
+            } catch (WakeupException | InterruptException e) {
                 break;
             }
 
@@ -75,16 +73,31 @@ class KafkaPollingTrackerWorker<K, V> implements AutoCloseable {
 
     @Override
     public void close() {
-        // allowing consumer to finish processing of the current batch,
-        consumer.wakeup();
+        close(Duration.ZERO);
     }
 
-    protected void finalClose() {
+    public void close(Duration timeout) {
+        // allowing consumer to finish processing of the current batch
+        LOGGER.info("Stopping consumer {}", System.identityHashCode(consumer));
 
+        consumer.wakeup();
         resourceManager.unregister(this);
 
+        LOGGER.info("Stopping consumer {}", System.identityHashCode(consumer));
+
         try {
-            consumer.close(pollInterval);
+            // closing with non-zero timeout gives Kafka a chance to commit offsets, etc.
+
+            // TODO: our tests (KafkaConsumerFactory_CallbackIT) show that if consumer is sitting in a poll loop,
+            //  commits can still be lost, and "consumer.close(timeout)" exits almost immediately, without processing
+            //  pending commits. In the tests we had to insert an explicit delay before close
+            consumer.close(timeout);
+        } catch (Throwable th) {
+            // ignoring...
+        }
+
+        try {
+            runAfterClose.run();
         } catch (Throwable th) {
             // ignoring...
         }

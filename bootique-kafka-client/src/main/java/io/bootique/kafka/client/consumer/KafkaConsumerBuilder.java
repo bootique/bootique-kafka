@@ -36,7 +36,7 @@ import java.util.*;
 /**
  * @since 3.0.M1
  */
-public class KafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaConsumerBuilder<K, V>>  {
+public class KafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaConsumerBuilder<K, V>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerBuilder.class);
 
@@ -97,7 +97,7 @@ public class KafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaConsumer
             throw new IllegalStateException("No consumption topics configured");
         }
 
-        LOGGER.info("Subscribing consumer. Topics: {}", topics);
+        LOGGER.info("Subscribing consumer {} to topics: {}", System.identityHashCode(consumer), topics);
         ConsumerRebalanceListener rebalanceListener = this.rebalanceListener != null
                 ? this.rebalanceListener
                 : new NoOpConsumerRebalanceListener();
@@ -107,8 +107,12 @@ public class KafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaConsumer
 
     protected Consumer<K, V> createUnmanagedConsumer() {
         Properties properties = resolveProperties();
-        LOGGER.info("Creating consumer. Cluster: {}", properties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
-        return new KafkaConsumer<>(properties, keyDeserializer, valueDeserializer);
+        Consumer<K, V> consumer = new KafkaConsumer<>(properties, keyDeserializer, valueDeserializer);
+        LOGGER.info("Creating consumer {}. Cluster: {}",
+                System.identityHashCode(consumer),
+                properties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
+
+        return consumer;
     }
 
     @Override
