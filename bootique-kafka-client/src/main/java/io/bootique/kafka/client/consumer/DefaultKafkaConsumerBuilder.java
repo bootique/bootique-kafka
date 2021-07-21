@@ -52,7 +52,6 @@ public class DefaultKafkaConsumerBuilder<K, V>
     private Duration sessionTimeout;
     private ConsumerRebalanceListener rebalanceListener;
 
-
     public DefaultKafkaConsumerBuilder(
             BootstrapServersCollection clusters,
             Map<String, String> defaultProperties,

@@ -110,27 +110,18 @@ KafkaConsumerFactory factory;
 
 public void runConsumer() {
     
-    Consumer<byte[], String> consumer = factory
+    // this will start consumer in the background
+    KafkaPoller<byte[], String> poll = factory
         .charValueConsumer()
         .cluster("cluster1")
         .group("somegroup")
         .topic("mytopic")
-        .create();
-
-    while(true) {
-        try {
-            ConsumerRecords<byte[], String> data = consumer.poll(Duration.ofSeconds(1));
-            for (ConsumerRecord<byte[], String> r : data) {
-                System.out.println(r.topic() + "_" + r.offset() + ": " + r.value());
-            }
-            consumer.commitSync();
-        }
-        catch(WakeupException e) {
-            break;
-        }
-    }
-
-    consumer.close();
+        .consume((c, data) -> data.forEach(
+                r -> System.out.println(r.topic() + "_" + r.offset() + ": " + r.value())));
+    
+    // optionally ity can be closed when needed.
+    // Otherwise Bootique will close it before the app exit
+    // poll.close();
 }
 ```
 

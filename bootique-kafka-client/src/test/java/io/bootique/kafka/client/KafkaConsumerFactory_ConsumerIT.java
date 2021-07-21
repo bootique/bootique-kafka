@@ -19,25 +19,16 @@
 
 package io.bootique.kafka.client;
 
-import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
-import io.bootique.Bootique;
 import io.bootique.junit5.BQApp;
 import io.bootique.junit5.BQTest;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
-import io.bootique.kafka.client.consumer.KafkaPoller;
-import io.bootique.kafka.client.producer.KafkaProducerFactory;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 import org.rnorth.ducttape.unreliables.Unreliables;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.util.Map;
@@ -47,30 +38,15 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Testcontainers
 @BQTest
-public class KafkaClientIT {
+public class KafkaConsumerFactory_ConsumerIT extends KafkaConsumerFactoryTestBase {
 
-    private static final String TEST_CLUSTER = "test_cluster";
-
-    @Container
-    final static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.5.3"));
-
-    // TODO: have to start the app in the instance scope, to ensure Kafka container in the static scope was started
-    //   How do we ensure Kafka startup when the app is in the static context?
     @BQApp(skipRun = true)
-    final BQRuntime app = Bootique
-            .app("--config=classpath:config.yml")
-            .modules(b -> BQCoreModule.extend(b).setProperty("bq.kafkaclient.clusters." + TEST_CLUSTER, kafka.getBootstrapServers()))
-            .module(KafkaClientModule.class)
-            .createRuntime();
+    final static BQRuntime app = createApp();
 
     @Test
     public void testConsumer_AtLeastOnce_Delivery() throws Exception {
-        Producer<String, String> producer = app.getInstance(KafkaProducerFactory.class)
-                .producer(new StringSerializer(), new StringSerializer())
-                .cluster(TEST_CLUSTER)
-                .create();
+        Producer<String, String> producer = createProducer(app);
 
         Supplier<Consumer<String, String>> consumerMaker = () -> app.getInstance(KafkaConsumerFactory.class)
                 .consumer(new StringDeserializer(), new StringDeserializer())
@@ -85,7 +61,7 @@ public class KafkaClientIT {
 
             Map<String, String> data = new ConcurrentHashMap<>();
 
-            producer.send(new ProducerRecord<>("topic1", "k1", "v1")).get();
+            producer.send(new ProducerRecord<>("topic1", "k1", "v1"));
             Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> {
                 c1.poll(Duration.ofSeconds(1)).forEach(r -> data.put(r.key(), r.value()));
                 // no commit... the record above will be seen again by future consumers
@@ -100,7 +76,7 @@ public class KafkaClientIT {
 
             Map<String, String> data = new ConcurrentHashMap<>();
 
-            producer.send(new ProducerRecord<>("topic1", "k2", "v2")).get();
+            producer.send(new ProducerRecord<>("topic1", "k2", "v2"));
             Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> {
                 c2.poll(Duration.ofSeconds(1)).forEach(r -> data.put(r.key(), r.value()));
                 // commit... the records above should not be seen by future consumers
@@ -117,7 +93,7 @@ public class KafkaClientIT {
 
             Map<String, String> data = new ConcurrentHashMap<>();
 
-            producer.send(new ProducerRecord<>("topic1", "k3", "v3")).get();
+            producer.send(new ProducerRecord<>("topic1", "k3", "v3"));
             Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> {
                 c3.poll(Duration.ofSeconds(1)).forEach(r -> data.put(r.key(), r.value()));
                 c3.commitSync();
@@ -126,37 +102,6 @@ public class KafkaClientIT {
 
             assertEquals(1, data.size());
             assertEquals("v3", data.get("k3"));
-        }
-    }
-
-    @Test
-    public void testConsume() {
-        Producer<String, String> producer = app.getInstance(KafkaProducerFactory.class)
-                .producer(new StringSerializer(), new StringSerializer())
-                .cluster(TEST_CLUSTER)
-                .create();
-
-        Map<String, String> data = new ConcurrentHashMap<>();
-
-        try (KafkaPoller<?, ?> poller = app.getInstance(KafkaConsumerFactory.class)
-                .consumer(new StringDeserializer(), new StringDeserializer())
-                .cluster(TEST_CLUSTER)
-                .group("group2")
-                .topics("topic2")
-                .consume((c, d) -> d.forEach(r -> {
-                    System.out.println("received..." + r.key());
-                    data.put(r.key(), r.value());
-                }), Duration.ofSeconds(1))) {
-
-            producer.send(new ProducerRecord<>("topic2", "k1", "v1"));
-            Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> data.containsKey("k1"));
-            assertEquals(1, data.size(), () -> "Unexpected consumed data: " + data);
-            assertEquals("v1", data.get("k1"));
-
-            producer.send(new ProducerRecord<>("topic2", "k2", "v2"));
-            Unreliables.retryUntilTrue(5, TimeUnit.SECONDS, () -> data.containsKey("k2"));
-            assertEquals(2, data.size(), () -> "Unexpected consumed data: " + data);
-            assertEquals("v2", data.get("k2"));
         }
     }
 }

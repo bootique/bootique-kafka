@@ -21,6 +21,7 @@ package io.bootique.kafka.client.consumer;
 import io.bootique.kafka.client.KafkaResourceManager;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.common.errors.InterruptException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * A utility class that encapsulates Kafka data consumption flow.
+ * A utility class that encapsulates common Kafka data consumption flow.
  *
  * @since 3.0.M1
  */
@@ -46,7 +47,7 @@ public class KafkaPoller<K, V> implements AutoCloseable {
 
     private ExecutorService threadPool;
 
-    public KafkaPoller(
+    protected KafkaPoller(
             KafkaResourceManager resourceManager,
             Consumer<K, V> consumer,
             KafkaConsumerCallback<K, V> callback,
@@ -56,6 +57,7 @@ public class KafkaPoller<K, V> implements AutoCloseable {
         this.consumer = Objects.requireNonNull(consumer);
         this.callback = Objects.requireNonNull(callback);
         this.pollInterval = Objects.requireNonNull(pollInterval);
+        resourceManager.register(this);
     }
 
     protected void start() {
@@ -83,14 +85,20 @@ public class KafkaPoller<K, V> implements AutoCloseable {
     }
 
     protected void pollBlocking() {
-        try {
-            while (true) {
-                ConsumerRecords<K, V> data = consumer.poll(pollInterval);
-                callback.consume(consumer, data);
+
+        while (true) {
+            ConsumerRecords<K, V> data;
+            try {
+                data = consumer.poll(pollInterval);
             }
-        } catch (WakeupException e) {
-            LOGGER.debug("Consumer polling is stopped");
-            forceClose();
+            // TODO: InterruptException was copy/pasted from somewhere. Is it really thrown here?
+            catch (WakeupException | InterruptException e) {
+                LOGGER.debug("Consumer polling stopped");
+                forceClose();
+                break;
+            }
+
+            callback.consume(consumer, data);
         }
     }
 

@@ -38,6 +38,10 @@ public class KafkaResourceManager implements Closeable {
         this.resources = new ConcurrentHashMap<>();
     }
 
+    int size() {
+        return resources.size();
+    }
+
     public void register(AutoCloseable resource) {
         resources.put(resource, 1);
     }
