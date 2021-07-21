@@ -19,9 +19,10 @@
 package io.bootique.kafka.client.consumer;
 
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
+import org.apache.kafka.clients.consumer.internals.NoOpConsumerRebalanceListener;
 
 import java.time.Duration;
-
 
 public interface KafkaConsumerBuilder<K, V> {
 
@@ -30,7 +31,16 @@ public interface KafkaConsumerBuilder<K, V> {
      *
      * @since 3.0.M1
      */
-    Consumer<K, V> create();
+    default Consumer<K, V> create() {
+        return create(new NoOpConsumerRebalanceListener());
+    }
+
+    /**
+     * Creates preconfigured consumer that is subscribed to the builder topics.
+     *
+     * @since 3.0.M1
+     */
+    Consumer<K, V> create(ConsumerRebalanceListener rebalanceListener);
 
     /**
      * Sets a custom property for the underlying Consumer object being built. This property will override any defaults,

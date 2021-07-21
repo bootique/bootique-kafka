@@ -22,6 +22,7 @@ import io.bootique.kafka.KafkaClientBuilder;
 import io.bootique.kafka.BootstrapServersCollection;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.slf4j.Logger;
@@ -101,7 +102,7 @@ public class DefaultKafkaConsumerBuilder<K, V>
     }
 
     @Override
-    public Consumer<K, V> create() {
+    public Consumer<K, V> create(ConsumerRebalanceListener rebalanceListener) {
 
         Properties properties = resolveProperties();
         Collection<String> topics = createTopics();
@@ -111,7 +112,7 @@ public class DefaultKafkaConsumerBuilder<K, V>
                 topics);
 
         Consumer<K, V> consumer = new ManagedConsumer<>(consumersManager, createConsumer(properties));
-        consumer.subscribe(topics);
+        consumer.subscribe(topics, rebalanceListener);
         return consumer;
     }
 
