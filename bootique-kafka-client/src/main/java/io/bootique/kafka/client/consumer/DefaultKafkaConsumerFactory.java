@@ -42,11 +42,10 @@ public class DefaultKafkaConsumerFactory implements KafkaConsumerFactory {
     @Override
     public <K, V> KafkaConsumerBuilder<K, V> consumer(Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer) {
         return new DefaultKafkaConsumerBuilder<>(
-                consumersManager,
-                clusters,
-                properties,
+                clusters, properties, consumersManager,
                 keyDeserializer,
-                valueDeserializer);
+                valueDeserializer
+        );
     }
 
     @Override

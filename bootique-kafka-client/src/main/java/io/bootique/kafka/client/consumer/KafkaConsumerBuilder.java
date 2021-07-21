@@ -20,34 +20,39 @@ package io.bootique.kafka.client.consumer;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
-import org.apache.kafka.clients.consumer.internals.NoOpConsumerRebalanceListener;
 
 import java.time.Duration;
 
 public interface KafkaConsumerBuilder<K, V> {
 
     /**
-     * Creates preconfigured consumer that is subscribed to the builder topics.
+     * Provides a quick way to consume Kafka messages. Internally creates a new consumer, subscribes it to the specified
+     * topics, and starts Kafka polling, invoking the provided callback on each batch of data read. This method
+     * is non-blocking, and returns immediately. To stop consumption, you may call {@link KafkaPoller#stop()} on the
+     * returned "poller" object.
      *
      * @since 3.0.M1
      */
-    default Consumer<K, V> create() {
-        return create(new NoOpConsumerRebalanceListener());
-    }
+    KafkaPoller<K, V> consume(KafkaConsumerCallback<K, V> callback, Duration pollInterval);
 
     /**
-     * Creates preconfigured consumer that is subscribed to the builder topics.
+     * Creates a consumer, configures it using builder settings, and subscribes it to the builder topics. This method
+     * should be used if {@link #consume(KafkaConsumerCallback, Duration)} is not sufficient, and the caller needs
+     * more fine-grained control over the process of reading Kafka queue.
      *
      * @since 3.0.M1
      */
-    Consumer<K, V> create(ConsumerRebalanceListener rebalanceListener);
+    Consumer<K, V> createConsumer();
+
+    /**
+     * @since 3.0.M1
+     */
+    KafkaConsumerBuilder<K, V> rebalanceListener(ConsumerRebalanceListener rebalanceListener);
 
     /**
      * Sets a custom property for the underlying Consumer object being built. This property will override any defaults,
      * specified via Bootique config.
      *
-     * @param key
-     * @param value
      * @return this builder instance
      */
     KafkaConsumerBuilder<K, V> property(String key, String value);

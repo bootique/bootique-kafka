@@ -27,6 +27,8 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A YAML-configurable factory for a base consumer configuration. Kafka Consumers are created by merging this
@@ -101,9 +103,11 @@ public class KafkaConsumerFactoryFactory {
         AutoOffsetReset autoOffsetReset = this.autoOffsetReset != null ? this.autoOffsetReset : AutoOffsetReset.latest;
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset.name());
 
-        long heartbeatIntervalMs = heartbeatInterval != null ? heartbeatInterval.getDuration().toMillis(): 3000L;
+        long heartbeatIntervalMs = heartbeatInterval != null ? heartbeatInterval.getDuration().toMillis() : 3000L;
         properties.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, String.valueOf(heartbeatIntervalMs));
 
         return properties;
     }
+
+
 }

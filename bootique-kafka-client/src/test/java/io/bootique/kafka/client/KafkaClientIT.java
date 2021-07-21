@@ -81,7 +81,7 @@ public class KafkaClientIT {
                 .cluster(TEST_CLUSTER)
                 .topics("topic1")
                 .group("group1")
-                .create();
+                .createConsumer();
 
         Consumer<String, String> c1 = consumerMaker.get();
         try {

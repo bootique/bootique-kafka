@@ -18,12 +18,13 @@
  */
 package io.bootique.kafka.client.consumer;
 
-import io.bootique.kafka.KafkaClientBuilder;
 import io.bootique.kafka.BootstrapServersCollection;
+import io.bootique.kafka.KafkaClientBuilder;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.internals.NoOpConsumerRebalanceListener;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +49,13 @@ public class DefaultKafkaConsumerBuilder<K, V>
     private Duration autoCommitInterval;
     private AutoOffsetReset autoOffsetReset;
     private Duration sessionTimeout;
+    private ConsumerRebalanceListener rebalanceListener;
+
 
     public DefaultKafkaConsumerBuilder(
-            KafkaConsumersManager consumersManager,
             BootstrapServersCollection clusters,
             Map<String, String> defaultProperties,
+            KafkaConsumersManager consumersManager,
             Deserializer<K> keyDeserializer,
             Deserializer<V> valueDeserializer) {
 
@@ -102,10 +105,30 @@ public class DefaultKafkaConsumerBuilder<K, V>
     }
 
     @Override
-    public Consumer<K, V> create(ConsumerRebalanceListener rebalanceListener) {
+    public KafkaConsumerBuilder<K, V> rebalanceListener(ConsumerRebalanceListener rebalanceListener) {
+        this.rebalanceListener = rebalanceListener;
+        return this;
+    }
+
+    @Override
+    public KafkaPoller<K, V> consume(KafkaConsumerCallback<K, V> callback, Duration pollInterval) {
+        Consumer<K, V> consumer = createConsumer();
+
+        // Using
+        KafkaPoller<K, V> poller = new KafkaPoller<>(consumer, callback, pollInterval);
+        poller.start();
+
+        return poller;
+    }
+
+    @Override
+    public Consumer<K, V> createConsumer() {
 
         Properties properties = resolveProperties();
         Collection<String> topics = createTopics();
+        ConsumerRebalanceListener rebalanceListener = this.rebalanceListener != null
+                ? this.rebalanceListener
+                : new NoOpConsumerRebalanceListener();
 
         LOGGER.info("Creating consumer. Cluster: {}, topics: {}.",
                 properties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG),
