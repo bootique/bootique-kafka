@@ -26,7 +26,6 @@ import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Test;
 import org.rnorth.ducttape.unreliables.Unreliables;
 
@@ -49,7 +48,7 @@ public class KafkaConsumerFactory_ConsumerIT extends KafkaConsumerFactoryTestBas
         Producer<String, String> producer = createProducer(app);
 
         Supplier<Consumer<String, String>> consumerMaker = () -> app.getInstance(KafkaConsumerFactory.class)
-                .consumer(new StringDeserializer(), new StringDeserializer())
+                .charConsumer()
                 // must disable auto-commit, as we'll be committing manually
                 .autoCommit(false)
                 .cluster(TEST_CLUSTER)

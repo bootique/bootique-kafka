@@ -29,6 +29,13 @@ public interface KafkaConsumerFactory {
         return consumer(new ByteArrayDeserializer(), new ByteArrayDeserializer());
     }
 
+    /**
+     * @since 3.0.M1
+     */
+    default KafkaConsumerBuilder<String, String> charConsumer() {
+        return consumer(new StringDeserializer(), new StringDeserializer());
+    }
+
     default KafkaConsumerBuilder<byte[], String> charValueConsumer() {
         return consumer(new ByteArrayDeserializer(), new StringDeserializer());
     }

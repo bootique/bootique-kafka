@@ -26,7 +26,6 @@ import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
 import io.bootique.kafka.client.consumer.KafkaPoller;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Test;
 import org.rnorth.ducttape.unreliables.Unreliables;
 
@@ -52,7 +51,7 @@ public class KafkaConsumerFactory_KafkaPollerIT extends KafkaConsumerFactoryTest
         String group = getClass().getSimpleName() + "_testConsume_group";
 
         try (KafkaPoller<?, ?> poller = app.getInstance(KafkaConsumerFactory.class)
-                .consumer(new StringDeserializer(), new StringDeserializer())
+                .charConsumer()
                 .cluster(TEST_CLUSTER)
                 .group(group)
                 .topics(topic)
@@ -80,7 +79,7 @@ public class KafkaConsumerFactory_KafkaPollerIT extends KafkaConsumerFactoryTest
         Map<String, String> data = new ConcurrentHashMap<>();
 
         try (KafkaPoller<?, ?> poller = app.getInstance(KafkaConsumerFactory.class)
-                .consumer(new StringDeserializer(), new StringDeserializer())
+                .charConsumer()
                 .cluster(TEST_CLUSTER)
                 .group(group)
                 .topics(topic)
