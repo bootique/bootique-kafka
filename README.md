@@ -108,7 +108,14 @@ Consumer example (also see [this code sample](https://github.com/bootique-exampl
 @Inject
 KafkaConsumerFactory factory;
 
+// a custom function to consume data 
+public void consumeBatch(Consumer<K, V> consumer, ConsumerRecords<K, V> data){
+    data.forEach(r -> System.out.println(r.topic() + "_" + r.offset() + ": " + r.value()))
+}
+
 public void runConsumer() {
+    
+
     
     // this will start consumer in the background
     KafkaPollingTracker poll = factory
@@ -119,8 +126,7 @@ public void runConsumer() {
         .topic("mytopic")
         
         // start consumption in the background
-        .consume((c, data) -> data.forEach(
-                r -> System.out.println(r.topic() + "_" + r.offset() + ": " + r.value())));
+        .consume(this::consumeBatch, Duration.ofSeconds(1));
     
     // Close when we need to stop consumption. With no explicit Bootique will
     // close the consumer before the app exit
