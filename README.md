@@ -114,9 +114,6 @@ public void consumeBatch(Consumer<K, V> consumer, ConsumerRecords<K, V> data){
 }
 
 public void runConsumer() {
-    
-
-    
     // this will start consumer in the background
     KafkaPollingTracker poll = factory
         // configure consumer
