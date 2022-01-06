@@ -114,15 +114,15 @@ public void consumeBatch(Consumer<K, V> consumer, ConsumerRecords<K, V> data){
 }
 
 public void runConsumer() {
-    // this will start consumer in the background
     KafkaPollingTracker poll = factory
+        
         // configure consumer
         .charValueConsumer()
         .cluster("cluster1")
         .group("somegroup")
         .topic("mytopic")
         
-        // start consumption in the background
+        // start the consumer in the background
         .consume(this::consumeBatch, Duration.ofSeconds(1));
     
     // Close when we need to stop consumption. With no explicit Bootique will
