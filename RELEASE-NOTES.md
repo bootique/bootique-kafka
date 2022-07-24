@@ -1,6 +1,7 @@
 ## 3.0.M1
 
 * #30 Replace consumer iterator with callback
+* #31 Upgrade client to 2.7.2
 
 ## 2.0.M1
 

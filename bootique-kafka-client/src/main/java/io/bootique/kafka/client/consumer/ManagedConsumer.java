@@ -45,6 +45,16 @@ public class ManagedConsumer<K, V> implements Consumer<K, V> {
     }
 
     @Override
+    public void enforceRebalance() {
+        delegate.enforceRebalance();
+    }
+
+    @Override
+    public ConsumerGroupMetadata groupMetadata() {
+        return delegate.groupMetadata();
+    }
+
+    @Override
     public Set<TopicPartition> assignment() {
         return delegate.assignment();
     }
