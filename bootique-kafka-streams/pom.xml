@@ -45,12 +45,10 @@
         <dependency>
             <groupId>io.bootique.kafka</groupId>
             <artifactId>bootique-kafka-base</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <scope>compile</scope>
         </dependency>
 
         <!-- Unit test dependencies -->
