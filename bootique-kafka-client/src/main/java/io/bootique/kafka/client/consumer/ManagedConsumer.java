@@ -19,15 +19,25 @@
 package io.bootique.kafka.client.consumer;
 
 import io.bootique.kafka.client.KafkaResourceManager;
-import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerGroupMetadata;
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.clients.consumer.OffsetAndTimestamp;
+import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 
 import java.time.Duration;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.OptionalLong;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -47,6 +57,11 @@ public class ManagedConsumer<K, V> implements Consumer<K, V> {
     @Override
     public void enforceRebalance() {
         delegate.enforceRebalance();
+    }
+
+    @Override
+    public void enforceRebalance(String reason) {
+        delegate.enforceRebalance(reason);
     }
 
     @Override
@@ -263,16 +278,14 @@ public class ManagedConsumer<K, V> implements Consumer<K, V> {
     }
 
     @Override
-    public void close() {
-        resourceManager.unregister(this);
-        delegate.close();
+    public OptionalLong currentLag(TopicPartition topicPartition) {
+        return delegate.currentLag(topicPartition);
     }
 
     @Override
-    @Deprecated
-    public void close(long timeout, TimeUnit unit) {
+    public void close() {
         resourceManager.unregister(this);
-        delegate.close(timeout, unit);
+        delegate.close();
     }
 
     @Override

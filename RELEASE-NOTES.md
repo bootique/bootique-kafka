@@ -1,3 +1,7 @@
+## 3.0.M2
+
+* #33 Update Kafka clients and streams version to 3.4.0
+
 ## 3.0.M1
 
 * #30 Replace consumer iterator with callback

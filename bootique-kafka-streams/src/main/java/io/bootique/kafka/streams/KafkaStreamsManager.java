@@ -23,9 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A singleton that manages a mutable collection of KafkaStreams, providing per instance start and close operations as
@@ -36,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class KafkaStreamsManager implements Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaStreamsManager.class);
-    private static final long DEFAULT_CLOSE_TIMEOUT_SEC = 10;
+    private static final Duration DEFAULT_CLOSE_TIMEOUT = Duration.of(10, ChronoUnit.SECONDS);
 
     private Map<KafkaStreams, Integer> streamsMap;
 
@@ -50,7 +51,7 @@ public class KafkaStreamsManager implements Closeable {
     }
 
     public void close(KafkaStreams streams) {
-        streams.close(DEFAULT_CLOSE_TIMEOUT_SEC, TimeUnit.SECONDS);
+        streams.close(DEFAULT_CLOSE_TIMEOUT);
         streamsMap.remove(streams);
     }
 
@@ -58,7 +59,7 @@ public class KafkaStreamsManager implements Closeable {
     public void close() {
         streamsMap.keySet().forEach(s -> {
             try {
-                s.close(DEFAULT_CLOSE_TIMEOUT_SEC, TimeUnit.SECONDS);
+                s.close(DEFAULT_CLOSE_TIMEOUT);
             } catch (Exception e) {
                 // errors or timeouts stopping a given stream should not prevent us from stopping others
                 LOGGER.warn("Error shutting down KafkaStreams. Ignoring.", e);
