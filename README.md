@@ -36,7 +36,7 @@ Include the BOMs and then ```bootique-kafka-client```:
         <dependency>
             <groupId>io.bootique.bom</groupId>
             <artifactId>bootique-bom</artifactId>
-            <version>3.0.M1-SNAPSHOT</version>
+            <version>3.0.M2</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
