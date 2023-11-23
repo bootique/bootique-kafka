@@ -41,7 +41,7 @@ public class KafkaConsumerFactory_ConsumerIT extends KafkaConsumerFactoryTestBas
     final static BQRuntime app = createApp();
 
     @Test
-    public void testAtLeastOnce_Delivery() {
+    public void atLeastOnce_Delivery() {
         Producer<String, String> producer = createProducer(app);
         String topic = getClass().getSimpleName() + "_testAtLeastOnceDelivery_topic";
         String group = getClass().getSimpleName() + "_testAtLeastOnceDelivery_group";

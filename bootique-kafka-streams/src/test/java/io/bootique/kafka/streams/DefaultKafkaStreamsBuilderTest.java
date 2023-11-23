@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 public class DefaultKafkaStreamsBuilderTest {
 
     @Test
-    public void testAppendBuilderProperties_All() {
+    public void appendBuilderProperties_All() {
 
         DefaultKafkaStreamsBuilder builder = new DefaultKafkaStreamsBuilder(
                 mock(KafkaStreamsManager.class),
@@ -52,7 +52,7 @@ public class DefaultKafkaStreamsBuilderTest {
     }
 
     @Test
-    public void testAppendBuilderProperties_Partial() {
+    public void appendBuilderProperties_Partial() {
 
         DefaultKafkaStreamsBuilder builder = new DefaultKafkaStreamsBuilder(
                 mock(KafkaStreamsManager.class),

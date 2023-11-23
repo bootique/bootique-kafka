@@ -36,13 +36,13 @@ public class BootstrapServersTest {
     }
 
     @Test
-    public void testDeserializeString() throws IOException {
+    public void deserializeString() throws IOException {
         BootstrapServers s = deserialize(BootstrapServers.class, "s1,s2");
         assertEquals("s1,s2", s.asString());
     }
 
     @Test
-    public void testDeserializeInMap() throws IOException {
+    public void deserializeInMap() throws IOException {
         C1 c1 = deserialize(C1.class, "servers:\n    a: s1,s2\n    b: s3:3001");
         assertEquals(2, c1.servers.size());
         assertEquals("s1,s2", c1.servers.get("a").asString());

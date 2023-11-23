@@ -44,7 +44,7 @@ public class KafkaConsumerFactory_CallbackIT extends KafkaConsumerFactoryTestBas
     final BQRuntime app = createApp();
 
     @Test
-    public void testSimpleConsume() {
+    public void simpleConsume() {
         Producer<String, String> producer = createProducer(app);
         String topic = getClass().getSimpleName() + "_testConsume_topic";
         String group = getClass().getSimpleName() + "_testConsume_group";
@@ -72,7 +72,7 @@ public class KafkaConsumerFactory_CallbackIT extends KafkaConsumerFactoryTestBas
     }
 
     @Test
-    public void testClose() throws InterruptedException {
+    public void close() throws InterruptedException {
         Producer<String, String> producer = createProducer(app);
         KafkaResourceManager resourceManager = app.getInstance(KafkaResourceManager.class);
         String topic = getClass().getSimpleName() + "_testClose_topic";
@@ -108,7 +108,7 @@ public class KafkaConsumerFactory_CallbackIT extends KafkaConsumerFactoryTestBas
     }
 
     @Test
-    public void testAtLeastOnceDelivery() throws InterruptedException {
+    public void atLeastOnceDelivery() throws InterruptedException {
         Producer<String, String> producer = createProducer(app);
         String topic = getClass().getSimpleName() + "_testAtLeastOnceDelivery_topic";
         String group = getClass().getSimpleName() + "_testAtLeastOnceDelivery_group";

@@ -25,12 +25,12 @@ import org.junit.jupiter.api.Test;
 public class KafkaClientModuleProviderTest {
 
     @Test
-    public void testAutoLoadable() {
+    public void autoLoadable() {
         BQModuleProviderChecker.testAutoLoadable(KafkaClientModuleProvider.class);
     }
 
     @Test
-    public void testMetadata() {
+    public void metadata() {
         BQModuleProviderChecker.testMetadata(KafkaClientModuleProvider.class);
     }
 }

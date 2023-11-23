@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class KafkaClientBuilderTest {
 
     @Test
-    public void testResolveProperties_Clusters() {
+    public void resolveProperties_Clusters() {
 
         Map<String, BootstrapServers> clustersMap = new HashMap<>();
         clustersMap.put("c1", new BootstrapServers("example.org:5678"));
@@ -52,7 +52,7 @@ public class KafkaClientBuilderTest {
     }
 
     @Test
-    public void testResolveProperties_Clusters_Default() {
+    public void resolveProperties_Clusters_Default() {
 
         Map<String, BootstrapServers> clustersMap = new HashMap<>();
         clustersMap.put("c2", new BootstrapServers("example.org:5679"));
@@ -70,7 +70,7 @@ public class KafkaClientBuilderTest {
     }
 
     @Test
-    public void testResolveProperties_Clusters_NoDefault() {
+    public void resolveProperties_Clusters_NoDefault() {
 
         Map<String, BootstrapServers> clustersMap = new HashMap<>();
         clustersMap.put("c1", new BootstrapServers("example.org:5678"));
@@ -88,7 +88,7 @@ public class KafkaClientBuilderTest {
     }
 
     @Test
-    public void testResolveProperties_ExplicitVals() {
+    public void resolveProperties_ExplicitVals() {
 
         Map<String, BootstrapServers> clustersMap = new HashMap<>();
         clustersMap.put("c", new BootstrapServers("example.org:5679"));
@@ -120,7 +120,7 @@ public class KafkaClientBuilderTest {
     }
 
     @Test
-    public void testResolveProperties_CustomProperties() {
+    public void resolveProperties_CustomProperties() {
 
         Map<String, BootstrapServers> clustersMap = new HashMap<>();
         clustersMap.put("c", new BootstrapServers("example.org:5679"));
@@ -147,7 +147,7 @@ public class KafkaClientBuilderTest {
     }
 
     @Test
-    public void testResolveProperties_Defaults() {
+    public void resolveProperties_Defaults() {
 
         Map<String, BootstrapServers> clustersMap = new HashMap<>();
         clustersMap.put("c", new BootstrapServers("example.org:5679"));

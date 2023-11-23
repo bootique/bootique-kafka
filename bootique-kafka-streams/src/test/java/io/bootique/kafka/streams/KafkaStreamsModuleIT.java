@@ -33,7 +33,7 @@ public class KafkaStreamsModuleIT {
     final BQTestFactory testFactory = new BQTestFactory();
 
     @Test
-    public void testKafkaStreamsFactory() {
+    public void kafkaStreamsFactory() {
         BQRuntime runtime = testFactory
                 .app("-c", "classpath:io/bootique/kafka/streams/KafkaStreamsModuleIT.yml")
                 .autoLoadModules()
