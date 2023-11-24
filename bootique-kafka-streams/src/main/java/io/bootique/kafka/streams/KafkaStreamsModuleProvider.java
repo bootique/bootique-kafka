@@ -19,12 +19,15 @@
 package io.bootique.kafka.streams;
 
 import io.bootique.BQModuleProvider;
-import io.bootique.di.BQModule;
+import io.bootique.bootstrap.BuiltModule;
 
 public class KafkaStreamsModuleProvider implements BQModuleProvider {
 
     @Override
-    public BQModule module() {
-        return new KafkaStreamsModule();
+    public BuiltModule buildModule() {
+        return BuiltModule.of(new KafkaStreamsModule())
+                .provider(this)
+                .description("Integrates Apache Kafka streams client")
+                .build();
     }
 }
