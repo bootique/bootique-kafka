@@ -1,1 +1,1 @@
-io.bootique.kafka.client.KafkaClientModuleProvider
+io.bootique.kafka.client.KafkaClientModule

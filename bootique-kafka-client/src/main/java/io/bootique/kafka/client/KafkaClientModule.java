@@ -20,8 +20,10 @@
 package io.bootique.kafka.client;
 
 import io.bootique.BQCoreModule;
-import io.bootique.ConfigModule;
+import io.bootique.BQModuleProvider;
+import io.bootique.bootstrap.BuiltModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
@@ -33,7 +35,17 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import javax.inject.Singleton;
 import java.util.logging.Level;
 
-public class KafkaClientModule extends ConfigModule {
+public class KafkaClientModule implements BQModule, BQModuleProvider {
+
+    private static final String CONFIG_PREFIX = "kafkaclient";
+
+    @Override
+    public BuiltModule buildModule() {
+        return BuiltModule.of(this)
+                .description("Integrates Apache Kafka client")
+                .config(CONFIG_PREFIX, KafkaClientFactoryFactory.class)
+                .build();
+    }
 
     @Override
     public void configure(Binder binder) {
@@ -46,7 +58,7 @@ public class KafkaClientModule extends ConfigModule {
     @Singleton
     @Provides
     KafkaClientFactoryFactory provideClientFactoryFactory(ConfigurationFactory configFactory) {
-        return config(KafkaClientFactoryFactory.class, configFactory);
+        return configFactory.config(KafkaClientFactoryFactory.class, CONFIG_PREFIX);
     }
 
     @Singleton

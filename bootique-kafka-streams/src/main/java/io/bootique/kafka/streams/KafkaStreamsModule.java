@@ -19,15 +19,31 @@
 
 package io.bootique.kafka.streams;
 
-import javax.inject.Singleton;
-
-import io.bootique.ConfigModule;
+import io.bootique.BQModuleProvider;
+import io.bootique.bootstrap.BuiltModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.di.BQModule;
+import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.shutdown.ShutdownManager;
 
+import javax.inject.Singleton;
 
-public class KafkaStreamsModule extends ConfigModule {
+public class KafkaStreamsModule implements BQModule, BQModuleProvider {
+
+    private static final String CONFIG_PREFIX = "kafkastreams";
+
+    @Override
+    public BuiltModule buildModule() {
+        return BuiltModule.of(this)
+                .description("Integrates Apache Kafka streams client")
+                .config(CONFIG_PREFIX, KafkaStreamsFactoryFactory.class)
+                .build();
+    }
+
+    @Override
+    public void configure(Binder binder) {
+    }
 
     @Provides
     @Singleton
@@ -42,6 +58,6 @@ public class KafkaStreamsModule extends ConfigModule {
     @Provides
     @Singleton
     KafkaStreamsFactory provideStreamsFactory(ConfigurationFactory configFactory, KafkaStreamsManager streamsManager) {
-        return config(KafkaStreamsFactoryFactory.class, configFactory).createFactory(streamsManager);
+        return configFactory.config(KafkaStreamsFactoryFactory.class, CONFIG_PREFIX).createFactory(streamsManager);
     }
 }

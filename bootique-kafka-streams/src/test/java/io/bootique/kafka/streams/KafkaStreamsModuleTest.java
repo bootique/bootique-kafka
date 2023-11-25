@@ -16,20 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package io.bootique.kafka.streams;
 
-package io.bootique.kafka.client;
+import io.bootique.junit5.BQModuleProviderChecker;
+import org.junit.jupiter.api.Test;
 
-import io.bootique.BQModuleProvider;
-import io.bootique.bootstrap.BuiltModule;
+public class KafkaStreamsModuleTest {
 
-public class KafkaClientModuleProvider implements BQModuleProvider {
-
-    @Override
-    public BuiltModule buildModule() {
-        return BuiltModule.of(new KafkaClientModule())
-                .provider(this)
-                .description("Integrates Apache Kafka client")
-                .config("kafkaclient", KafkaClientFactoryFactory.class)
-                .build();
+    @Test
+    public void autoLoadable() {
+        BQModuleProviderChecker.testAutoLoadable(KafkaStreamsModule.class);
     }
 }
