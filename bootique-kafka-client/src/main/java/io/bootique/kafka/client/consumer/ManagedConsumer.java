@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * @since 3.0.M1
+ * @since 3.0
  */
 public class ManagedConsumer<K, V> implements Consumer<K, V> {
 

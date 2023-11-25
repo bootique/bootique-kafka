@@ -30,7 +30,7 @@ public interface KafkaConsumerFactory {
     }
 
     /**
-     * @since 3.0.M1
+     * @since 3.0
      */
     default KafkaConsumerBuilder<String, String> charConsumer() {
         return consumer(new StringDeserializer(), new StringDeserializer());
@@ -45,7 +45,7 @@ public interface KafkaConsumerFactory {
     }
 
     /**
-     * @since 3.0.M1
+     * @since 3.0
      */
     <K, V> KafkaConsumerBuilder<K, V> consumer(Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer);
 }

@@ -34,7 +34,7 @@ import java.time.Duration;
 import java.util.*;
 
 /**
- * @since 3.0.M1
+ * @since 3.0
  */
 public class KafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaConsumerBuilder<K, V>> {
 

@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
  * Runs background callback-style Kafka message consumption loop. The only public API in this class is {@link #close()}
  * that allows to cleanly stop the background consumer.
  *
- * @since 3.0.M1
+ * @since 3.0
  */
 public class KafkaPollingTracker implements AutoCloseable {
 

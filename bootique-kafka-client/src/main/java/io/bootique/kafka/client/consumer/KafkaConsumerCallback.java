@@ -26,7 +26,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
  * if desired.
  *
  * @see KafkaConsumerBuilder
- * @since 3.0.M1
+ * @since 3.0
  */
 @FunctionalInterface
 public interface KafkaConsumerCallback<K, V> {

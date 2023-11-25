@@ -29,7 +29,7 @@ import java.time.Duration;
 import java.util.Objects;
 
 /**
- * @since 3.0.M1
+ * @since 3.0
  */
 class KafkaPollingTrackerWorker<K, V> {
 
