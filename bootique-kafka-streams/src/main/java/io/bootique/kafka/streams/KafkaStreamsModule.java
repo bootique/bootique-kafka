@@ -20,7 +20,7 @@
 package io.bootique.kafka.streams;
 
 import io.bootique.BQModuleProvider;
-import io.bootique.bootstrap.BuiltModule;
+import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
@@ -34,8 +34,8 @@ public class KafkaStreamsModule implements BQModule, BQModuleProvider {
     private static final String CONFIG_PREFIX = "kafkastreams";
 
     @Override
-    public BuiltModule buildModule() {
-        return BuiltModule.of(this)
+    public ModuleCrate moduleCrate() {
+        return ModuleCrate.of(this)
                 .description("Integrates Apache Kafka streams client")
                 .config(CONFIG_PREFIX, KafkaStreamsFactoryFactory.class)
                 .build();
