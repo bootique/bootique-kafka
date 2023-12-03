@@ -20,9 +20,7 @@
 package io.bootique.kafka;
 
 import io.bootique.annotation.BQConfig;
-import io.bootique.annotation.BQConfigProperty;
 
-import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -32,19 +30,11 @@ import java.util.Objects;
 @BQConfig
 public class BootstrapServers {
 
-    private String bootstrapServers;
+    private final String bootstrapServers;
 
-    @BQConfigProperty
+    @BQConfig
     public BootstrapServers(String bootstrapServers) {
         this.bootstrapServers = Objects.requireNonNull(bootstrapServers);
-    }
-
-    public static BootstrapServers create(Collection<String> bootstrapServers) {
-        if (Objects.requireNonNull(bootstrapServers).isEmpty()) {
-            throw new IllegalArgumentException("Empty list of bootstrap servers");
-        }
-
-        return new BootstrapServers(String.join(",", bootstrapServers));
     }
 
     public String asString() {

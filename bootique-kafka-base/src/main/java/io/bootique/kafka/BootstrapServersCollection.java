@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class BootstrapServersCollection {
 
-    private Map<String, BootstrapServers> clusters;
+    private final Map<String, BootstrapServers> clusters;
 
     public BootstrapServersCollection(Map<String, BootstrapServers> clusters) {
         if (clusters == null || clusters.isEmpty()) {
