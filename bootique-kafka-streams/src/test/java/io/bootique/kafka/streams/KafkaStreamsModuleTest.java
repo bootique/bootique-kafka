@@ -18,13 +18,13 @@
  */
 package io.bootique.kafka.streams;
 
-import io.bootique.junit5.BQModuleProviderChecker;
+import io.bootique.junit5.BQModuleTester;
 import org.junit.jupiter.api.Test;
 
 public class KafkaStreamsModuleTest {
 
     @Test
-    public void autoLoadable() {
-        BQModuleProviderChecker.testAutoLoadable(KafkaStreamsModule.class);
+    public void check() {
+        BQModuleTester.of(KafkaStreamsModule.class).testAutoLoadable().testConfig();
     }
 }

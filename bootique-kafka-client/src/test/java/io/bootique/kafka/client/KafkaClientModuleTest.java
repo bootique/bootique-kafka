@@ -19,18 +19,13 @@
 
 package io.bootique.kafka.client;
 
-import io.bootique.junit5.BQModuleProviderChecker;
+import io.bootique.junit5.BQModuleTester;
 import org.junit.jupiter.api.Test;
 
 public class KafkaClientModuleTest {
 
     @Test
-    public void autoLoadable() {
-        BQModuleProviderChecker.testAutoLoadable(KafkaClientModule.class);
-    }
-
-    @Test
-    public void metadata() {
-        BQModuleProviderChecker.testMetadata(KafkaClientModule.class);
+    public void check() {
+        BQModuleTester.of(KafkaClientModule.class).testAutoLoadable().testConfig();
     }
 }
