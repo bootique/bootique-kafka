@@ -69,9 +69,7 @@ public class KafkaClientModule implements BQModule {
     @Singleton
     @Provides
     KafkaResourceManager provideResourceManager(ShutdownManager shutdownManager) {
-        KafkaResourceManager rm = new KafkaResourceManager();
-        shutdownManager.addShutdownHook(rm);
-        return rm;
+        return shutdownManager.onShutdown(new KafkaResourceManager());
     }
 
     @Singleton

@@ -49,9 +49,7 @@ public class KafkaStreamsModule implements BQModule {
     KafkaStreamsManager provideStreamsManager(ShutdownManager shutdownManager) {
         // we need a central stream manager that can track streams dynamically, but serve as the only integration
         // point with ShutdownManager
-        KafkaStreamsManager streamsManager = new KafkaStreamsManager();
-        shutdownManager.addShutdownHook(streamsManager);
-        return streamsManager;
+        return shutdownManager.onShutdown(new KafkaStreamsManager());
     }
 
     @Provides
