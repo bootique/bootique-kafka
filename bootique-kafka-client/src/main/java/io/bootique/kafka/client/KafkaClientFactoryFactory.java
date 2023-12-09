@@ -28,21 +28,26 @@ import io.bootique.kafka.client.consumer.KafkaConsumerFactoryFactory;
 import io.bootique.kafka.client.producer.DefaultKafkaProducerFactory;
 import io.bootique.kafka.client.producer.KafkaProducerFactoryFactory;
 
+import javax.inject.Inject;
 import java.util.Map;
+import java.util.Objects;
 
 /**
- * A configuration object that describes a a set of Kafka servers  as well as a producer and consumer templates. Serves
+ * A configuration object that describes a set of Kafka servers as well as a producer and consumer templates. Serves
  * as a factory for server producers and consumers.
  */
-@BQConfig
+@BQConfig("Describes a set of Kafka servers and producer and consumer templates")
 public class KafkaClientFactoryFactory {
+
+   private final KafkaResourceManager consumersManager;
 
     private Map<String, BootstrapServers> clusters;
     private KafkaConsumerFactoryFactory consumer;
     private KafkaProducerFactoryFactory producer;
 
-    public KafkaClientFactoryFactory() {
-        this.consumer = new KafkaConsumerFactoryFactory();
+    @Inject
+    public KafkaClientFactoryFactory(KafkaResourceManager consumersManager) {
+        this.consumersManager = Objects.requireNonNull(consumersManager);
     }
 
     @BQConfigProperty
@@ -58,8 +63,8 @@ public class KafkaClientFactoryFactory {
     /**
      * @return a new consumer factory.
      */
-    public KafkaConsumerFactory createConsumerFactory(KafkaResourceManager resourceManager) {
-        return nonNullConsumer().createConsumer(resourceManager, getClusters());
+    public KafkaConsumerFactory createConsumerFactory() {
+        return nonNullConsumer().createConsumer(consumersManager, getClusters());
     }
 
     /**

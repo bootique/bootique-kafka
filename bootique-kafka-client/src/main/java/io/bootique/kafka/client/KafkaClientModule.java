@@ -74,7 +74,7 @@ public class KafkaClientModule implements BQModule {
 
     @Singleton
     @Provides
-    KafkaConsumerFactory provideConsumerFactory(KafkaResourceManager consumersManager, KafkaClientFactoryFactory parentFactory) {
-        return parentFactory.createConsumerFactory(consumersManager);
+    KafkaConsumerFactory provideConsumerFactory(KafkaClientFactoryFactory parentFactory) {
+        return parentFactory.createConsumerFactory();
     }
 }

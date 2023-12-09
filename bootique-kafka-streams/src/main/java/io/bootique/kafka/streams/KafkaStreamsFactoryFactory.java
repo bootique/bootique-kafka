@@ -26,13 +26,17 @@ import io.bootique.kafka.streams.config.ProcessingGuarantee;
 import io.bootique.value.Bytes;
 import org.apache.kafka.streams.StreamsConfig;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 @BQConfig
 public class KafkaStreamsFactoryFactory {
+
+    private final KafkaStreamsManager streamsManager;
 
     private Map<String, BootstrapServers> clusters;
     private String applicationId;
@@ -43,7 +47,12 @@ public class KafkaStreamsFactoryFactory {
     // TODO: other StreamsConfig.*_CONFIG properties
     // TODO: properties for adminClient, consumer, globalConsumer, producer, restoreConsumer
 
-    public DefaultKafkaStreamsFactory createFactory(KafkaStreamsManager streamsManager) {
+    @Inject
+    public KafkaStreamsFactoryFactory(KafkaStreamsManager streamsManager) {
+        this.streamsManager = Objects.requireNonNull(streamsManager);
+    }
+
+    public DefaultKafkaStreamsFactory create() {
         return new DefaultKafkaStreamsFactory(streamsManager, getClusters(), createProperties());
     }
 

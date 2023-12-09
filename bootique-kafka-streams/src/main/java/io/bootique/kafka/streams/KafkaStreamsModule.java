@@ -54,7 +54,7 @@ public class KafkaStreamsModule implements BQModule {
 
     @Provides
     @Singleton
-    KafkaStreamsFactory provideStreamsFactory(ConfigurationFactory configFactory, KafkaStreamsManager streamsManager) {
-        return configFactory.config(KafkaStreamsFactoryFactory.class, CONFIG_PREFIX).createFactory(streamsManager);
+    KafkaStreamsFactory provideStreamsFactory(ConfigurationFactory configFactory) {
+        return configFactory.config(KafkaStreamsFactoryFactory.class, CONFIG_PREFIX).create();
     }
 }
