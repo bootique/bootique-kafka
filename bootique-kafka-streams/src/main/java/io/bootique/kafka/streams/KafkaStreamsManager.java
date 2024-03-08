@@ -62,7 +62,7 @@ public class KafkaStreamsManager implements Closeable {
                 s.close(DEFAULT_CLOSE_TIMEOUT);
             } catch (Exception e) {
                 // errors or timeouts stopping a given stream should not prevent us from stopping others
-                LOGGER.warn("Error shutting down KafkaStreams. Ignoring.", e);
+                LOGGER.warn("Error stopping KafkaStreams. Ignoring.", e);
             }
         });
 
