@@ -26,10 +26,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetAndTimestamp;
 import org.apache.kafka.clients.consumer.OffsetCommitCallback;
-import org.apache.kafka.common.Metric;
-import org.apache.kafka.common.MetricName;
-import org.apache.kafka.common.PartitionInfo;
-import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.*;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -52,6 +49,11 @@ public class ManagedConsumer<K, V> implements Consumer<K, V> {
         this.resourceManager = Objects.requireNonNull(resourceManager);
         this.delegate = Objects.requireNonNull(delegate);
         resourceManager.register(delegate);
+    }
+
+    @Override
+    public Uuid clientInstanceId(Duration timeout) {
+        return delegate.clientInstanceId(timeout);
     }
 
     @Override

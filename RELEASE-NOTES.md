@@ -1,3 +1,7 @@
+## 3.0-M4
+
+* #34 Upgrade kafka-clients and kafka-streams to 3.7.0
+
 ## 3.0.M2
 
 * #33 Update Kafka clients and streams version to 3.4.0

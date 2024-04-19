@@ -25,7 +25,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.internals.NoOpConsumerRebalanceListener;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +100,8 @@ public class KafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaConsumer
         LOGGER.info("Subscribing consumer {} to topics: {}", System.identityHashCode(consumer), topics);
         ConsumerRebalanceListener rebalanceListener = this.rebalanceListener != null
                 ? this.rebalanceListener
-                : new NoOpConsumerRebalanceListener();
+                : new NoOpRebalanceListener();
+
         consumer.subscribe(topics, rebalanceListener);
         return consumer;
     }
@@ -194,5 +195,15 @@ public class KafkaConsumerBuilder<K, V> extends KafkaClientBuilder<KafkaConsumer
     public KafkaConsumerBuilder<K, V> rebalanceListener(ConsumerRebalanceListener rebalanceListener) {
         this.rebalanceListener = rebalanceListener;
         return this;
+    }
+
+    static class NoOpRebalanceListener implements ConsumerRebalanceListener {
+        @Override
+        public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+        }
+
+        @Override
+        public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+        }
     }
 }
