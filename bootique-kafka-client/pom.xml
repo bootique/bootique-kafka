@@ -45,7 +45,6 @@
         <dependency>
             <groupId>io.bootique.kafka</groupId>
             <artifactId>bootique-kafka-base</artifactId>
-            <scope>compile</scope>
         </dependency>
 
         <!-- Unit test dependencies -->
