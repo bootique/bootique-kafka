@@ -55,7 +55,9 @@ Include the BOMs and then ```bootique-kafka-client```:
 
 ## Producer/Consumer Configuration
 
-Configure parameters in the YAML:
+Configure parameters in the YAML. Note that practically all of these settings can be overridden when creating a
+specific Producer or Consumer instance via `KafkaProducerFactory` or `KafkaConsumerFactory`. So this is just a
+collection of defaults for the most typical Producer or Consumer:
 
 ```yaml
 kafkaclient:
