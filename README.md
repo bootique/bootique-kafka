@@ -22,11 +22,6 @@
 
 # bootique-kafka
 
-Integration of Kafka client and Kafka streams for Bootique. See usage examples:
-
-* [bootique-kafka-producer](https://github.com/bootique-examples/bootique-kafka-producer)
-* [bootique-kafka-consumer](https://github.com/bootique-examples/bootique-kafka-consumer)
-
 ## Dependencies
 
 Include the BOMs and then ```bootique-kafka-client```:
@@ -60,9 +55,7 @@ Include the BOMs and then ```bootique-kafka-client```:
 
 ## Producer/Consumer Configuration
 
-Configure parameters in the YAML. Note that practically all of these settings can be overidden when obtaining a 
-specific Producer or Consumer instance via ```io.bootique.kafka.client.KafkaClientFactory```. So this is just a 
-collection of defaults for the most typical Producer or Consumer:
+Configure parameters in the YAML:
 
 ```yaml
 kafkaclient:
@@ -83,8 +76,10 @@ kafkaclient:
     bufferMemory: 33554432
 ```
 
-Now you can inject producer and consumer factories and create any number of producers and consumers. Producer
-example (also see [this code sample](https://github.com/bootique-examples/bootique-kafka-producer)) :
+Now you can inject producer and consumer factories and create any number of producers and consumers (for more details
+see [bootique-kafka-examples](https://github.com/bootique-examples/bootique-kafka-examples)).
+
+Producer:
 ```java
 @Inject
 KafkaProducerFactory factory;
