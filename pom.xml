@@ -36,7 +36,7 @@
 
     <properties>
         <bootique.version>${project.version}</bootique.version>
-        <kafka.version>3.7.0</kafka.version>
+        <kafka.version>3.9.0</kafka.version>
     </properties>
 
     <modules>
