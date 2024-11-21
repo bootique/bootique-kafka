@@ -1,4 +1,4 @@
-## 3.0-M5
+## 3.0-M6
 
 * #36 Upgrade to "kafka-clients" 3.9.0
 
