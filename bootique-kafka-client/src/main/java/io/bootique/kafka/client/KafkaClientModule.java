@@ -31,7 +31,7 @@ import io.bootique.shutdown.ShutdownManager;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.logging.Level;
 
 public class KafkaClientModule implements BQModule {

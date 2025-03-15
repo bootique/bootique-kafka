@@ -26,7 +26,7 @@ import io.bootique.kafka.streams.config.ProcessingGuarantee;
 import io.bootique.value.Bytes;
 import org.apache.kafka.streams.StreamsConfig;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;

@@ -26,7 +26,7 @@ import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.shutdown.ShutdownManager;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 public class KafkaStreamsModule implements BQModule {
 

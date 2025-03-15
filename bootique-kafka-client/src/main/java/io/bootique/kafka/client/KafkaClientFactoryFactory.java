@@ -28,7 +28,7 @@ import io.bootique.kafka.client.consumer.KafkaConsumerFactoryFactory;
 import io.bootique.kafka.client.producer.DefaultKafkaProducerFactory;
 import io.bootique.kafka.client.producer.KafkaProducerFactoryFactory;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Map;
 import java.util.Objects;
 
