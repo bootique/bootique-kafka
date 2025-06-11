@@ -1,3 +1,7 @@
+## 3.0-RC2
+
+* #38 Upgrade Kafka client to 3.9.1
+
 ## 3.0-M6
 
 * #36 Upgrade to "kafka-clients" 3.9.0
