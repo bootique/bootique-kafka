@@ -18,16 +18,17 @@
  */
 package io.bootique.kafka.streams;
 
+import io.bootique.kafka.BootstrapServers;
 import io.bootique.kafka.BootstrapServersCollection;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsConfig;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 public class DefaultKafkaStreamsBuilderTest {
 
@@ -35,8 +36,8 @@ public class DefaultKafkaStreamsBuilderTest {
     public void appendBuilderProperties_All() {
 
         DefaultKafkaStreamsBuilder builder = new DefaultKafkaStreamsBuilder(
-                mock(KafkaStreamsManager.class),
-                mock(BootstrapServersCollection.class),
+                new KafkaStreamsManager(),
+                new BootstrapServersCollection(Map.of("a", new BootstrapServers("-"))),
                 Collections.emptyMap()
         );
 
@@ -55,8 +56,8 @@ public class DefaultKafkaStreamsBuilderTest {
     public void appendBuilderProperties_Partial() {
 
         DefaultKafkaStreamsBuilder builder = new DefaultKafkaStreamsBuilder(
-                mock(KafkaStreamsManager.class),
-                mock(BootstrapServersCollection.class),
+                new KafkaStreamsManager(),
+                new BootstrapServersCollection(Map.of("a", new BootstrapServers("-"))),
                 Collections.emptyMap()
         );
 
