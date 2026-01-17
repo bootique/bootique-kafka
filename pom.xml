@@ -35,7 +35,7 @@
     <description>Provides integration of various versions of Kafka clients with Bootique</description>
 
     <properties>
-        <kafka.version>3.9.1</kafka.version>
+        <kafka.version>4.1.1</kafka.version>
         <lz4j.version>1.8.1</lz4j.version>
         <commons.compress.version>1.26.1</commons.compress.version>
         <commons.lang.version>3.18.0</commons.lang.version>

@@ -19,6 +19,7 @@
 package io.bootique.kafka.client.consumer;
 
 import io.bootique.kafka.client.KafkaResourceManager;
+import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerGroupMetadata;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
@@ -26,7 +27,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetAndTimestamp;
 import org.apache.kafka.clients.consumer.OffsetCommitCallback;
+import org.apache.kafka.clients.consumer.SubscriptionPattern;
 import org.apache.kafka.common.*;
+import org.apache.kafka.common.metrics.KafkaMetric;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -107,14 +110,28 @@ public class ManagedConsumer<K, V> implements Consumer<K, V> {
     }
 
     @Override
-    public void unsubscribe() {
-        delegate.unsubscribe();
+    public void subscribe(SubscriptionPattern subscriptionPattern, ConsumerRebalanceListener consumerRebalanceListener) {
+        delegate.subscribe(subscriptionPattern, consumerRebalanceListener);
     }
 
     @Override
-    @Deprecated
-    public ConsumerRecords<K, V> poll(long timeout) {
-        return delegate.poll(timeout);
+    public void subscribe(SubscriptionPattern subscriptionPattern) {
+        delegate.subscribe(subscriptionPattern);
+    }
+
+    @Override
+    public void registerMetricForSubscription(KafkaMetric kafkaMetric) {
+        delegate.registerMetricForSubscription(kafkaMetric);
+    }
+
+    @Override
+    public void unregisterMetricFromSubscription(KafkaMetric kafkaMetric) {
+        delegate.unregisterMetricFromSubscription(kafkaMetric);
+    }
+
+    @Override
+    public void unsubscribe() {
+        delegate.unsubscribe();
     }
 
     @Override
@@ -185,18 +202,6 @@ public class ManagedConsumer<K, V> implements Consumer<K, V> {
     @Override
     public long position(TopicPartition partition, Duration timeout) {
         return delegate.position(partition, timeout);
-    }
-
-    @Override
-    @Deprecated
-    public OffsetAndMetadata committed(TopicPartition partition) {
-        return delegate.committed(partition);
-    }
-
-    @Override
-    @Deprecated
-    public OffsetAndMetadata committed(TopicPartition partition, Duration timeout) {
-        return delegate.committed(partition, timeout);
     }
 
     @Override
@@ -290,10 +295,17 @@ public class ManagedConsumer<K, V> implements Consumer<K, V> {
         delegate.close();
     }
 
+    @Deprecated
     @Override
     public void close(Duration timeout) {
         resourceManager.unregister(this);
         delegate.close(timeout);
+    }
+
+    @Override
+    public void close(CloseOptions closeOptions) {
+        resourceManager.unregister(this);
+        delegate.close(closeOptions);
     }
 
     @Override

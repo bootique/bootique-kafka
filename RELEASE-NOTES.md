@@ -1,3 +1,7 @@
+## 4.0-M3
+
+* #40 Upgrade Kafka Client to 4.1.1
+
 ## 3.0-RC2
 
 * #38 Upgrade Kafka client to 3.9.1

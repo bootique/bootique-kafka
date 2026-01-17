@@ -29,6 +29,6 @@ public class ProcessingGuaranteeTest {
     public void enumMatchesKafka() {
         // sanity check that may be useful as we upgrade kafka-streams in the future
         assertEquals(StreamsConfig.AT_LEAST_ONCE, ProcessingGuarantee.at_least_once.name());
-        assertEquals(StreamsConfig.EXACTLY_ONCE, ProcessingGuarantee.exactly_once.name());
+        assertEquals(StreamsConfig.EXACTLY_ONCE_V2, ProcessingGuarantee.exactly_once_v2.name());
     }
 }
