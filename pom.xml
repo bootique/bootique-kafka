@@ -37,9 +37,6 @@
     <properties>
         <kafka.version>4.1.1</kafka.version>
         <lz4j.version>1.8.1</lz4j.version>
-        <commons.compress.version>1.26.1</commons.compress.version>
-        <commons.lang.version>3.18.0</commons.lang.version>
-        <commons.io.version>2.19.0</commons.io.version>
     </properties>
 
     <modules>
@@ -64,6 +61,11 @@
             <dependency>
                 <groupId>io.bootique</groupId>
                 <artifactId>bootique-junit5</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.bootique</groupId>
+                <artifactId>bootique-testcontainers-internal</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -119,20 +121,14 @@
                 <artifactId>lz4-java</artifactId>
                 <version>${lz4j.version}</version>
             </dependency>
-            <!-- Importing testcontainers modules individually instead of using a BOM
-            to have more control over the transitive dependencies -->
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-junit-jupiter</artifactId>
                 <version>${testcontainers.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>commons-compress</artifactId>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>testcontainers</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -140,31 +136,12 @@
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-kafka</artifactId>
                 <version>${testcontainers.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-compress</artifactId>
-                <version>${commons.compress.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>commons-lang3</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-io</groupId>
-                        <artifactId>commons-io</artifactId>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>testcontainers</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons.lang.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons.io.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
