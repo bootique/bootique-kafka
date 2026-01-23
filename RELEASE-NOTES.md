@@ -3,7 +3,7 @@
 * #39 Upgrade lz4-java to 1.8.1
 * #40 Upgrade Kafka Client to 4.1.1
 
-## 3.0-RC2
+## 3.0
 
 * #38 Upgrade Kafka client to 3.9.1
 * #39 Upgrade lz4-java to 1.8.1
