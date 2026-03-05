@@ -20,8 +20,8 @@
 package io.bootique.kafka.client;
 
 import io.bootique.BQRuntime;
-import io.bootique.junit5.BQApp;
-import io.bootique.junit5.BQTest;
+import io.bootique.junit.BQApp;
+import io.bootique.junit.BQTest;
 import io.bootique.kafka.client.consumer.KafkaConsumerBuilder;
 import io.bootique.kafka.client.consumer.KafkaConsumerFactory;
 import io.bootique.kafka.client.consumer.KafkaPollingTracker;

@@ -22,7 +22,7 @@ package io.bootique.kafka.client;
 import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
-import io.bootique.junit5.BQTest;
+import io.bootique.junit.BQTest;
 import io.bootique.kafka.client.producer.KafkaProducerFactory;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringSerializer;
