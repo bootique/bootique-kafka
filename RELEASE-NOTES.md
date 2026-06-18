@@ -1,3 +1,7 @@
+## 4.0-M4
+
+* #42 Upgrade kafka-client to 4.3.0
+
 ## 4.0-M3
 
 * #39 Upgrade lz4-java to 1.8.1
